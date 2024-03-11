@@ -5,7 +5,9 @@ on:
 
   pull_request:
     paths:
-      - "src/Dotflyer.Service/**"
+      - .github/workflows/dotflyer-api-ci.yaml
+      - .github/workflows/shared-app-ci-workflow.yaml
+      - src/Dotflyer.Service/**
 
 permissions:
   id-token: write
@@ -13,7 +15,6 @@ permissions:
 
 jobs:
   DotflyerService_CI:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Hello
-        run: echo "hello"
+    uses: ./.github/workflows/shared-app-ci-workflow.yaml
+    with:
+      applicationName: Dotflyer.Service
