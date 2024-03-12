@@ -1,0 +1,46 @@
+name: Shared Application CD Workflow
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_TENANT_ID:
+        required: true
+        description: 'Azure Tenant ID'
+      AZURE_CLIENT_ID:
+        required: true
+        description: 'Azure Client ID'
+      AZURE_PLATFORM_SUBSCRIPTION_ID:
+        required: true
+        description: 'Azure Platform Subscription ID'
+      AZURE_DEV_SUBSCRIPTION_ID:
+        required: true
+        description: 'Azure Dev Subscription ID'
+      AZURE_PROD_SUBSCRIPTION_ID:
+        required: true
+        description: 'Azure Prod Subscription ID'
+      ACTIONS_AUTH_APP_ID:
+        required: true
+        description: 'GitHub App ID'
+      ACTIONS_AUTH_APP_PRIVATE_KEY:
+        required: true
+        description: 'GitHub App Private Key'
+    inputs:
+      applicationFolder:
+        type: string
+        required: true
+        description: 'Application Folder'
+      applicationName:
+        type: string
+        required: true
+        description: 'Application Name'
+      
+jobs:
+  app_package:
+    uses: ./.github/workflows/shared-app-package-workflow.yaml
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_PLATFORM_SUBSCRIPTION_ID }}
+    with:
+      applicationFolder: ${{ inputs.applicationFolder }}
+      applicationName: ${{ inputs.applicationName }}
