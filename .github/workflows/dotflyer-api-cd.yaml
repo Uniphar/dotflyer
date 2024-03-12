@@ -1,4 +1,4 @@
-name: CD for Dotflyer API
+name: CD for DotFlyer API
 
 on:
   workflow_dispatch:
@@ -7,7 +7,9 @@ on:
     branches:
       - main
     paths:
-      - "src/Dotflyer.Api/**"
+      - .github/workflows/shared-app-cd-workflow.yaml
+      - .github/workflows/shared-app-package-workflow.yaml
+      - src/DotFlyer.Api/**
 
 permissions:
   id-token: write
@@ -15,8 +17,16 @@ permissions:
   pull-requests: read
 
 jobs:
-  DotflyerApi_CD:
-    runs-on: ubuntu-latest
-    steps:
-      - name: hello
-        run: echo "hello"
+  DotFlyerApi_CD:
+    uses: ./.github/workflows/shared-app-cd-workflow.yaml
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_PLATFORM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PLATFORM_SUBSCRIPTION_ID }}
+      AZURE_DEV_SUBSCRIPTION_ID: ${{ secrets.AZURE_DEV_SUBSCRIPTION_ID }}
+      AZURE_PROD_SUBSCRIPTION_ID: ${{ secrets.AZURE_PROD_SUBSCRIPTION_ID }}
+      ACTIONS_AUTH_APP_ID: ${{ secrets.ACTIONS_AUTH_APP_ID }}
+      ACTIONS_AUTH_APP_PRIVATE_KEY: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
+    with:
+      applicationFolder: DotFlyer.Api
+      applicationName: dotflyer-api
