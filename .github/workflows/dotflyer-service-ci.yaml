@@ -1,4 +1,4 @@
-name: CI for Dotflyer Service
+name: CI for DotFlyer Service
 
 on:
   workflow_dispatch:
@@ -7,14 +7,14 @@ on:
     paths:
       - .github/workflows/dotflyer-api-ci.yaml
       - .github/workflows/shared-app-ci-workflow.yaml
-      - src/Dotflyer.Service/**
+      - src/DotFlyer.Service/**
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  DotflyerService_CI:
+  DotFlyerService_CI:
     uses: ./.github/workflows/shared-app-ci-workflow.yaml
     with:
-      applicationName: Dotflyer.Service
+      applicationName: DotFlyer.Service

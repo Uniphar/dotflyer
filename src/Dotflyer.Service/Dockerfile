@@ -8,17 +8,17 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Dotflyer.Service/Dotflyer.Service.csproj", "Dotflyer.Service/"]
-RUN dotnet restore "./Dotflyer.Service/Dotflyer.Service.csproj"
+COPY ["DotFlyer.Service/DotFlyer.Service.csproj", "DotFlyer.Service/"]
+RUN dotnet restore "./DotFlyer.Service/DotFlyer.Service.csproj"
 COPY . .
-WORKDIR "/src/Dotflyer.Service"
-RUN dotnet build "./Dotflyer.Service.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/DotFlyer.Service"
+RUN dotnet build "./DotFlyer.Service.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Dotflyer.Service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./DotFlyer.Service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Dotflyer.Service.dll"]
+ENTRYPOINT ["dotnet", "DotFlyer.Service.dll"]

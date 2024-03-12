@@ -1,6 +1,6 @@
 apiVersion: v2
 name: dotflyer-service
-description: Helm chart for Dotflyer Service application
+description: Helm chart for DotFlyer Service application
 type: application
 version: 1.0.0
 appVersion: "1.0.0"
