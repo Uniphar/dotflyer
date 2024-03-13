@@ -1,6 +1,7 @@
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+global using DotFlyer.Service;
 
-app.MapGet("/", () => "Hello World!");
+var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddHostedService<MessageProcessor>();
 
-app.Run();
+var host = builder.Build();
+host.Run();

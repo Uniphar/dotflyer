@@ -1,23 +1,17 @@
 {
     "profiles": {
-        "Kestrel": {
+        "DotFlyer.Service": {
             "commandName": "Project",
-            "launchBrowser": true,
             "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "dev"
+                "DOTNET_ENVIRONMENT": "dev"
             },
-            "dotnetRunMessages": true,
-            "applicationUrl": "http://localhost:5077"
+            "dotnetRunMessages": true
         },
         "Container": {
             "commandName": "Docker",
-            "launchBrowser": true,
-            "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
             "environmentVariables": {
-                "ASPNETCORE_HTTP_PORTS": "8080",
-                "ASPNETCORE_ENVIRONMENT": "dev"
-            },
-            "publishAllPorts": true
+                "DOTNET_ENVIRONMENT": "dev"
+            }
         }
     },
     "$schema": "http://json.schemastore.org/launchsettings.json"
