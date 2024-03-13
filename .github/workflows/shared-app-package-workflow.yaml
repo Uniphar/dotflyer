@@ -60,7 +60,7 @@ jobs:
             try{
               Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
-              $AcrName = Resolve-UniResourceName 'acr' 'compute' 'aks'
+              $AcrName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
               
               echo "ACR_NAME=$AcrName" >> $env:GITHUB_ENV
               echo "IMAGE_REPOSITORY=$($AcrName).azurecr.io/${{ inputs.applicationName }}" >> $env:GITHUB_ENV

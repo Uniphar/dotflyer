@@ -7,8 +7,11 @@ on:
     branches:
       - main
     paths:
+      - .github/workflows/dotflyer-service-cd.yaml
       - .github/workflows/shared-app-cd-workflow.yaml
       - .github/workflows/shared-app-package-workflow.yaml
+      - .github/workflows/shared-app-deployment-workflow.yaml
+      - .github/workflows/shared-app-integration-tests-workflow.yaml
       - src/DotFlyer.Service/**
 
 permissions:
