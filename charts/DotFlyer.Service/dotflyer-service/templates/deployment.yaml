@@ -6,9 +6,13 @@ metadata:
     app.kubernetes.io/name: {{ .Chart.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
   template:
     metadata:
       labels:
+        app.kubernetes.io/name: {{ .Chart.Name }}
         azure.workload.identity/use: "true"
       annotations:
         {{- with .Values.podAnnotations }}{{- toYaml . | nindent 8 }}{{- end }}
@@ -19,9 +23,7 @@ spec:
           image: {{ .Values.ACRName }}.azurecr.io/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
           ports:
-            - name: {{ .Chart.Name }}
-              containerPort: {{ .Values.port }}
-              protocol: TCP
+            - containerPort: {{ .Values.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       nodeSelector:
