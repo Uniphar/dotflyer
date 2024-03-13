@@ -79,7 +79,7 @@ jobs:
 
               $ACRName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
               $AKSClusterResourceGroup = Resolve-UniResourceName 'resource-group' $p_computeProject -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
-              $AKSClusterName = Resolve-UniResourceName 'aks' $p_computeProject -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
+              $AKSClusterName = Resolve-UniResourceName 'aks' $p_computeProject -Context $app_AKS -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
               $AKSClusterServiceAccountDisplayName = (Get-UniDomainServicePrincipalDetail 'devops' '${{ inputs.environment }}').DisplayName
 
               echo "ACR_NAME=$ACRName" >> $env:GITHUB_ENV
