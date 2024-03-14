@@ -74,6 +74,7 @@ jobs:
         uses: azure/powershell@v1
         with:
           azPSVersion: "latest"
+          failOnStandardError: true
           inlineScript: |
             Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
