@@ -56,6 +56,7 @@ jobs:
       - name: compute environment variables
         uses: azure/powershell@v1
         with:
+          azPSVersion: "latest"
           inlineScript: |
             Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
@@ -66,7 +67,6 @@ jobs:
             echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
             echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
             echo "APPLICATION_VERSION=1.0.$($env:GITHUB_RUN_NUMBER)" >> $env:GITHUB_ENV
-          azPSVersion: "latest"
 
       - name: azure login
         uses: azure/login@v1
