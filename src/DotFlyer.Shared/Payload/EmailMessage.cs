@@ -1,16 +1,22 @@
 ﻿namespace DotFlyer.Shared.Payload;
 
-internal class EmailMessage
+public class EmailMessage
 {
     public required string FromEmail { get; set; }
 
     public required string FromName { get; set; }
 
-    public required string ToEmail { get; set; }
-
-    public required string ToName { get; set; }
+    public List<EmailRecipient> To { get; set; } = new();
 
     public required string Subject { get; set; }
 
     public required string Body { get; set; }
+}
+
+
+public class EmailRecipient
+{
+    public required string Email { get; set; }
+
+    public required string Name { get; set; }
 }
