@@ -74,28 +74,22 @@ jobs:
         uses: azure/powershell@v1
         with:
           inlineScript: |
-            try{
-              Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
+            Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
-              $ACRName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
-              $AKSClusterResourceGroup = Resolve-UniResourceName 'resource-group' $p_computeProject -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
-              $AKSClusterName = Resolve-UniResourceName 'aks' $p_computeProject -Context $app_AKS -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
-              $AKSClusterServiceAccountDisplayName = (Get-UniDomainServicePrincipalDetail 'devops' '${{ inputs.environment }}').DisplayName
-              $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
+            $ACRName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
+            $AKSClusterResourceGroup = Resolve-UniResourceName 'resource-group' $p_computeProject -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
+            $AKSClusterName = Resolve-UniResourceName 'aks' $p_computeProject -Context $app_AKS -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
+            $AKSClusterServiceAccountDisplayName = (Get-UniDomainServicePrincipalDetail 'devops' '${{ inputs.environment }}').DisplayName
+            $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
 
-              echo "ACR_NAME=$ACRName" >> $env:GITHUB_ENV
-              echo "AKS_CLUSTER_RESOURCE_GROUP=$AKSClusterResourceGroup" >> $env:GITHUB_ENV
-              echo "AKS_CLUSTER_NAME=$AKSClusterName" >> $env:GITHUB_ENV
-              echo "AKS_CLUSTER_SERVICE_ACCOUNT_DISPLAY_NAME=$AKSClusterServiceAccountDisplayName" >> $env:GITHUB_ENV
-              echo "AZURE_KEY_VAULT_NAME=$AzureKeyVaultName" >> $env:GITHUB_ENV
-              echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
-              echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
-              echo "APPLICATION_VERSION=${{ inputs.applicationVersion }}" >> $env:GITHUB_ENV
-            }
-            catch {
-              Write-Error $_
-              exit 1
-            }
+            echo "ACR_NAME=$ACRName" >> $env:GITHUB_ENV
+            echo "AKS_CLUSTER_RESOURCE_GROUP=$AKSClusterResourceGroup" >> $env:GITHUB_ENV
+            echo "AKS_CLUSTER_NAME=$AKSClusterName" >> $env:GITHUB_ENV
+            echo "AKS_CLUSTER_SERVICE_ACCOUNT_DISPLAY_NAME=$AKSClusterServiceAccountDisplayName" >> $env:GITHUB_ENV
+            echo "AZURE_KEY_VAULT_NAME=$AzureKeyVaultName" >> $env:GITHUB_ENV
+            echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
+            echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
+            echo "APPLICATION_VERSION=${{ inputs.applicationVersion }}" >> $env:GITHUB_ENV
           azPSVersion: "latest"
 
       - name: setup kubectl
