@@ -81,7 +81,7 @@ jobs:
               $AKSClusterResourceGroup = Resolve-UniResourceName 'resource-group' $p_computeProject -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
               $AKSClusterName = Resolve-UniResourceName 'aks' $p_computeProject -Context $app_AKS -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
               $AKSClusterServiceAccountDisplayName = (Get-UniDomainServicePrincipalDetail 'devops' '${{ inputs.environment }}').DisplayName
-              $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' '$p_devopsDomain-app' -Environment '${{ inputs.environment }}'
+              $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
 
               echo "ACR_NAME=$ACRName" >> $env:GITHUB_ENV
               echo "AKS_CLUSTER_RESOURCE_GROUP=$AKSClusterResourceGroup" >> $env:GITHUB_ENV
