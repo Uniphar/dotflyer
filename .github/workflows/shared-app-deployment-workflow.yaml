@@ -93,6 +93,7 @@ jobs:
               echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
               echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
               echo "APPLICATION_VERSION=${{ inputs.applicationVersion }}" >> $env:GITHUB_ENV
+            }
             catch {
               Write-Error $_
               exit 1

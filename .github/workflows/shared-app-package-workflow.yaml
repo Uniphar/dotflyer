@@ -69,6 +69,7 @@ jobs:
               echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
               echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
               echo "APPLICATION_VERSION=1.0.$($env:GITHUB_RUN_NUMBER)" >> $env:GITHUB_ENV
+            }
             catch {
               Write-Error $_
               exit 1
