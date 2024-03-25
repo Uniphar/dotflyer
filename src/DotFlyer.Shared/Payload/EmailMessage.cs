@@ -6,7 +6,7 @@ public class EmailMessage
 
     public required string FromName { get; set; }
 
-    public List<EmailRecipient> To { get; set; } = new();
+    public List<EmailRecipient> To { get; set; } = [];
 
     public required string Subject { get; set; }
 
