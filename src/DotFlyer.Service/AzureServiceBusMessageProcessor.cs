@@ -10,6 +10,7 @@
 /// <param name="sendGridClient">The <see cref="ISendGridClient"/> instance that sends emails.</param>
 public class AzureServiceBusMessageProcessor(
         ILogger<MessageProcessingService> logger,
+        TelemetryClient telemetryClient,
         IConfiguration configuration,
         ServiceBusAdministrationClient serviceBusAdministrationClient,
         ServiceBusProcessor serviceBusProcessor,
@@ -49,7 +50,7 @@ public class AzureServiceBusMessageProcessor(
     /// </summary>
     /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns>Task representing the asynchronous operation.</returns>
-    public async Task StartProcessingAsync(CancellationToken cancellationToken = default) => 
+    public async Task StartProcessingAsync(CancellationToken cancellationToken = default) =>
         await serviceBusProcessor.StartProcessingAsync(cancellationToken != default ? cancellationToken : _cancellationToken);
 
     /// <summary>
@@ -91,6 +92,12 @@ public class AzureServiceBusMessageProcessor(
 
                 logger.LogError($"Failed to send email message: {errorMessage}");
             }
+
+            telemetryClient.TrackEvent("EmailSent", new Dictionary<string, string>
+            {
+                { "StatusCode", result.StatusCode.ToString() },
+                { "Subject", emailMessage.Subject }
+            });
         }
         else
         {
