@@ -1,0 +1,42 @@
+name: Shared Application Integration Tests Workflow
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_TENANT_ID:
+        required: true
+        description: 'Azure Tenant ID'
+      AZURE_CLIENT_ID:
+        required: true
+        description: 'Azure Client ID'
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+        description: 'Azure Subscription ID'
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: 'Environment'
+      applicationFolder:
+        type: string
+        required: true
+        description: 'Application Folder'
+
+jobs:
+  run_integration_tests:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v1
+
+      - name: azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: run integration tests
+        working-directory: ./src/${{ inputs.applicationFolder }}.Tests
+        run: dotnet test -s ./runsettings/${{ inputs.environment }}.runsettings --filter TestCategory=Integration
