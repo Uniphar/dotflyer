@@ -37,6 +37,7 @@ jobs:
         working-directory: ./src/
         shell: pwsh
         run: |
+            dotnet restore
             dotnet list package --vulnerable --include-transitive 2>&1 | tee build.log
             echo "Analyze dotnet list package command log output..."
             exit (Select-String -Path "build.log" -Pattern "has the following vulnerable packages" -AllMatches).Matches.Count -gt 0 ? 1 : 0
