@@ -17,7 +17,7 @@ spec:
       annotations:
         {{- with .Values.podAnnotations }}{{- toYaml . | nindent 8 }}{{- end }}
     spec:
-      serviceAccountName: {{ .Values.AKSClusterServiceAccountDisplayName }}
+      serviceAccountName: {{ .Values.AKSClusterSAName }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.ACRName }}.azurecr.io/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
