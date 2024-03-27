@@ -10,7 +10,6 @@
 /// <param name="sendGridClient">The <see cref="ISendGridClient"/> instance that sends emails.</param>
 public class AzureServiceBusMessageProcessor(
         ILogger<MessageProcessingService> logger,
-        TelemetryClient telemetryClient,
         IConfiguration configuration,
         ServiceBusAdministrationClient serviceBusAdministrationClient,
         ServiceBusProcessor serviceBusProcessor,
@@ -92,12 +91,6 @@ public class AzureServiceBusMessageProcessor(
 
                 logger.LogError($"Failed to send email message: {errorMessage}");
             }
-
-            telemetryClient.TrackEvent("EmailSent", new Dictionary<string, string>
-            {
-                { "StatusCode", result.StatusCode.ToString() },
-                { "Subject", emailMessage.Subject }
-            });
         }
         else
         {
