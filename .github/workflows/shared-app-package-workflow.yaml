@@ -54,25 +54,17 @@ jobs:
           token: ${{ steps.gh-app.outputs.token }}
 
       - name: compute environment variables
-        uses: azure/powershell@v1
-        with:
-          inlineScript: |
-            try{
-              Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
+        shell: pwsh
+        run: |
+          Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
-              $AcrName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
-              
-              echo "ACR_NAME=$AcrName" >> $env:GITHUB_ENV
-              echo "IMAGE_REPOSITORY=$($AcrName).azurecr.io/${{ inputs.applicationName }}" >> $env:GITHUB_ENV
-              echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
-              echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
-              echo "APPLICATION_VERSION=1.0.$($env:GITHUB_RUN_NUMBER)" >> $env:GITHUB_ENV
-            }
-            catch {
-              Write-Error $_
-              exit 1
-            }
-          azPSVersion: "latest"
+          $AcrName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
+          
+          echo "ACR_NAME=$AcrName" >> $env:GITHUB_ENV
+          echo "IMAGE_REPOSITORY=$($AcrName).azurecr.io/${{ inputs.applicationName }}" >> $env:GITHUB_ENV
+          echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
+          echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
+          echo "APPLICATION_VERSION=1.0.$($env:GITHUB_RUN_NUMBER)" >> $env:GITHUB_ENV
 
       - name: azure login
         uses: azure/login@v1
