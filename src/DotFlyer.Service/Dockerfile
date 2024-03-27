@@ -4,7 +4,7 @@ COPY ["DotFlyer.Service/DotFlyer.Service.csproj", "DotFlyer.Service/"]
 RUN dotnet restore "./DotFlyer.Service/DotFlyer.Service.csproj"
 COPY . .
 WORKDIR "/src/DotFlyer.Service"
-RUN dotnet publish "./DotFlyer.Service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./DotFlyer.Service.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 USER app
