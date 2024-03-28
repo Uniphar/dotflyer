@@ -4,7 +4,6 @@ global using Azure.Messaging.ServiceBus.Administration;
 global using DotFlyer.Service;
 global using DotFlyer.Service.Extensions;
 global using DotFlyer.Shared.Payload;
-global using Microsoft.ApplicationInsights;
 global using Microsoft.Extensions.Azure;
 global using SendGrid;
 global using SendGrid.Extensions.DependencyInjection;
@@ -12,13 +11,15 @@ global using SendGrid.Helpers.Mail;
 global using System.Net;
 global using System.Text.Json;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = Host.CreateApplicationBuilder();
 
-builder.Configuration.AddDotFlyerConfiguration();
+builder.Configuration
+    .AddDotFlyerConfiguration();
 
-builder.Services.AddDotFlyerDependencies(builder.Configuration);
-builder.Services.AddSingleton<IMessageProcessor, AzureServiceBusMessageProcessor>();
-builder.Services.AddHostedService<MessageProcessingService>();
+builder.Services
+    .AddDotFlyerMessageProcessor<AzureServiceBusMessageProcessor>()
+    .WithEmailSender<SendGridEmailSender>()
+    .WithDependencies(builder.Configuration);
 
 var host = builder.Build();
 host.Run();

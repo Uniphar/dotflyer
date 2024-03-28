@@ -7,13 +7,13 @@
 /// <param name="configuration">The <see cref="ILogger"/> instance containing application configuration.</param>
 /// <param name="serviceBusAdministrationClient">The <see cref="ServiceBusAdministrationClient"/> instance that allows to manage namespace entities.</param>
 /// <param name="serviceBusProcessor">The <see cref="ServiceBusProcessor"/> instance that processes incoming messages.</param>
-/// <param name="sendGridClient">The <see cref="ISendGridClient"/> instance that sends emails.</param>
+/// <param name="emailSender">The <see cref="IEmailSender"/> instance.</param>
 public class AzureServiceBusMessageProcessor(
         ILogger<MessageProcessingService> logger,
         IConfiguration configuration,
         ServiceBusAdministrationClient serviceBusAdministrationClient,
         ServiceBusProcessor serviceBusProcessor,
-        ISendGridClient sendGridClient) : IMessageProcessor
+        IEmailSender emailSender) : IMessageProcessor
 {
     /// <summary>
     /// The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.
@@ -71,25 +71,13 @@ public class AzureServiceBusMessageProcessor(
 
         if (emailMessage != null)
         {
-            SendGridMessage sendGridMessage = new()
+            try
             {
-                From = new(emailMessage.FromEmail, emailMessage.FromName),
-                Subject = emailMessage.Subject,
-                PlainTextContent = emailMessage.Body
-            };
-
-            foreach (var emailRecipient in emailMessage.To)
-            {
-                sendGridMessage.AddTo(new EmailAddress(emailRecipient.Email, emailRecipient.Name));
+                await emailSender.SendAsync(emailMessage, _cancellationToken);
             }
-
-            var result = await sendGridClient.SendEmailAsync(sendGridMessage, _cancellationToken);
-
-            if (result.StatusCode != HttpStatusCode.Accepted)
+            catch (Exception ex)
             {
-                var errorMessage = await result.Body.ReadAsStringAsync();
-
-                logger.LogError($"Failed to send email message: {errorMessage}");
+                logger.LogError(ex, $"Failed to send email message: {ex.Message}");
             }
         }
         else

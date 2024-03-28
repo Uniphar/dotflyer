@@ -6,11 +6,27 @@
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds dependencies to the service collection of DotFlyer application.
+    /// Adds a message processor and a hosted service to the service collection.
+    /// </summary>
+    /// <typeparam name="TMessageProcessor">Concrete type of the message processor.</typeparam>
+    /// <param name="serviceCollection">The <see cref="IServiceCollection"/>.</param>
+    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddDotFlyerMessageProcessor<TMessageProcessor>(this IServiceCollection serviceCollection)
+        where TMessageProcessor : class, IMessageProcessor
+    {
+        serviceCollection.AddSingleton<IMessageProcessor, TMessageProcessor>();
+        serviceCollection.AddHostedService<MessageProcessingService>();
+
+        return serviceCollection;
+    }
+
+    /// <summary>
+    /// Adds dependencies to the service collection.
     /// </summary>
     /// <param name="serviceCollection">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configuration">The <see cref="IConfiguration"/> that contains application configuration.</param>
-    public static void AddDotFlyerDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
+    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection WithDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(options => options.EnableAdaptiveSampling = false);
 
@@ -26,5 +42,21 @@ public static class ServiceCollectionExtensions
         });
 
         serviceCollection.AddSendGrid(options => options.ApiKey = configuration["SendGrid:ApiKey"]);
+
+        return serviceCollection;
+    }
+
+    /// <summary>
+    /// Adds an email sender to the service collection.
+    /// </summary>
+    /// <typeparam name="TEmailSender"></typeparam>
+    /// <param name="serviceCollection">The <see cref="IServiceCollection"/>.</param>
+    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection WithEmailSender<TEmailSender>(this IServiceCollection serviceCollection)
+        where TEmailSender : class, IEmailSender
+    {
+        serviceCollection.AddSingleton<IEmailSender, TEmailSender>();
+
+        return serviceCollection;
     }
 }

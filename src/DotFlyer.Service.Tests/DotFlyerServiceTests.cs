@@ -21,8 +21,6 @@ public class DotFlyerServiceTests
     [ClassInitialize]
     public static async Task ClassInitialize(TestContext context)
     {
-        Environment.SetEnvironmentVariable("AZURE_KEY_VAULT_NAME", "uni-devops-app-dev-kv");
-
         var azureKeyVaultName = Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME");
 
         SecretClient secretClient = new(new($"https://{azureKeyVaultName}.vault.azure.net/"), new DefaultAzureCredential());
@@ -67,7 +65,7 @@ public class DotFlyerServiceTests
 
         await _serviceBusSender!.SendMessageAsync(message);
 
-        // TODO: Verify email is sent using ADX
+        // TODO: Assert that email is sent using ADX
     }
 
     [ClassCleanup]

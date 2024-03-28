@@ -1,7 +1,10 @@
 ﻿namespace DotFlyer.Service;
 
+/// <summary>
+/// Represents a message processor.
+/// </summary>
 public interface IMessageProcessor
-{
+{   
     /// <summary>
     /// Initializes the message processor.
     /// </summary>
@@ -18,7 +21,7 @@ public interface IMessageProcessor
     Task StartProcessingAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Stops the message processor.
+    /// Stops the message processor after cancellation is requested.
     /// </summary>
     /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns>Task representing the asynchronous operation.</returns>
