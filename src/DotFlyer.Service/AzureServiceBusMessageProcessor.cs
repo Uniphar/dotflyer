@@ -29,14 +29,14 @@ public class AzureServiceBusMessageProcessor(
     {
         _cancellationToken = cancellationToken;
 
-        if (!await serviceBusAdministrationClient.TopicExistsAsync(configuration["ServiceBus:TopicName"], _cancellationToken))
+        if (!await serviceBusAdministrationClient.TopicExistsAsync(configuration["AzureServiceBus:TopicName"], _cancellationToken))
         {
-            await serviceBusAdministrationClient.CreateTopicAsync(new CreateTopicOptions(configuration["ServiceBus:TopicName"]), _cancellationToken);
+            await serviceBusAdministrationClient.CreateTopicAsync(new CreateTopicOptions(configuration["AzureServiceBus:TopicName"]), _cancellationToken);
         }
 
-        if (!await serviceBusAdministrationClient.SubscriptionExistsAsync(configuration["ServiceBus:TopicName"], configuration["ServiceBus:SubscriptionName"], _cancellationToken))
+        if (!await serviceBusAdministrationClient.SubscriptionExistsAsync(configuration["AzureServiceBus:TopicName"], configuration["AzureServiceBus:SubscriptionName"], _cancellationToken))
         {
-            await serviceBusAdministrationClient.CreateSubscriptionAsync(configuration["ServiceBus:TopicName"], configuration["ServiceBus:SubscriptionName"], _cancellationToken);
+            await serviceBusAdministrationClient.CreateSubscriptionAsync(configuration["AzureServiceBus:TopicName"], configuration["AzureServiceBus:SubscriptionName"], _cancellationToken);
         }
 
         serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;

@@ -13,7 +13,7 @@ public static class ConfigurationBuilderExtensions
     public static IConfigurationBuilder AddDotFlyerConfiguration(this IConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.AddAzureKeyVault(
-            new Uri($"https://{Environment.GetEnvironmentVariable("KEY_VAULT_NAME")}.vault.azure.net/"),
+            new Uri($"https://{Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME")}.vault.azure.net/"),
             new DefaultAzureCredential());
 
         return configurationBuilder;

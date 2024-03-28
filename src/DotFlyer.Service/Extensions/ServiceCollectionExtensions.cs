@@ -36,7 +36,7 @@ public static class ServiceCollectionExtensions
             clientBuilder.AddServiceBusAdministrationClientWithNamespace(configuration["AzureServiceBus:Name"]);
             clientBuilder.AddClient<ServiceBusProcessor, ServiceBusProcessorOptions>(
                 (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
-                    .CreateProcessor(configuration["ServiceBus:TopicName"], configuration["ServiceBus:SubscriptionName"]));
+                    .CreateProcessor(configuration["AzureServiceBus:TopicName"], configuration["AzureServiceBus:SubscriptionName"]));
 
             clientBuilder.UseCredential(new DefaultAzureCredential());
         });
