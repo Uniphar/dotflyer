@@ -7,12 +7,14 @@
 /// <param name="configuration">The <see cref="ILogger"/> instance containing application configuration.</param>
 /// <param name="serviceBusAdministrationClient">The <see cref="ServiceBusAdministrationClient"/> instance that allows to manage namespace entities.</param>
 /// <param name="serviceBusProcessor">The <see cref="ServiceBusProcessor"/> instance that processes incoming messages.</param>
+/// <param name="adxClient">The <see cref="AzureDataExplorerClient"/> instance that stores data in Azure Data Explorer database.</param>
 /// <param name="emailSender">The <see cref="IEmailSender"/> instance.</param>
 public class AzureServiceBusMessageProcessor(
         ILogger<MessageProcessingService> logger,
         IConfiguration configuration,
         ServiceBusAdministrationClient serviceBusAdministrationClient,
         ServiceBusProcessor serviceBusProcessor,
+        AzureDataExplorerClient adxClient,
         IEmailSender emailSender) : IMessageProcessor
 {
     /// <summary>
@@ -42,6 +44,8 @@ public class AzureServiceBusMessageProcessor(
         serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
 
         serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
+
+        await adxClient.InitializeAsync(_cancellationToken);
     }
 
     /// <summary>

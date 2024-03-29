@@ -4,7 +4,9 @@
 /// The email sender, which uses SendGrid.
 /// </summary>
 /// <param name="sendGridClient"></param>
-public class SendGridEmailSender(ISendGridClient sendGridClient) : IEmailSender
+public class SendGridEmailSender(
+    ISendGridClient sendGridClient,
+    AzureDataExplorerClient adxClient) : IEmailSender
 {
     /// <summary>
     /// Sends an email message.
@@ -28,6 +30,8 @@ public class SendGridEmailSender(ISendGridClient sendGridClient) : IEmailSender
         }
 
         var result = await sendGridClient.SendEmailAsync(sendGridMessage, cancellationToken);
+
+        await adxClient.IngestEmailDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode), cancellationToken);
 
         if (result.StatusCode != HttpStatusCode.Accepted)
         {

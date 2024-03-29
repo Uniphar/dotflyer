@@ -28,6 +28,8 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection WithDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        DefaultAzureCredential credential = new();
+
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(options => options.EnableAdaptiveSampling = false);
 
         serviceCollection.AddAzureClients(clientBuilder =>
@@ -38,10 +40,17 @@ public static class ServiceCollectionExtensions
                 (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
                     .CreateProcessor(configuration["AzureServiceBus:TopicName"], configuration["AzureServiceBus:SubscriptionName"]));
 
-            clientBuilder.UseCredential(new DefaultAzureCredential());
+            clientBuilder.UseCredential(credential);
         });
 
         serviceCollection.AddSendGrid(options => options.ApiKey = configuration["SendGrid:ApiKey"]);
+
+        var kcsb = new KustoConnectionStringBuilder(configuration["AzureDataExplorer:HostAddress"], configuration["AzureDataExplorer:DatabaseName"])
+            .WithAadApplicationTokenAuthentication(credential.GetToken(new(["https://kusto.kusto.windows.net/.default"])).Token);
+
+        serviceCollection.AddSingleton(KustoClientFactory.CreateCslAdminProvider(kcsb));
+        serviceCollection.AddSingleton(KustoIngestFactory.CreateDirectIngestClient(kcsb));
+        serviceCollection.AddSingleton<AzureDataExplorerClient>();
 
         return serviceCollection;
     }
