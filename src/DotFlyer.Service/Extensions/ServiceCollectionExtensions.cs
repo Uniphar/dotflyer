@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSendGrid(options => options.ApiKey = configuration["SendGrid:ApiKey"]);
 
         var kcsb = new KustoConnectionStringBuilder(configuration["AzureDataExplorer:HostAddress"], configuration["AzureDataExplorer:DatabaseName"])
-            .WithAadApplicationTokenAuthentication(credential.GetToken(new(["https://kusto.kusto.windows.net/.default"])).Token);
+            .WithAadTokenProviderAuthentication(async () => (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]))).Token);
 
         serviceCollection.AddSingleton(KustoClientFactory.CreateCslAdminProvider(kcsb));
         serviceCollection.AddSingleton(KustoIngestFactory.CreateDirectIngestClient(kcsb));
