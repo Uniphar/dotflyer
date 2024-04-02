@@ -6,8 +6,19 @@ public class AzureDataExplorerClient(
     IKustoIngestClient kustoIngestClient)
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
-    {        
-        var createTableCommand = CslCommandGenerator.GenerateTableCreateCommand(EmailTable.TableName, EmailTable.Schema);
+    {
+        TableSchema schema = new() { Name = EmailTable.TableName };
+
+        foreach (var column in EmailTable.Schema)
+        {
+            schema.AddColumnIfMissing(new()
+            {
+                Name = column.Name,
+                Type = column.Type
+            });
+        }
+
+        var createTableCommand = CslCommandGenerator.GenerateTableCreateMergeCommand(schema);
 
         await cslAdminProvider.ExecuteControlCommandAsync(cslAdminProvider.DefaultDatabaseName, createTableCommand);
 

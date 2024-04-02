@@ -8,6 +8,8 @@ public class EmailData : EmailMessage
 
     public required string SendGridStatusCodeString { get; set; }
 
+    public required DateTime IngestDateTimeUtc { get; set; }
+
     public static EmailData ConvertToAdxModel(EmailMessage emailMessage, HttpStatusCode sendgridStatusCode) => new()
     {
         FromEmail = emailMessage.FromEmail,
@@ -16,6 +18,7 @@ public class EmailData : EmailMessage
         Subject = emailMessage.Subject,
         Body = emailMessage.Body,
         SendGridStatusCodeInt = (int)sendgridStatusCode,
-        SendGridStatusCodeString = sendgridStatusCode.ToString()
+        SendGridStatusCodeString = sendgridStatusCode.ToString(),
+        IngestDateTimeUtc = DateTime.UtcNow
     };
 }

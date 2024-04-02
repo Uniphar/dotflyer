@@ -4,15 +4,23 @@ public class EmailTable
 {
     public const string TableName = "dotflyer-email";
 
-    public static Tuple<string, string>[] Schema =
+    public class Column
+    {
+        public required string Name { get; set; }
+
+        public required string Type { get; set; }
+    }
+
+    public static List<Column> Schema =
     [
-        Tuple.Create(nameof(EmailData.FromEmail), typeof(string).FullName!),
-        Tuple.Create(nameof(EmailData.FromName), typeof(string).FullName!),
-        Tuple.Create(nameof(EmailData.To), typeof(string).FullName!),
-        Tuple.Create(nameof(EmailData.Subject), typeof(string).FullName!),
-        Tuple.Create(nameof(EmailData.Body), typeof(string).FullName!),
-        Tuple.Create(nameof(EmailData.SendGridStatusCodeInt), typeof(int).FullName!),
-        Tuple.Create(nameof(EmailData.SendGridStatusCodeString), typeof(string).FullName!)
+        new() { Name = nameof(EmailData.FromEmail), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.FromName), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.To), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.Subject), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.Body), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.SendGridStatusCodeInt), Type = typeof(int).FullName! },
+        new() { Name = nameof(EmailData.SendGridStatusCodeString), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.IngestDateTimeUtc), Type = typeof(DateTime).FullName! }
     ];
 
     public const string MappingName = "dotflyer-email-mapping";
@@ -27,10 +35,10 @@ public class EmailTable
             {
                 columnMapping.Add(new()
                 {
-                    ColumnName = column.Item1,
+                    ColumnName = column.Name,
                     Properties = new()
                     {
-                        { MappingConsts.Path, $"$.{column.Item1}" }
+                        { MappingConsts.Path, $"$.{column.Name}" }
                     }
                 });
             }
