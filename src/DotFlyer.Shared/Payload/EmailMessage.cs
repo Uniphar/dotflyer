@@ -8,6 +8,10 @@ public class EmailMessage
 
     public List<EmailRecipient> To { get; set; } = [];
 
+    public List<EmailRecipient> Cc { get; set; } = [];
+
+    public List<EmailRecipient> Bcc { get; set; } = [];
+
     public required string Subject { get; set; }
 
     public required string Body { get; set; }

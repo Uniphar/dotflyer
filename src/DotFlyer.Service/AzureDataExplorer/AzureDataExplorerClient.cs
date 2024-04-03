@@ -9,14 +9,14 @@ public class AzureDataExplorerClient(
     {
         TableSchema schema = new() { Name = EmailTable.TableName };
 
-        foreach (var column in EmailTable.Schema)
+        EmailTable.Schema.ForEach(column =>
         {
             schema.AddColumnIfMissing(new()
             {
                 Name = column.Name,
                 Type = column.Type
             });
-        }
+        });
 
         var createTableCommand = CslCommandGenerator.GenerateTableCreateMergeCommand(schema);
 

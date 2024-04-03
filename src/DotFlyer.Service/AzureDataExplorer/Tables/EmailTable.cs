@@ -16,6 +16,8 @@ public class EmailTable
         new() { Name = nameof(EmailData.FromEmail), Type = typeof(string).FullName! },
         new() { Name = nameof(EmailData.FromName), Type = typeof(string).FullName! },
         new() { Name = nameof(EmailData.To), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.Cc), Type = typeof(string).FullName! },
+        new() { Name = nameof(EmailData.Bcc), Type = typeof(string).FullName! },
         new() { Name = nameof(EmailData.Subject), Type = typeof(string).FullName! },
         new() { Name = nameof(EmailData.Body), Type = typeof(string).FullName! },
         new() { Name = nameof(EmailData.SendGridStatusCodeInt), Type = typeof(int).FullName! },
@@ -31,7 +33,7 @@ public class EmailTable
         {
             List<ColumnMapping> columnMapping = [];
 
-            foreach (var column in Schema)
+            Schema.ForEach(column =>
             {
                 columnMapping.Add(new()
                 {
@@ -41,7 +43,7 @@ public class EmailTable
                         { MappingConsts.Path, $"$.{column.Name}" }
                     }
                 });
-            }
+            });
 
             return columnMapping;
         }
