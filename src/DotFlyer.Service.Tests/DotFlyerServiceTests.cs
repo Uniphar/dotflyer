@@ -65,7 +65,7 @@ public class DotFlyerServiceTests
                 new()
                 {
                     Email = _receiverEmail!,
-                    Name = "Integration Test Destination"
+                    Name = "Integration Test Destination Address"
                 }
             ]
         };
