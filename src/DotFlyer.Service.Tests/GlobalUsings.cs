@@ -1,0 +1,14 @@
+﻿global using Azure.Identity;
+global using Azure.Messaging.ServiceBus;
+global using Azure.Security.KeyVault.Secrets;
+global using DotFlyer.Service.AzureDataExplorer.Models;
+global using DotFlyer.Service.AzureDataExplorer.Tables;
+global using DotFlyer.Shared.Payload;
+global using FluentAssertions;
+global using Kusto.Cloud.Platform.Data;
+global using Kusto.Data;
+global using Kusto.Data.Common;
+global using Kusto.Data.Net.Client;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using System.Text;
+global using System.Text.Json;

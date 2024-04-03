@@ -1,12 +1,4 @@
-﻿using Azure.Identity;
-using Azure.Messaging.ServiceBus;
-using Azure.Security.KeyVault.Secrets;
-using DotFlyer.Shared.Payload;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Text;
-using System.Text.Json;
-
-namespace DotFlyer.Service.Tests;
+﻿namespace DotFlyer.Service.Tests;
 
 [TestClass, TestCategory("Integration")]
 public class DotFlyerServiceTests
@@ -14,30 +6,47 @@ public class DotFlyerServiceTests
     private static ServiceBusClient? _serviceBusClient;
     private static ServiceBusSender? _serviceBusSender;
     private static HttpClient? _httpClient;
+    private static ICslQueryProvider? _cslQueryProvider;
 
     private static string? _senderEmail;
     private static string? _receiverEmail;
+    private static string? _adxDatabaseName;
+
+    private static CancellationToken _cancellationToken;
 
     [ClassInitialize]
     public static async Task ClassInitialize(TestContext context)
     {
+        _cancellationToken = context.CancellationTokenSource.Token;
+
         var azureKeyVaultName = Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME");
 
-        SecretClient secretClient = new(new($"https://{azureKeyVaultName}.vault.azure.net/"), new DefaultAzureCredential());
+        DefaultAzureCredential credential = new();
 
-        var serviceBusNamespaceName = await secretClient.GetSecretAsync("AzureServiceBus--Name");
+        SecretClient secretClient = new(new($"https://{azureKeyVaultName}.vault.azure.net/"), credential);
 
-        _serviceBusClient = new(serviceBusNamespaceName.Value.Value, new DefaultAzureCredential());
+        var serviceBusNamespaceName = await secretClient.GetSecretAsync("AzureServiceBus--Name", cancellationToken: _cancellationToken);
+
+        _serviceBusClient = new(serviceBusNamespaceName.Value.Value, credential);
 
         _serviceBusSender = _serviceBusClient.CreateSender("dotflyer");
 
-        var sendgridApiKeyIntegrationTest = await secretClient.GetSecretAsync("SendGrid--ApiKeyIntegrationTest");
+        var sendgridApiKeyIntegrationTest = await secretClient.GetSecretAsync("SendGrid--ApiKeyIntegrationTest", cancellationToken: _cancellationToken);
 
         _httpClient = new() { BaseAddress = new("https://api.sendgrid.com/v3/") };
         _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {sendgridApiKeyIntegrationTest.Value.Value}");
 
-        _senderEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-sender")).Value.Value;
-        _receiverEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-receiver")).Value.Value;
+        _senderEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-sender", cancellationToken: _cancellationToken)).Value.Value;
+        _receiverEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-receiver", cancellationToken: _cancellationToken)).Value.Value;
+
+        var _adxHostAddress = (await secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
+        _adxDatabaseName = (await secretClient.GetSecretAsync("AzureDataExplorer--DatabaseName", cancellationToken: _cancellationToken)).Value.Value;
+
+        var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, _adxDatabaseName)
+            .WithAadTokenProviderAuthentication(async () => 
+                (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]), cancellationToken: _cancellationToken)).Token);
+
+        _cslQueryProvider = KustoClientFactory.CreateCslQueryProvider(kcsb);
     }
 
 
@@ -61,18 +70,29 @@ public class DotFlyerServiceTests
             ]
         };
 
-        var message = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(emailMessage)));
+        ServiceBusMessage message = new(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(emailMessage)));
 
         await _serviceBusSender!.SendMessageAsync(message);
 
-        // TODO: Assert that email is sent using ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>($"[\"{EmailTable.TableName}\"] | where Subject == \"{emailMessage.Subject}\"", TimeSpan.FromMinutes(5), _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.Body.Should().Be(emailMessage.Body);
+        emailData.FromEmail.Should().Be(emailMessage.FromEmail);
+        emailData.FromName.Should().Be(emailMessage.FromName);
+        emailData.To.Should().Be(JsonSerializer.Serialize(emailMessage.To));
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
     }
 
     [ClassCleanup]
     public static async Task ClassCleanup()
     {
-        await _serviceBusSender!.DisposeAsync();
-        await _serviceBusClient!.DisposeAsync();
-        _httpClient!.Dispose();
+        if (_serviceBusSender != null) await _serviceBusSender.DisposeAsync();
+        if (_serviceBusClient != null) await _serviceBusClient.DisposeAsync();
+        _httpClient?.Dispose();
+        _cslQueryProvider?.Dispose();
     }
 }
