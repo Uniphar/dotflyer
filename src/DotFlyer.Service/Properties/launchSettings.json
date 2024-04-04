@@ -3,7 +3,7 @@
         "DotFlyer.Service": {
             "commandName": "Project",
             "dotnetRunMessages": true
-        },
+            },
         "Container": {
             "commandName": "Docker"
         }

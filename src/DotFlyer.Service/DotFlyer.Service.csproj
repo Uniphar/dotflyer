@@ -22,4 +22,5 @@
   <ItemGroup>
     <ProjectReference Include="..\DotFlyer.Shared\DotFlyer.Shared.csproj" />
   </ItemGroup>
+
 </Project>

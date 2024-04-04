@@ -17,4 +17,4 @@ jobs:
   DotFlyerService_CI:
     uses: ./.github/workflows/shared-app-ci-workflow.yaml
     with:
-      applicationName: DotFlyer.Service
+      applicationFolder: DotFlyer.Service
