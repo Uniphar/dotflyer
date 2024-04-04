@@ -1,12 +1,4 @@
-﻿using Azure.Identity;
-using Azure.Messaging.ServiceBus;
-using Azure.Security.KeyVault.Secrets;
-using DotFlyer.Shared.Payload;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Text;
-using System.Text.Json;
-
-namespace DotFlyer.Service.Tests;
+﻿namespace DotFlyer.Service.Tests;
 
 [TestClass, TestCategory("Integration")]
 public class DotFlyerServiceTests
@@ -56,7 +48,7 @@ public class DotFlyerServiceTests
                 new()
                 {
                     Email = _receiverEmail!,
-                    Name = "Integration Test Destination"
+                    Name = "Integration Test Destination Address"
                 }
             ]
         };
@@ -71,8 +63,8 @@ public class DotFlyerServiceTests
     [ClassCleanup]
     public static async Task ClassCleanup()
     {
-        await _serviceBusSender!.DisposeAsync();
-        await _serviceBusClient!.DisposeAsync();
-        _httpClient!.Dispose();
+        if (_serviceBusSender != null) await _serviceBusSender.DisposeAsync();
+        if (_serviceBusClient != null) await _serviceBusClient.DisposeAsync();
+        _httpClient?.Dispose();
     }
 }
