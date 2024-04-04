@@ -1,0 +1,43 @@
+name: Shared Application CI Workflow
+
+on:
+  workflow_call:
+    inputs:
+      applicationFolder:
+        type: string
+        required: true
+        description: Application Folder
+      
+jobs:
+  app_ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8'
+
+      - name: expose app name into env
+        run: |
+          echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $GITHUB_ENV
+          
+      - name: run unit tests
+        working-directory: ./src/${{ env.APPLICATION_FOLDER }}.Tests
+        run: |
+          dotnet test --filter TestCategory=Unit
+
+      - name: docker build test
+        working-directory: ./src/
+        run: |
+          docker build . -f ./$APPLICATION_FOLDER/Dockerfile
+      
+      - name: check for NuGet vulnerabilites
+        working-directory: ./src/
+        shell: pwsh
+        run: |
+            dotnet restore
+            dotnet list package --vulnerable --include-transitive 2>&1 | tee build.log
+            echo "Analyze dotnet list package command log output..."
+            exit (Select-String -Path "build.log" -Pattern "has the following vulnerable packages" -AllMatches).Matches.Count -gt 0 ? 1 : 0
