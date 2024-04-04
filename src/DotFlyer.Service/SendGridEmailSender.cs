@@ -19,13 +19,10 @@ public class SendGridEmailSender(ISendGridClient sendGridClient) : IEmailSender
         {
             From = new(emailMessage.FromEmail, emailMessage.FromName),
             Subject = emailMessage.Subject,
-            PlainTextContent = emailMessage.Body
+            HtmlContent = emailMessage.Body
         };
 
-        foreach (var emailRecipient in emailMessage.To)
-        {
-            sendGridMessage.AddTo(new EmailAddress(emailRecipient.Email, emailRecipient.Name));
-        }
+        emailMessage.To.ForEach(emailRecipient => sendGridMessage.AddTo(new EmailAddress(emailRecipient.Email, emailRecipient.Name)));
 
         var result = await sendGridClient.SendEmailAsync(sendGridMessage, cancellationToken);
 
