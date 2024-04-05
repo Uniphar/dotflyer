@@ -17,4 +17,4 @@ jobs:
   DotFlyerApi_CI:
     uses: ./.github/workflows/shared-app-ci-workflow.yaml
     with:
-      applicationName: DotFlyer.Api
+      applicationFolder: DotFlyer.Api

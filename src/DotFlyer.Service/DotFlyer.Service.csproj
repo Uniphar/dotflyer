@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="*" />
-	<PackageReference Include="Azure.Identity" Version="*" />
-	<PackageReference Include="Azure.Messaging.ServiceBus" Version="*" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="*" />
+    <PackageReference Include="Azure.Identity" Version="*" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="*" />
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="*" />
     <PackageReference Include="Microsoft.Azure.Kusto.Ingest" Version="*" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="*" />
@@ -23,4 +23,5 @@
   <ItemGroup>
     <ProjectReference Include="..\DotFlyer.Shared\DotFlyer.Shared.csproj" />
   </ItemGroup>
+
 </Project>

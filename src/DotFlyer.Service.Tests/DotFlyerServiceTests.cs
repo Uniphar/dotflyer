@@ -29,7 +29,7 @@ public class DotFlyerServiceTests
 
         _serviceBusClient = new(serviceBusNamespaceName.Value.Value, credential);
 
-        _serviceBusSender = _serviceBusClient.CreateSender("dotflyer");
+        _serviceBusSender = _serviceBusClient.CreateSender("dotflyer-email");
 
         var sendgridApiKeyIntegrationTest = await secretClient.GetSecretAsync("SendGrid--ApiKeyIntegrationTest", cancellationToken: _cancellationToken);
 

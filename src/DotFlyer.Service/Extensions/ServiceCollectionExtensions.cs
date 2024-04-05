@@ -38,7 +38,8 @@ public static class ServiceCollectionExtensions
             clientBuilder.AddServiceBusAdministrationClientWithNamespace(configuration["AzureServiceBus:Name"]);
             clientBuilder.AddClient<ServiceBusProcessor, ServiceBusProcessorOptions>(
                 (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
-                    .CreateProcessor(configuration["AzureServiceBus:TopicName"], configuration["AzureServiceBus:SubscriptionName"]));
+                    .CreateProcessor(configuration["AzureServiceBus:TopicNameForEmail"], configuration["AzureServiceBus:SubscriptionName"]))
+                    .WithName("email-topic-processor");
 
             clientBuilder.UseCredential(credential);
         });
