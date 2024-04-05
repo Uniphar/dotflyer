@@ -2,7 +2,7 @@
 
 public class EmailTable
 {
-    public const string TableName = "dotflyer-email";
+    public const string TableName = "DotFlyerEmails";
 
     public class Column
     {
@@ -25,7 +25,7 @@ public class EmailTable
         new() { Name = nameof(EmailData.Body), Type = typeof(string).FullName! }
     ];
 
-    public const string MappingName = "dotflyer-email-mapping";
+    public const string MappingName = "DotFlyerEmailsMapping";
 
     public static List<ColumnMapping> Mapping
     {
