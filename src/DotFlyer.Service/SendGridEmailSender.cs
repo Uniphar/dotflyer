@@ -36,7 +36,7 @@ public class SendGridEmailSender(
         {
             var errorMessage = await result.Body.ReadAsStringAsync(cancellationToken);
 
-            throw new Exception($"Failed to send email message: {errorMessage}");
+            throw new Exception(errorMessage);
         }
     }
 }
