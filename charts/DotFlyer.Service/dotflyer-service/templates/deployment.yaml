@@ -22,8 +22,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: {{ .Values.ACRName }}.azurecr.io/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: {{ .Values.port }}
+          env:
+            - name: "AZURE_KEY_VAULT_NAME"
+              value: {{ .Values.AzureKeyVaultName }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       nodeSelector:

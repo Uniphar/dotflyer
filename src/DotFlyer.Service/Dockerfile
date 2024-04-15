@@ -6,9 +6,8 @@ COPY . .
 WORKDIR "/src/DotFlyer.Service"
 RUN dotnet publish "./DotFlyer.Service.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/runtime:8.0
 USER app
 WORKDIR /app
-EXPOSE 8080
 COPY --from=sdk /app/publish .
 ENTRYPOINT ["dotnet", "DotFlyer.Service.dll"]
