@@ -1,5 +1,8 @@
 ﻿namespace DotFlyer.Service.AzureDataExplorer.Models;
 
+/// <summary>
+/// Contains the model for email data to be ingested into Azure Data Explorer.
+/// </summary>
 public class EmailData : EmailMessage
 {
     public new required string To { get; set; }

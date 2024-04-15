@@ -1,5 +1,8 @@
 ﻿namespace DotFlyer.Service.AzureDataExplorer.Tables;
 
+/// <summary>
+/// Contains the schema and mapping for the email table in Azure Data Explorer.
+/// </summary>
 public class EmailTable
 {
     public const string TableName = "DotFlyerEmails";
