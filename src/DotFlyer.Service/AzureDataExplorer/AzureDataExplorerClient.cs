@@ -9,7 +9,7 @@
 public class AzureDataExplorerClient(
     ILogger<AzureDataExplorerClient> logger,
     ICslAdminProvider cslAdminProvider,
-    IKustoIngestClient kustoIngestClient)
+    IKustoIngestClient kustoIngestClient) : IAzureDataExplorerClient
 {
     /// <summary>
     /// Initializes Azure Data Explorer client.

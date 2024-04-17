@@ -6,7 +6,7 @@
 /// <param name="sendGridClient"></param>
 public class SendGridEmailSender(
     ISendGridClient sendGridClient,
-    AzureDataExplorerClient adxClient) : IEmailSender
+    IAzureDataExplorerClient adxClient) : IEmailSender
 {
     /// <summary>
     /// Sends an email message.

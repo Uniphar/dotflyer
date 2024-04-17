@@ -17,6 +17,7 @@
     <PackageReference Include="FluentAssertions" Version="*" />
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
+    <PackageReference Include="Moq" Version="*" />
     <PackageReference Include="MSTest.TestAdapter" Version="*" />
     <PackageReference Include="MSTest.TestFramework" Version="*" />
     <PackageReference Include="Polly" Version="*" />
