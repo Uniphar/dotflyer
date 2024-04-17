@@ -14,9 +14,15 @@ public class SendGridEmailSender(
     /// <param name="emailMessage">The <see cref="EmailMessage"/> instance to send.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns>Task representing the asynchronous operation.</returns>
-    /// <exception cref="Exception">Thrown when failed to send email message.</exception>
+    /// <exception cref="ArgumentException">Thrown when email message does not have any recipients in the 'To' field.</exception>
+    /// <exception cref="HttpRequestException">Thrown when the email message could not be sent.</exception>"
     public async Task SendAsync(EmailMessage emailMessage, CancellationToken cancellationToken = default)
     {
+        if (emailMessage.To.Count == 0)
+        {
+            throw new ArgumentException("Email message must have at least one recipient in the 'To' field.");
+        }
+        
         SendGridMessage sendGridMessage = new()
         {
             From = new(emailMessage.FromEmail, emailMessage.FromName),
@@ -36,7 +42,7 @@ public class SendGridEmailSender(
         {
             var errorMessage = await result.Body.ReadAsStringAsync(cancellationToken);
 
-            throw new Exception(errorMessage);
+            throw new HttpRequestException(errorMessage);
         }
     }
 }

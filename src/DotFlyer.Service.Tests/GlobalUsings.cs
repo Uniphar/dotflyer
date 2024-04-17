@@ -10,5 +10,6 @@ global using Kusto.Data;
 global using Kusto.Data.Common;
 global using Kusto.Data.Net.Client;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Polly;
 global using System.Text;
 global using System.Text.Json;

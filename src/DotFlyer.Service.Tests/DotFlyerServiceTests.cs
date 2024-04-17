@@ -10,7 +10,6 @@ public class DotFlyerServiceTests
 
     private static string? _senderEmail;
     private static string? _receiverEmail;
-    private static string? _adxDatabaseName;
 
     private static CancellationToken _cancellationToken;
 
@@ -40,9 +39,8 @@ public class DotFlyerServiceTests
         _receiverEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-receiver", cancellationToken: _cancellationToken)).Value.Value;
 
         var _adxHostAddress = (await secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
-        _adxDatabaseName = (await secretClient.GetSecretAsync("AzureDataExplorer--DatabaseName", cancellationToken: _cancellationToken)).Value.Value;
 
-        var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, _adxDatabaseName)
+        var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, "devops")
             .WithAadTokenProviderAuthentication(async () => 
                 (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]), cancellationToken: _cancellationToken)).Token);
 
