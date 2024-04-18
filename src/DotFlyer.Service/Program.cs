@@ -26,7 +26,7 @@ builder.Configuration
     .AddDotFlyerConfiguration();
 
 builder.Services
-    .AddDotFlyerMessageProcessor<AzureServiceBusMessagesProcessor>()
+    .AddDotFlyerMessagesProcessor<AzureServiceBusMessagesProcessor>()
     .WithDependencies(builder.Configuration);
 
 var host = builder.Build();

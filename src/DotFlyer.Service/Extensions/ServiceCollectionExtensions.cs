@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TMessageProcessor">Concrete type of the message processor.</typeparam>
     /// <param name="serviceCollection">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddDotFlyerMessageProcessor<TMessageProcessor>(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddDotFlyerMessagesProcessor<TMessageProcessor>(this IServiceCollection serviceCollection)
         where TMessageProcessor : class, IMessagesProcessor
     {
         serviceCollection.AddSingleton<IMessagesProcessor, TMessageProcessor>();
