@@ -15,9 +15,11 @@ public class EmailData : EmailMessage
 
     public required string SendGridStatusCodeString { get; set; }
 
+    public required string SendGridResponseContent { get; set; }
+
     public required DateTime IngestDateTimeUtc { get; set; }
 
-    public static EmailData ConvertToAdxModel(EmailMessage emailMessage, HttpStatusCode sendgridStatusCode) => new()
+    public static EmailData ConvertToAdxModel(EmailMessage emailMessage, HttpStatusCode sendgridStatusCode, string sendgridResponseContent) => new()
     {
         FromEmail = emailMessage.FromEmail,
         FromName = emailMessage.FromName,
@@ -28,6 +30,7 @@ public class EmailData : EmailMessage
         Body = emailMessage.Body,
         SendGridStatusCodeInt = (int)sendgridStatusCode,
         SendGridStatusCodeString = sendgridStatusCode.ToString(),
+        SendGridResponseContent = sendgridResponseContent,
         IngestDateTimeUtc = DateTime.UtcNow
     };
 }

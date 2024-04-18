@@ -37,13 +37,13 @@ public class EmailSender(
 
         var result = await sendGridClient.SendEmailAsync(sendGridMessage, cancellationToken);
 
-        await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode), cancellationToken);
+        var resultContent = await result.Body.ReadAsStringAsync(cancellationToken);
+
+        await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode, resultContent), cancellationToken);
 
         if (result.StatusCode != HttpStatusCode.Accepted)
         {
-            var errorMessage = await result.Body.ReadAsStringAsync(cancellationToken);
-
-            throw new HttpRequestException(errorMessage);
+            throw new HttpRequestException(resultContent);
         }
     }
 }

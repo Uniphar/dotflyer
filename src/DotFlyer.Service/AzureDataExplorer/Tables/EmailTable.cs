@@ -14,6 +14,7 @@ public class EmailTable : BaseTable
             new() { Name = nameof(EmailData.IngestDateTimeUtc), Type = typeof(DateTime).FullName! },
             new() { Name = nameof(EmailData.SendGridStatusCodeInt), Type = typeof(int).FullName! },
             new() { Name = nameof(EmailData.SendGridStatusCodeString), Type = typeof(string).FullName! },
+            new() { Name = nameof(EmailData.SendGridResponseContent), Type = typeof(string).FullName! },
             new() { Name = nameof(EmailData.FromEmail), Type = typeof(string).FullName! },
             new() { Name = nameof(EmailData.FromName), Type = typeof(string).FullName! },
             new() { Name = nameof(EmailData.To), Type = typeof(string).FullName! },
