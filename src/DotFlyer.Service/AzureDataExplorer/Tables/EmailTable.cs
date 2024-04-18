@@ -7,8 +7,8 @@ public class EmailTable : BaseTable
 {
     private static readonly EmailTable table = new()
     {
-        TableName = "DotFlyerEmailsArt",
-        MappingName = "DotFlyerEmailsMappingArt",
+        TableName = "DotFlyerEmails",
+        MappingName = "DotFlyerEmailsMapping",
         Schema =
         [
             new() { Name = nameof(EmailData.IngestDateTimeUtc), Type = typeof(DateTime).FullName! },
