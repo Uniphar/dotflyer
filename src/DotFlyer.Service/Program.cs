@@ -6,6 +6,7 @@ global using DotFlyer.Service.AzureDataExplorer;
 global using DotFlyer.Service.AzureDataExplorer.Models;
 global using DotFlyer.Service.AzureDataExplorer.Tables;
 global using DotFlyer.Service.Extensions;
+global using DotFlyer.Service.TopicProcessors;
 global using DotFlyer.Shared.Payload;
 global using Kusto.Data;
 global using Kusto.Data.Common;
@@ -25,9 +26,11 @@ builder.Configuration
     .AddDotFlyerConfiguration();
 
 builder.Services
-    .AddDotFlyerMessageProcessor<AzureServiceBusMessageProcessor>()
-    .WithEmailSender<SendGridEmailSender>()
+    .AddDotFlyerMessageProcessor<AzureServiceBusMessagesProcessor>()
     .WithDependencies(builder.Configuration);
 
 var host = builder.Build();
+
+await host.InitializeResourcesAsync();
+
 host.Run();

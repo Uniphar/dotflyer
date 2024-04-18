@@ -1,10 +1,11 @@
 ﻿namespace DotFlyer.Service;
 
 /// <summary>
-/// The email sender, which uses SendGrid.
+/// The email sender service.
 /// </summary>
-/// <param name="sendGridClient"></param>
-public class SendGridEmailSender(
+/// <param name="sendGridClient">The <see cref="ISendGridClient"/> instance to send emails.</param>
+/// <param name="adxClient">The <see cref="IAzureDataExplorerClient"/> instance to ingest email data.</param>
+public class EmailSender(
     ISendGridClient sendGridClient,
     IAzureDataExplorerClient adxClient) : IEmailSender
 {
@@ -36,7 +37,7 @@ public class SendGridEmailSender(
 
         var result = await sendGridClient.SendEmailAsync(sendGridMessage, cancellationToken);
 
-        await adxClient.IngestEmailDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode), cancellationToken);
+        await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode), cancellationToken);
 
         if (result.StatusCode != HttpStatusCode.Accepted)
         {

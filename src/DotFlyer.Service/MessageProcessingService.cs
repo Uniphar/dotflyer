@@ -3,8 +3,8 @@ namespace DotFlyer.Service;
 /// <summary>
 /// Message processing service.
 /// </summary>
-/// <param name="messageProcessor">The <see cref="IMessageProcessor"/> instance that processes incoming messages.</param>
-public class MessageProcessingService(IMessageProcessor messageProcessor) : BackgroundService
+/// <param name="messageProcessor">The <see cref="IMessagesProcessor"/> instance that processes incoming messages.</param>
+public class MessageProcessingService(IMessagesProcessor messageProcessor) : BackgroundService
 {
     /// <summary>
     /// Executes the message processing service.
@@ -13,8 +13,6 @@ public class MessageProcessingService(IMessageProcessor messageProcessor) : Back
     /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await messageProcessor.InitializeAsync(stoppingToken);
-
         await messageProcessor.StartProcessingAsync(stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)

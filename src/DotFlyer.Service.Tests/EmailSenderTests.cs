@@ -1,21 +1,21 @@
 ﻿namespace DotFlyer.Service.Tests;
 
 [TestClass, TestCategory("Unit")]
-public class SendGridEmailSenderTests
+public class EmailSenderTests
 {
     private Mock<ISendGridClient> _sendGridClientMock;
     private Mock<IAzureDataExplorerClient> _azureDataExplorerClientMock;
 
     private EmailMessage? _emailMessage;
 
-    private SendGridEmailSender _sendGridEmailSender;
+    private EmailSender _emailSender;
 
-    public SendGridEmailSenderTests()
+    public EmailSenderTests()
     {
         _sendGridClientMock = new Mock<ISendGridClient>();
         _azureDataExplorerClientMock = new Mock<IAzureDataExplorerClient>();
 
-        _sendGridEmailSender = new(_sendGridClientMock.Object, _azureDataExplorerClientMock.Object);
+        _emailSender = new(_sendGridClientMock.Object, _azureDataExplorerClientMock.Object);
     }
 
     [TestInitialize]
@@ -35,20 +35,20 @@ public class SendGridEmailSenderTests
     }
 
     [TestMethod]
-    public async Task SendGridEmailSender_ShouldThrowArgumentException_WhenEmailMessageToIsEmpty()
+    public async Task EmailSender_ShouldThrowArgumentException_WhenEmailMessageToIsEmpty()
     {
         _emailMessage!.To = [];
 
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => _sendGridEmailSender.SendAsync(_emailMessage!));
+        await Assert.ThrowsExceptionAsync<ArgumentException>(() => _emailSender.SendAsync(_emailMessage!));
     }
 
     [TestMethod]
-    public async Task SendGridEmailSender_ShouldThrowHttpRequestException_WhenResponseIsNotAccepted()
+    public async Task EmailSender_ShouldThrowHttpRequestException_WhenResponseIsNotAccepted()
     {
         _sendGridClientMock
             .Setup(x => x.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Response(HttpStatusCode.BadRequest, new StringContent("Bad Request"), null));
 
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(() => _sendGridEmailSender.SendAsync(_emailMessage!));
+        await Assert.ThrowsExceptionAsync<HttpRequestException>(() => _emailSender.SendAsync(_emailMessage!));
     }
 }

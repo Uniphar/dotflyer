@@ -12,15 +12,53 @@ public class AzureDataExplorerClient(
     IKustoIngestClient kustoIngestClient) : IAzureDataExplorerClient
 {
     /// <summary>
-    /// Initializes Azure Data Explorer client.
+    /// Creates or updates tables in Azure Data Explorer.
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    public async Task CreateOrUpdateTablesAsync(CancellationToken cancellationToken = default)
     {
-        TableSchema schema = new() { Name = EmailTable.TableName };
+        await CreateOrUpdateTableAsync(EmailTable.Instance, cancellationToken);
+    }
 
-        EmailTable.Schema.ForEach(column =>
+    /// <summary>
+    /// Ingests data into Azure Data Explorer.
+    /// </summary>
+    /// <typeparam name="TData">The type of data to ingest.</typeparam>
+    /// <param name="data">The data to ingest.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
+    /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentException">Thrown when the data type is invalid.</exception>
+    public async Task IngestDataAsync<TData>(TData data, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (data is EmailData emailData)
+            {
+                await IngestDataAsync(emailData, EmailTable.Instance.TableName, EmailTable.Instance.MappingName, cancellationToken);
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid data type: {typeof(TData).Name}");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Failed to ingest data: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Creates or updates table in Azure Data Explorer.
+    /// </summary>
+    /// <param name="table">Table to create or update.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
+    /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
+    private async Task CreateOrUpdateTableAsync(BaseTable table, CancellationToken cancellationToken = default)
+    {
+        TableSchema schema = new() { Name = table.TableName };
+
+        table.Schema.ForEach(column =>
         {
             schema.AddColumnIfMissing(new()
             {
@@ -34,32 +72,28 @@ public class AzureDataExplorerClient(
         await cslAdminProvider.ExecuteControlCommandAsync(cslAdminProvider.DefaultDatabaseName, createTableCommand);
 
         var createTableMappingCommand =
-            CslCommandGenerator.GenerateTableMappingCreateOrAlterCommand(IngestionMappingKind.Json, EmailTable.TableName, EmailTable.MappingName, EmailTable.Mapping);
+            CslCommandGenerator.GenerateTableMappingCreateOrAlterCommand(IngestionMappingKind.Json, table.TableName, table.MappingName, table.Mapping);
 
         await cslAdminProvider.ExecuteControlCommandAsync(cslAdminProvider.DefaultDatabaseName, createTableMappingCommand);
     }
 
     /// <summary>
-    /// Ingests email data into Azure Data Explorer.
+    /// Ingests data into Azure Data Explorer.
     /// </summary>
-    /// <param name="emailData">The <see cref="EmailData"/> instance to ingest.</param>
+    /// <typeparam name="TData">The type of data to ingest.</typeparam>
+    /// <param name="data">The data to ingest.</param>
+    /// <param name="tableName">The name of the table to ingest data into.</param>
+    /// <param name="tableMapping">The name of the table mapping to use for ingestion.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
-    public async Task IngestEmailDataAsync(EmailData emailData, CancellationToken cancellationToken = default)
+    private async Task IngestDataAsync<TData>(TData data, string tableName, string tableMapping, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            using MemoryStream emailDataStream = new(JsonSerializer.SerializeToUtf8Bytes(emailData));
+        using MemoryStream dataStream = new(JsonSerializer.SerializeToUtf8Bytes(data));
 
-            await kustoIngestClient.IngestFromStreamAsync(emailDataStream, new(cslAdminProvider.DefaultDatabaseName, EmailTable.TableName)
-            {
-                Format = DataSourceFormat.json,
-                IngestionMapping = new() { IngestionMappingReference = EmailTable.MappingName }
-            });
-        }
-        catch (Exception ex)
+        await kustoIngestClient.IngestFromStreamAsync(dataStream, new(cslAdminProvider.DefaultDatabaseName, tableName)
         {
-            logger.LogError(ex, $"Failed to ingest email data: {ex.Message}");    
-        }
+            Format = DataSourceFormat.json,
+            IngestionMapping = new() { IngestionMappingReference = tableMapping }
+        });
     }
 }

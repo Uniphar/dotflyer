@@ -10,7 +10,7 @@ public interface IAzureDataExplorerClient
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task InitializeAsync(CancellationToken cancellationToken = default);
+    public Task CreateOrUpdateTablesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Ingests email data into Azure Data Explorer.
@@ -18,5 +18,5 @@ public interface IAzureDataExplorerClient
     /// <param name="emailData">The <see cref="EmailData"/> instance to ingest.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task IngestEmailDataAsync(EmailData emailData, CancellationToken cancellationToken = default);
+    public Task IngestDataAsync<TData>(TData data, CancellationToken cancellationToken = default);
 }

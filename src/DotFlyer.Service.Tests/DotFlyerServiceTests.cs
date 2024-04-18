@@ -73,7 +73,7 @@ public class DotFlyerServiceTests
         await _serviceBusSender!.SendMessageAsync(message);
 
         EmailData emailData = await _cslQueryProvider!
-            .WaitSingleQueryResult<EmailData>($"[\"{EmailTable.TableName}\"] | where Subject == \"{emailMessage.Subject}\"", TimeSpan.FromMinutes(5), _cancellationToken);
+            .WaitSingleQueryResult<EmailData>($"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"", TimeSpan.FromMinutes(5), _cancellationToken);
 
         emailData.Should().NotBeNull();
         emailData.Subject.Should().Be(emailMessage.Subject);
