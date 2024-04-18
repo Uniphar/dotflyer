@@ -10,7 +10,7 @@
 public class ResourcesInitializer(
     ILogger<ResourcesInitializer> logger,
     IConfiguration configuration,
-    ITopicProcessorFactory topicProcessorFactory,
+    ServiceBusAdministrationClient serviceBusAdministrationClient,
     IAzureDataExplorerClient azureDataExplorerClient)
 {
     /// <summary>
@@ -21,9 +21,7 @@ public class ResourcesInitializer(
     {
         try
         {
-            await topicProcessorFactory.CreateTopicAndSubscriptionIfNotExistAsync(
-                configuration["AzureServiceBus:TopicNameForEmail"]!,
-                configuration["AzureServiceBus:SubscriptionName"]!);
+            await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForEmail"]!, configuration["AzureServiceBus:SubscriptionName"]!);
 
             await azureDataExplorerClient.CreateOrUpdateTablesAsync();
         }
@@ -31,6 +29,26 @@ public class ResourcesInitializer(
         {
             logger.LogError(ex, "An error occurred while initializing resources.");
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Creates a topic and subscription if they do not exist.
+    /// </summary>
+    /// <param name="topicName">The name of the topic.</param>
+    /// <param name="subscriptionName">The name of the subscription.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
+    /// <returns></returns>
+    private async Task CreateTopicAndSubscriptionIfNotExistAsync(string topicName, string subscriptionName)
+    {
+        if (!await serviceBusAdministrationClient.TopicExistsAsync(topicName))
+        {
+            await serviceBusAdministrationClient.CreateTopicAsync(new CreateTopicOptions(topicName));
+        }
+
+        if (!await serviceBusAdministrationClient.SubscriptionExistsAsync(topicName, subscriptionName))
+        {
+            await serviceBusAdministrationClient.CreateSubscriptionAsync(topicName, subscriptionName);
         }
     }
 }

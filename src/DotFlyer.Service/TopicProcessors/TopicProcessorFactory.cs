@@ -2,8 +2,7 @@
 
 public class TopicProcessorFactory(
     IServiceProvider serviceProvider,
-    IAzureClientFactory<ServiceBusProcessor> azureClientFactory,
-    ServiceBusAdministrationClient serviceBusAdministrationClient) : ITopicProcessorFactory
+    IAzureClientFactory<ServiceBusProcessor> azureClientFactory) : ITopicProcessorFactory
 {
     public ServiceBusProcessor CreateTopicProcessor(string topicProcessorName)
     {
@@ -19,21 +18,5 @@ public class TopicProcessorFactory(
         serviceBusProcessor.ProcessErrorAsync += topicProcessor.ProcessErrorAsync;
 
         return serviceBusProcessor;
-    }
-
-    public async Task CreateTopicAndSubscriptionIfNotExistAsync(
-        string topicName,
-        string subscriptionName,
-        CancellationToken cancellationToken = default)
-    {
-        if (!await serviceBusAdministrationClient.TopicExistsAsync(topicName, cancellationToken))
-        {
-            await serviceBusAdministrationClient.CreateTopicAsync(new CreateTopicOptions(topicName), cancellationToken);
-        }
-
-        if (!await serviceBusAdministrationClient.SubscriptionExistsAsync(topicName, subscriptionName, cancellationToken))
-        {
-            await serviceBusAdministrationClient.CreateSubscriptionAsync(topicName, subscriptionName, cancellationToken);
-        }
     }
 }
