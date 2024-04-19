@@ -11,6 +11,8 @@ public class EmailData : EmailMessage
 
     public new required string Bcc { get; set; }
 
+    public new required string Tags { get; set; }
+
     public required int SendGridStatusCodeInt { get; set; }
 
     public required string SendGridStatusCodeString { get; set; }
@@ -28,6 +30,7 @@ public class EmailData : EmailMessage
         Bcc = JsonSerializer.Serialize(emailMessage.Bcc),
         Subject = emailMessage.Subject,
         Body = emailMessage.Body,
+        Tags = JsonSerializer.Serialize(emailMessage.Tags),
         SendGridStatusCodeInt = (int)sendgridStatusCode,
         SendGridStatusCodeString = sendgridStatusCode.ToString(),
         SendGridResponseContent = sendgridResponseContent,
