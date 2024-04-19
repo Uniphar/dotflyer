@@ -30,7 +30,7 @@ public class EmailData : EmailMessage
         Bcc = JsonSerializer.Serialize(emailMessage.Bcc),
         Subject = emailMessage.Subject,
         Body = emailMessage.Body,
-        Tags = JsonSerializer.Serialize(emailMessage.Tags),
+        Tags = emailMessage.Tags == null ? "{}" : JsonSerializer.Serialize(emailMessage.Tags),
         SendGridStatusCodeInt = (int)sendgridStatusCode,
         SendGridStatusCodeString = sendgridStatusCode.ToString(),
         SendGridResponseContent = sendgridResponseContent,
