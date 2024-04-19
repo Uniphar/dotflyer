@@ -17,9 +17,10 @@ public class TopicProcessorFactory(
     /// <exception cref="ArgumentException">Thrown when an unknown topic processor name is provided.</exception>
     public ServiceBusProcessor CreateTopicProcessor(string topicProcessorName)
     {
-        var topicProcessor = topicProcessorName switch
+        ITopicProcessor topicProcessor = topicProcessorName switch
         {
             EmailTopicProcessor.ProcessorName => serviceProvider.GetRequiredService<EmailTopicProcessor>(),
+            SMSTopicProcessor.ProcessorName => serviceProvider.GetRequiredService<SMSTopicProcessor>(),
             _ => throw new ArgumentException($"Unknown topic processor name: {topicProcessorName}")
         };
         
