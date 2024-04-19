@@ -23,7 +23,7 @@ public class SMSTopicProcessor(
         try
         {
             SMSMessage? smsMessage = JsonSerializer.Deserialize<SMSMessage>(args.Message.Body.ToString())
-                ?? throw new ArgumentException("The sms message data is deserialized to null");
+                ?? throw new ArgumentException("The SMS message data is deserialized to null");
 
             await smsSender.SendAsync(smsMessage);
         }
