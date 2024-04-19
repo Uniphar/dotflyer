@@ -18,3 +18,5 @@ global using SendGrid.Helpers.Mail;
 global using System.Net;
 global using System.Text;
 global using System.Text.Json;
+global using Twilio.Clients;
+global using Twilio.Http;

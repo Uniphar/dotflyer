@@ -42,6 +42,10 @@ public static class ServiceCollectionExtensions
                 (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
                     .CreateProcessor(configuration["AzureServiceBus:TopicNameForEmail"], configuration["AzureServiceBus:SubscriptionName"]))
                     .WithName(EmailTopicProcessor.ProcessorName);
+            clientBuilder.AddClient<ServiceBusProcessor, ServiceBusProcessorOptions>(
+                (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
+                    .CreateProcessor(configuration["AzureServiceBus:TopicNameForSMS"], configuration["AzureServiceBus:SubscriptionName"]))
+                    .WithName(SMSTopicProcessor.ProcessorName);
 
             clientBuilder.UseCredential(credential);
         });
@@ -52,6 +56,16 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<EmailTopicProcessor>();
 
         serviceCollection.AddSendGrid(options => options.ApiKey = configuration["SendGrid:ApiKey"]);
+
+        TwilioClient.Init(configuration["Twilio:ApiKeySID"], configuration["Twilio:ApiKeySecret"], configuration["Twilio:AccountSID"]);
+        serviceCollection.AddSingleton(TwilioClient.GetRestClient());
+        serviceCollection.AddSingleton(new SMSSenderConfiguration()
+        {
+            AccountSID = configuration["Twilio:AccountSID"]!,
+            ApiKeySID = configuration["Twilio:ApiKeySID"]!,
+            ApiKeySecret = configuration["Twilio:ApiKeySecret"]!,
+            FromPhoneNumber = configuration["Twilio:FromPhoneNumber"]!
+        });
 
         var kcsb = new KustoConnectionStringBuilder(configuration["AzureDataExplorer:HostAddress"], configuration["AzureDataExplorer:DatabaseName"])
             .WithAadTokenProviderAuthentication(async () => (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]))).Token);

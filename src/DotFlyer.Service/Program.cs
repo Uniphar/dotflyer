@@ -19,6 +19,10 @@ global using SendGrid.Extensions.DependencyInjection;
 global using SendGrid.Helpers.Mail;
 global using System.Net;
 global using System.Text.Json;
+global using Twilio;
+global using Twilio.Clients;
+global using Twilio.Http;
+global using Twilio.Rest.Api.V2010.Account;
 
 var builder = Host.CreateApplicationBuilder();
 

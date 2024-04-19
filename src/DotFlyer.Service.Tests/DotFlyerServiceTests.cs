@@ -4,12 +4,15 @@
 public class DotFlyerServiceTests
 {
     private static ServiceBusClient? _serviceBusClient;
-    private static ServiceBusSender? _serviceBusSender;
-    private static HttpClient? _httpClient;
+    private static ServiceBusSender? _emailServiceBusSender;
+    private static ServiceBusSender? _smsServiceBusSender;
+    private static System.Net.Http.HttpClient? _httpClient;
     private static ICslQueryProvider? _cslQueryProvider;
 
     private static string? _senderEmail;
     private static string? _receiverEmail;
+
+    private static string? _receiverNumber;
 
     private static CancellationToken _cancellationToken;
 
@@ -28,7 +31,8 @@ public class DotFlyerServiceTests
 
         _serviceBusClient = new(serviceBusNamespaceName.Value.Value, credential);
 
-        _serviceBusSender = _serviceBusClient.CreateSender("dotflyer-email");
+        _emailServiceBusSender = _serviceBusClient.CreateSender("dotflyer-email");
+        _smsServiceBusSender = _serviceBusClient.CreateSender("dotflyer-sms");
 
         var sendgridApiKeyIntegrationTest = await secretClient.GetSecretAsync("SendGrid--ApiKeyIntegrationTest", cancellationToken: _cancellationToken);
 
@@ -38,10 +42,12 @@ public class DotFlyerServiceTests
         _senderEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-sender", cancellationToken: _cancellationToken)).Value.Value;
         _receiverEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-receiver", cancellationToken: _cancellationToken)).Value.Value;
 
+        _receiverNumber = (await secretClient.GetSecretAsync("integration-test-dotflyer-receiver-number", cancellationToken: _cancellationToken)).Value.Value;
+
         var _adxHostAddress = (await secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
 
         var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, "devops")
-            .WithAadTokenProviderAuthentication(async () => 
+            .WithAadTokenProviderAuthentication(async () =>
                 (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]), cancellationToken: _cancellationToken)).Token);
 
         _cslQueryProvider = KustoClientFactory.CreateCslQueryProvider(kcsb);
@@ -70,7 +76,7 @@ public class DotFlyerServiceTests
 
         ServiceBusMessage message = new(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(emailMessage)));
 
-        await _serviceBusSender!.SendMessageAsync(message);
+        await _emailServiceBusSender!.SendMessageAsync(message);
 
         EmailData emailData = await _cslQueryProvider!
             .WaitSingleQueryResult<EmailData>($"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"", TimeSpan.FromMinutes(5), _cancellationToken);
@@ -85,10 +91,42 @@ public class DotFlyerServiceTests
         emailData.SendGridStatusCodeString.Should().Be("Accepted");
     }
 
+    [TestMethod]
+    public async Task DotFlyerService_ShouldSendSMS()
+    {
+        var randomGuid = Guid.NewGuid();
+
+        SMSMessage smsMessage = new()
+        {
+            Body = $"Test SMS body {randomGuid}",
+            To = _receiverNumber!,
+            Tags = new()
+            {
+                { "TestName", "DotFlyer Service Integration Test" },
+                { "TestRandomGuid", randomGuid.ToString() }
+            }
+        };
+
+        ServiceBusMessage message = new(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(smsMessage)));
+
+        await _smsServiceBusSender!.SendMessageAsync(message);
+
+        SMSData smsData = await _cslQueryProvider!
+            .WaitSingleQueryResult<SMSData>($"[\"{SMSTable.Instance.TableName}\"] | where Body == \"{smsMessage.Body}\"", TimeSpan.FromMinutes(5), _cancellationToken);
+
+        smsData.Should().NotBeNull();
+        smsData.Body.Should().Be(smsMessage.Body);
+        smsData.To.Should().Be(smsMessage.To);
+        smsData.TwilioStatusCodeInt.Should().Be(201);
+        smsData.TwilioStatusCodeString.Should().Be("Created");
+        smsData.Tags.Should().Be(JsonSerializer.Serialize(smsMessage.Tags));
+    }
+
     [ClassCleanup]
     public static async Task ClassCleanup()
     {
-        if (_serviceBusSender != null) await _serviceBusSender.DisposeAsync();
+        if (_emailServiceBusSender != null) await _emailServiceBusSender.DisposeAsync();
+        if (_smsServiceBusSender != null) await _smsServiceBusSender.DisposeAsync();
         if (_serviceBusClient != null) await _serviceBusClient.DisposeAsync();
         _httpClient?.Dispose();
         _cslQueryProvider?.Dispose();

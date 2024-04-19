@@ -27,5 +27,9 @@ The following configuration settings are required by the service:
 - `AzureServiceBus:TopicName` - Azure Service Bus topic name, where messages are sent
 - `AzureServiceBus:SubscriptionName` - Azure Service Bus subscription name, where messages are received
 - `SendGrid:ApiKey` - SendGrid API key for sending emails
+- `Twilio:AccountSID` - Twilio account SID
+- `Twilio:ApiKeySID` - Twilio API key SID
+- `Twilio:ApiKeySecret` - Twilio API key secret
+- `Twilio:FromPhoneNumber` - Twilio phone number, which is used to send SMS
 - `AzureDataExplorer:HostAddress` - Azure Data Explorer host address, where email information is saved
 - `AzureDataExplorer:DatabaseName` - Azure Data Explorer database name, which is used to save email information
