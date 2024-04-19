@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection WithDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddSingleton<IEmailSender, EmailSender>();
+        serviceCollection.AddSingleton<ISMSSender, SMSSender>();
 
         DefaultAzureCredential credential = new();
 
