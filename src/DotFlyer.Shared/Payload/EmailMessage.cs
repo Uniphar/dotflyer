@@ -18,6 +18,8 @@ public class EmailMessage
     public required string Subject { get; set; }
 
     public required string Body { get; set; }
+
+    public List<string> Attachments { get; set; } = [];
 }
 
 /// <summary>
