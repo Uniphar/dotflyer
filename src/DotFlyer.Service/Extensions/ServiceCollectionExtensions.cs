@@ -54,6 +54,7 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddSingleton<ITopicProcessorFactory, TopicProcessorFactory>();
         serviceCollection.AddSingleton<EmailTopicProcessor>();
+        serviceCollection.AddSingleton<SMSTopicProcessor>();
 
         serviceCollection.AddSendGrid(options => options.ApiKey = configuration["SendGrid:ApiKey"]);
 
