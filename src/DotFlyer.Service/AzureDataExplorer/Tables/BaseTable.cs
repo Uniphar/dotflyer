@@ -1,5 +1,8 @@
 ﻿namespace DotFlyer.Service.AzureDataExplorer.Tables;
 
+/// <summary>
+/// Base class for Azure Data Explorer tables.
+/// </summary>
 public abstract class BaseTable
 {
     public required string TableName { get; set; }
