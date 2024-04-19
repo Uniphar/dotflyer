@@ -11,10 +11,10 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TMessageProcessor">Concrete type of the message processor.</typeparam>
     /// <param name="serviceCollection">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddDotFlyerMessageProcessor<TMessageProcessor>(this IServiceCollection serviceCollection)
-        where TMessageProcessor : class, IMessageProcessor
+    public static IServiceCollection AddDotFlyerMessagesProcessor<TMessageProcessor>(this IServiceCollection serviceCollection)
+        where TMessageProcessor : class, IMessagesProcessor
     {
-        serviceCollection.AddSingleton<IMessageProcessor, TMessageProcessor>();
+        serviceCollection.AddSingleton<IMessagesProcessor, TMessageProcessor>();
         serviceCollection.AddHostedService<MessageProcessingService>();
 
         return serviceCollection;
@@ -28,8 +28,10 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection WithDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.AddSingleton<IEmailSender, EmailSender>();
+
         DefaultAzureCredential credential = new();
-        
+
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(options => options.EnableAdaptiveSampling = false);
 
         serviceCollection.AddAzureClients(clientBuilder =>
@@ -39,26 +41,24 @@ public static class ServiceCollectionExtensions
             clientBuilder.AddClient<ServiceBusProcessor, ServiceBusProcessorOptions>(
                 (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
                     .CreateProcessor(configuration["AzureServiceBus:TopicNameForEmail"], configuration["AzureServiceBus:SubscriptionName"]))
-                    .WithName("email-topic-processor");
+                    .WithName(EmailTopicProcessor.ProcessorName);
 
             clientBuilder.UseCredential(credential);
         });
 
+        serviceCollection.AddSingleton<ResourcesInitializer>();
+
+        serviceCollection.AddSingleton<ITopicProcessorFactory, TopicProcessorFactory>();
+        serviceCollection.AddSingleton<EmailTopicProcessor>();
+
         serviceCollection.AddSendGrid(options => options.ApiKey = configuration["SendGrid:ApiKey"]);
 
-        return serviceCollection;
-    }
+        var kcsb = new KustoConnectionStringBuilder(configuration["AzureDataExplorer:HostAddress"], configuration["AzureDataExplorer:DatabaseName"])
+            .WithAadTokenProviderAuthentication(async () => (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]))).Token);
 
-    /// <summary>
-    /// Adds an email sender to the service collection.
-    /// </summary>
-    /// <typeparam name="TEmailSender"></typeparam>
-    /// <param name="serviceCollection">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection WithEmailSender<TEmailSender>(this IServiceCollection serviceCollection)
-        where TEmailSender : class, IEmailSender
-    {
-        serviceCollection.AddSingleton<IEmailSender, TEmailSender>();
+        serviceCollection.AddSingleton(KustoClientFactory.CreateCslAdminProvider(kcsb));
+        serviceCollection.AddSingleton(KustoIngestFactory.CreateDirectIngestClient(kcsb));
+        serviceCollection.AddSingleton<IAzureDataExplorerClient, AzureDataExplorerClient>();
 
         return serviceCollection;
     }

@@ -1,5 +1,8 @@
 ﻿namespace DotFlyer.Shared.Payload;
 
+/// <summary>
+/// Email message payload.
+/// </summary>
 public class EmailMessage
 {
     public required string FromEmail { get; set; }
@@ -8,12 +11,18 @@ public class EmailMessage
 
     public List<EmailRecipient> To { get; set; } = [];
 
+    public List<EmailRecipient> Cc { get; set; } = [];
+
+    public List<EmailRecipient> Bcc { get; set; } = [];
+
     public required string Subject { get; set; }
 
     public required string Body { get; set; }
 }
 
-
+/// <summary>
+/// Email recipient payload.
+/// </summary>
 public class EmailRecipient
 {
     public required string Email { get; set; }
