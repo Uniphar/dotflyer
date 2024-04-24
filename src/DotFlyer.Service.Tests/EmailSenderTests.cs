@@ -3,6 +3,7 @@
 [TestClass, TestCategory("Unit")]
 public class EmailSenderTests
 {
+    private Mock<DefaultAzureCredential> _credentialMock;
     private Mock<ISendGridClient> _sendGridClientMock;
     private Mock<IAzureDataExplorerClient> _azureDataExplorerClientMock;
 
@@ -12,10 +13,11 @@ public class EmailSenderTests
 
     public EmailSenderTests()
     {
+        _credentialMock = new Mock<DefaultAzureCredential>();
         _sendGridClientMock = new Mock<ISendGridClient>();
         _azureDataExplorerClientMock = new Mock<IAzureDataExplorerClient>();
 
-        _emailSender = new(_sendGridClientMock.Object, _azureDataExplorerClientMock.Object);
+        _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, _azureDataExplorerClientMock.Object);
     }
 
     [TestInitialize]
