@@ -31,3 +31,53 @@ The following configuration settings are required by the service:
 - `Twilio:FromPhoneNumber` - Twilio phone number, which is used to send SMS
 - `AzureDataExplorer:HostAddress` - Azure Data Explorer host address, where email information is saved
 - `AzureDataExplorer:DatabaseName` - Azure Data Explorer database name, which is used to save email information
+
+The following payload properties are expected in the Azure Service bus message to send emails:
+
+``` json
+{
+    "FromEmail": "sender@example.io", // Email address of the sender
+    "FromName": "DotFlyer", // Name of the sender
+    "To": [ // List of recipients, required to have at least one object in the list
+        {
+            "Email": "recipient1@example.io", // Email address of the recipient
+            "Name": "Recipient 1" // Name of the recipient
+        }
+    ],
+    "Cc": [ // List of CC recipients, optional
+        {
+            "Email": "recipient2@example.io", // Email address of the recipient
+            "Name": "Recipient 2" // Name of the recipient
+        }
+    ],
+    "Bcc": [ // List of BCC recipients, optional
+        {
+            "Email": "recipient3@example.io", // Email address of the recipient
+            "Name": "Recipient 3" // Name of the recipient
+        }
+    ],
+    "Subject": "Greetings!", // Email subject
+    "Body": "<b>Hello</b> <i>from</i> DotFlyer!", // Email body
+    "Attachments": [ // List of attachments, optional, should be a list of Azure Blob Storage URIs
+        "https://storage1.blob.core.windows.net/attachments/folder1/attachment.txt",
+        "https://storage2.blob.core.windows.net/attachments/folder2/attachment.csv"
+    ],
+    "Tags": { // Optional tags, can be any valid flat json object wtih dynamic properties
+        "Reason": "Advertising",
+        "Campaign": "Sale"
+    }
+}
+```
+
+The following payload properties are expected in the Azure Service bus message to send SMS:
+
+``` json
+{
+    "To": "+XXXXXXXXXXX", // Phone number of the recipient
+    "Body": "Hello from DotFlyer!", // Message body
+    "Tags": { // Optional tags, can be any valid flat json object wtih dynamic properties
+        "SenderName": "John",
+        "RecipientName": "Jane"
+    }
+}
+```
