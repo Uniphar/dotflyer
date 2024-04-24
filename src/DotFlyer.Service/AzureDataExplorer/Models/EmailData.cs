@@ -13,6 +13,8 @@ public class EmailData : EmailMessage
 
     public new required string Attachments { get; set; }
 
+    public new required string Tags { get; set; }
+
     public required int SendGridStatusCodeInt { get; set; }
 
     public required string SendGridStatusCodeString { get; set; }
@@ -31,6 +33,7 @@ public class EmailData : EmailMessage
         Attachments = JsonSerializer.Serialize(emailMessage.Attachments.Select(attachment => new Attachment(attachment))),
         Subject = emailMessage.Subject,
         Body = emailMessage.Body,
+        Tags = emailMessage.Tags == null ? "{}" : JsonSerializer.Serialize(emailMessage.Tags),
         SendGridStatusCodeInt = (int)sendgridStatusCode,
         SendGridStatusCodeString = sendgridStatusCode.ToString(),
         SendGridResponseContent = sendgridResponseContent,

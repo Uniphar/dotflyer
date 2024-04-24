@@ -11,13 +11,11 @@ The solution consists of the following projects:
 
 ### DotFlyer.Service
 
-DotFlyer.Service is a .NET [worker service](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services) that runs the custom implementation of the `IMessageProcessor` interface.
+DotFlyer.Service is a .NET [worker service](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services) that runs the custom implementation of the `IMessagesProcessor` interface.
 
 The configuration of the service is driven by settings loaded via `AddDotFlyerConfiguration` extension method, where any required configuration source can be added. The service uses `appsettings.json` file (loaded by default) and Azure KeyVault for storing secrets and configuration settings. `AZURE_KEY_VAULT_NAME` environment variable specifies the name of the Azure KeyVault resource.
 
- Azure Service Bus is used in the solution as a message broker. `AzureServiceBusMessageProcessor` class implements the `IMessageProcessor` interface and is added to the service collection by `AddDotFlyerMessageProcessor<TMessageProcessor>` extension method.
-
- Email sender is abstracted by `IEmailSender` interface, which can be implemented and added to the service collection by `AddDotFlyerEmailSender<TEmailSender>` extension method and used in `IMessageProcessor` implementation as a dependency.
+ Azure Service Bus is used in the solution as a message broker. `AzureServiceBusMessagesProcessor` class implements the `IMessagesProcessor` interface and is added to the service collection by `AddDotFlyerMessageProcessor<TMessageProcessor>` extension method. The payload of messages is expected to be in JSON format with properties defined in `DotFlyer.Shared` project.
 
 All required dependencies/services can be added with `WithDependencies` extension method providing `IConfiguration` instance for configuration setup. The service uses Application Insights for telemetry and logging, Azure Service Bus clients for topic/subscription setup and receiving messages, and SendGrid client for sending emails.
 

@@ -22,7 +22,8 @@ public class EmailTable : BaseTable
             new() { Name = nameof(EmailData.Bcc), Type = typeof(string).FullName! },
             new() { Name = nameof(EmailData.Subject), Type = typeof(string).FullName! },
             new() { Name = nameof(EmailData.Body), Type = typeof(string).FullName! },
-            new() { Name = nameof(EmailData.Attachments), Type = typeof(string).FullName! }
+            new() { Name = nameof(EmailData.Attachments), Type = typeof(string).FullName! },
+            new() { Name = nameof(EmailData.Tags), Type = typeof(string).FullName! }
         ]
     };
 

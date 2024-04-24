@@ -20,6 +20,8 @@ public class EmailMessage
     public required string Body { get; set; }
 
     public List<string> Attachments { get; set; } = [];
+
+    public Dictionary<string, string>? Tags { get; set; }
 }
 
 /// <summary>
