@@ -36,33 +36,33 @@ The following payload properties are expected in the Azure Service bus message t
 
 ``` json
 {
-    "FromEmail": "sender@example.io", // Email address of the sender
-    "FromName": "DotFlyer", // Name of the sender
-    "To": [ // List of recipients, required to have at least one object in the list
+    "FromEmail": "sender@example.io",
+    "FromName": "DotFlyer",
+    "To": [
         {
-            "Email": "recipient1@example.io", // Email address of the recipient
-            "Name": "Recipient 1" // Name of the recipient
+            "Email": "recipient1@example.io",
+            "Name": "Recipient 1"
         }
     ],
-    "Cc": [ // List of CC recipients, optional
+    "Cc": [ // optional
         {
-            "Email": "recipient2@example.io", // Email address of the recipient
-            "Name": "Recipient 2" // Name of the recipient
+            "Email": "recipient2@example.io",
+            "Name": "Recipient 2"
         }
     ],
-    "Bcc": [ // List of BCC recipients, optional
+    "Bcc": [ // optional
         {
-            "Email": "recipient3@example.io", // Email address of the recipient
-            "Name": "Recipient 3" // Name of the recipient
+            "Email": "recipient3@example.io",
+            "Name": "Recipient 3"
         }
     ],
-    "Subject": "Greetings!", // Email subject
-    "Body": "<b>Hello</b> <i>from</i> DotFlyer!", // Email body
-    "Attachments": [ // List of attachments, optional, should be a list of Azure Blob Storage URIs
+    "Subject": "Greetings!",
+    "Body": "<b>Hello</b> <i>from</i> DotFlyer!",
+    "Attachments": [ // optional, should be a list of Azure Blob Storage URIs
         "https://storage1.blob.core.windows.net/attachments/folder1/attachment.txt",
         "https://storage2.blob.core.windows.net/attachments/folder2/attachment.csv"
     ],
-    "Tags": { // Optional tags, can be any valid flat json object wtih dynamic properties
+    "Tags": { // optional, can be any valid flat json object wtih dynamic properties
         "Reason": "Advertising",
         "Campaign": "Sale"
     }
@@ -73,9 +73,9 @@ The following payload properties are expected in the Azure Service bus message t
 
 ``` json
 {
-    "To": "+XXXXXXXXXXX", // Phone number of the recipient
-    "Body": "Hello from DotFlyer!", // Message body
-    "Tags": { // Optional tags, can be any valid flat json object wtih dynamic properties
+    "To": "+XXXXXXXXXXX",
+    "Body": "Hello from DotFlyer!",
+    "Tags": { // optional, can be any valid flat json object wtih dynamic properties
         "SenderName": "John",
         "RecipientName": "Jane"
     }
