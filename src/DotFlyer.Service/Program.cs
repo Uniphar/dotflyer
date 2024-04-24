@@ -1,6 +1,7 @@
 global using Azure.Identity;
 global using Azure.Messaging.ServiceBus;
 global using Azure.Messaging.ServiceBus.Administration;
+global using Azure.Storage.Blobs;
 global using DotFlyer.Service;
 global using DotFlyer.Service.AzureDataExplorer;
 global using DotFlyer.Service.AzureDataExplorer.Models;

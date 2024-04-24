@@ -11,6 +11,8 @@ public class EmailData : EmailMessage
 
     public new required string Bcc { get; set; }
 
+    public new required string Attachments { get; set; }
+
     public new required string Tags { get; set; }
 
     public required int SendGridStatusCodeInt { get; set; }
@@ -28,6 +30,7 @@ public class EmailData : EmailMessage
         To = JsonSerializer.Serialize(emailMessage.To),
         Cc = JsonSerializer.Serialize(emailMessage.Cc),
         Bcc = JsonSerializer.Serialize(emailMessage.Bcc),
+        Attachments = JsonSerializer.Serialize(emailMessage.Attachments.Select(attachment => new Attachment(attachment))),
         Subject = emailMessage.Subject,
         Body = emailMessage.Body,
         Tags = emailMessage.Tags == null ? "{}" : JsonSerializer.Serialize(emailMessage.Tags),
@@ -36,4 +39,9 @@ public class EmailData : EmailMessage
         SendGridResponseContent = sendgridResponseContent,
         IngestDateTimeUtc = DateTime.UtcNow
     };
+
+    public class Attachment(string URI)
+    {
+        public string URI { get; } = URI;
+    }
 }
