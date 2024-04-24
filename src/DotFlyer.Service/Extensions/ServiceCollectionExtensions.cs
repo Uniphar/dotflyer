@@ -33,6 +33,8 @@ public static class ServiceCollectionExtensions
 
         DefaultAzureCredential credential = new();
 
+        serviceCollection.AddSingleton(credential);
+
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(options => options.EnableAdaptiveSampling = false);
 
         serviceCollection.AddAzureClients(clientBuilder =>

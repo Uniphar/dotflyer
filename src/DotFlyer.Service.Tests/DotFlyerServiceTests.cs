@@ -71,7 +71,12 @@ public class DotFlyerServiceTests
                     Email = _receiverEmail!,
                     Name = "Integration Test Destination Address"
                 }
-            ]
+            ],
+            Tags = new()
+            {
+                { "TestName", "DotFlyer Service Integration Test" },
+                { "TestRandomGuid", randomGuid.ToString() }
+            }
         };
 
         ServiceBusMessage message = new(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(emailMessage)));
@@ -87,6 +92,7 @@ public class DotFlyerServiceTests
         emailData.FromEmail.Should().Be(emailMessage.FromEmail);
         emailData.FromName.Should().Be(emailMessage.FromName);
         emailData.To.Should().Be(JsonSerializer.Serialize(emailMessage.To));
+        emailData.Tags.Should().Be(JsonSerializer.Serialize(emailMessage.Tags));
         emailData.SendGridStatusCodeInt.Should().Be(202);
         emailData.SendGridStatusCodeString.Should().Be("Accepted");
     }
