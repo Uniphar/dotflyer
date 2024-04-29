@@ -7,6 +7,7 @@ public class AzureServiceBusMessagesProcessor : IMessagesProcessor, IAsyncDispos
 {
     private readonly ITopicProcessorFactory _topicProcessorFactory;
     private readonly ServiceBusProcessor _emailTopicProcessor;
+    private readonly ServiceBusProcessor _smsTopicProcessor;
 
     /// <summary>
     /// Creates a new instance of the <see cref="AzureServiceBusMessagesProcessor"/> class.
@@ -17,6 +18,7 @@ public class AzureServiceBusMessagesProcessor : IMessagesProcessor, IAsyncDispos
         _topicProcessorFactory = topicProcessorFactory;
 
         _emailTopicProcessor = _topicProcessorFactory.CreateTopicProcessor(EmailTopicProcessor.ProcessorName);
+        _smsTopicProcessor = _topicProcessorFactory.CreateTopicProcessor(SMSTopicProcessor.ProcessorName);
     }
 
     /// <summary>
@@ -27,6 +29,7 @@ public class AzureServiceBusMessagesProcessor : IMessagesProcessor, IAsyncDispos
     public async Task StartProcessingAsync(CancellationToken cancellationToken = default)
     {
         await _emailTopicProcessor.StartProcessingAsync(cancellationToken);
+        await _smsTopicProcessor.StartProcessingAsync(cancellationToken);
     }
 
     /// <summary>
@@ -37,6 +40,7 @@ public class AzureServiceBusMessagesProcessor : IMessagesProcessor, IAsyncDispos
     public async Task StopProcessingAsync(CancellationToken cancellationToken = default)
     {
         await _emailTopicProcessor.StopProcessingAsync(cancellationToken);
+        await _smsTopicProcessor.StopProcessingAsync(cancellationToken);
     }
 
     /// <summary>
@@ -46,5 +50,6 @@ public class AzureServiceBusMessagesProcessor : IMessagesProcessor, IAsyncDispos
     public async ValueTask DisposeAsync()
     {
         await _emailTopicProcessor.DisposeAsync();
+        await _smsTopicProcessor.DisposeAsync();
     }
 }

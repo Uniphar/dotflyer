@@ -7,6 +7,7 @@ global using DotFlyer.Service.AzureDataExplorer;
 global using DotFlyer.Service.AzureDataExplorer.Models;
 global using DotFlyer.Service.AzureDataExplorer.Tables;
 global using DotFlyer.Service.Extensions;
+global using DotFlyer.Service.Senders;
 global using DotFlyer.Service.TopicProcessors;
 global using DotFlyer.Shared.Payload;
 global using Kusto.Data;
@@ -20,6 +21,11 @@ global using SendGrid.Extensions.DependencyInjection;
 global using SendGrid.Helpers.Mail;
 global using System.Net;
 global using System.Text.Json;
+global using Twilio;
+global using Twilio.Clients;
+global using Twilio.Http;
+global using Twilio.Rest.Api.V2010.Account;
+global using Twilio.Types;
 
 var builder = Host.CreateApplicationBuilder();
 

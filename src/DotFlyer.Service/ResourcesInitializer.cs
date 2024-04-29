@@ -22,6 +22,7 @@ public class ResourcesInitializer(
         try
         {
             await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForEmail"]!, configuration["AzureServiceBus:SubscriptionName"]!);
+            await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForSMS"]!, configuration["AzureServiceBus:SubscriptionName"]!);
 
             await azureDataExplorerClient.CreateOrUpdateTablesAsync();
         }

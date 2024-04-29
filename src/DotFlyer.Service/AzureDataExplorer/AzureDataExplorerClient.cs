@@ -19,6 +19,7 @@ public class AzureDataExplorerClient(
     public async Task CreateOrUpdateTablesAsync(CancellationToken cancellationToken = default)
     {
         await CreateOrUpdateTableAsync(EmailTable.Instance, cancellationToken);
+        await CreateOrUpdateTableAsync(SMSTable.Instance, cancellationToken);
     }
 
     /// <summary>
@@ -36,6 +37,10 @@ public class AzureDataExplorerClient(
             if (data is EmailData emailData)
             {
                 await IngestDataAsync(emailData, EmailTable.Instance.TableName, EmailTable.Instance.MappingName, cancellationToken);
+            }
+            else if (data is SMSData smsData)
+            {
+                await IngestDataAsync(smsData, SMSTable.Instance.TableName, SMSTable.Instance.MappingName, cancellationToken);
             }
             else
             {

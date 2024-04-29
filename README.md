@@ -25,5 +25,59 @@ The following configuration settings are required by the service:
 - `AzureServiceBus:TopicName` - Azure Service Bus topic name, where messages are sent
 - `AzureServiceBus:SubscriptionName` - Azure Service Bus subscription name, where messages are received
 - `SendGrid:ApiKey` - SendGrid API key for sending emails
+- `Twilio:AccountSID` - Twilio account SID
+- `Twilio:ApiKeySID` - Twilio API key SID
+- `Twilio:ApiKeySecret` - Twilio API key secret
+- `Twilio:FromPhoneNumber` - Twilio phone number, which is used to send SMS
 - `AzureDataExplorer:HostAddress` - Azure Data Explorer host address, where email information is saved
 - `AzureDataExplorer:DatabaseName` - Azure Data Explorer database name, which is used to save email information
+
+The following payload properties are expected in the Azure Service bus message to send emails:
+
+``` json
+{
+    "FromEmail": "sender@example.io",
+    "FromName": "DotFlyer",
+    "To": [
+        {
+            "Email": "recipient1@example.io",
+            "Name": "Recipient 1"
+        }
+    ],
+    "Cc": [ // optional
+        {
+            "Email": "recipient2@example.io",
+            "Name": "Recipient 2"
+        }
+    ],
+    "Bcc": [ // optional
+        {
+            "Email": "recipient3@example.io",
+            "Name": "Recipient 3"
+        }
+    ],
+    "Subject": "Greetings!",
+    "Body": "<b>Hello</b> <i>from</i> DotFlyer!",
+    "Attachments": [ // optional, should be a list of Azure Blob Storage URIs
+        "https://storage1.blob.core.windows.net/attachments/folder1/attachment.txt",
+        "https://storage2.blob.core.windows.net/attachments/folder2/attachment.csv"
+    ],
+    "Tags": { // optional, can be any valid flat json object wtih dynamic properties
+        "Reason": "Advertising",
+        "Campaign": "Sale"
+    }
+}
+```
+
+The following payload properties are expected in the Azure Service bus message to send SMS:
+
+``` json
+{
+    "To": "+XXXXXXXXXXX",
+    "Body": "Hello from DotFlyer!",
+    "Tags": { // optional, can be any valid flat json object wtih dynamic properties
+        "SenderName": "John",
+        "RecipientName": "Jane"
+    }
+}
+```

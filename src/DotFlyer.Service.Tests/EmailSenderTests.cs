@@ -49,7 +49,7 @@ public class EmailSenderTests
     {
         _sendGridClientMock
             .Setup(x => x.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Response(HttpStatusCode.BadRequest, new StringContent("Bad Request"), null));
+            .ReturnsAsync(new SendGrid.Response(HttpStatusCode.BadRequest, new StringContent("Bad Request"), null));
 
         await Assert.ThrowsExceptionAsync<HttpRequestException>(() => _emailSender.SendAsync(_emailMessage!));
     }
