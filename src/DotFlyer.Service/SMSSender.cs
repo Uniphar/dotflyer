@@ -26,7 +26,7 @@ public class SMSSender(
             throw new ArgumentException("SMS message must have a recipient in the 'To' field.");
         }
 
-        CreateMessageOptions options = new(new(smsMessage.To))
+        CreateMessageOptions options = new(new PhoneNumber(smsMessage.To))
         {
             Body = smsMessage.Body,
             From = new(configuration.FromPhoneNumber)

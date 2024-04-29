@@ -24,6 +24,7 @@ global using Twilio;
 global using Twilio.Clients;
 global using Twilio.Http;
 global using Twilio.Rest.Api.V2010.Account;
+global using Twilio.Types;
 
 var builder = Host.CreateApplicationBuilder();
 
