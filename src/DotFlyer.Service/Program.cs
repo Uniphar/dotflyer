@@ -7,6 +7,7 @@ global using DotFlyer.Service.AzureDataExplorer;
 global using DotFlyer.Service.AzureDataExplorer.Models;
 global using DotFlyer.Service.AzureDataExplorer.Tables;
 global using DotFlyer.Service.Extensions;
+global using DotFlyer.Service.Senders;
 global using DotFlyer.Service.TopicProcessors;
 global using DotFlyer.Shared.Payload;
 global using Kusto.Data;

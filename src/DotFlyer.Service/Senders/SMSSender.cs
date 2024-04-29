@@ -1,4 +1,4 @@
-﻿namespace DotFlyer.Service;
+﻿namespace DotFlyer.Service.Senders;
 
 /// <summary>
 /// The SMS sender service.
