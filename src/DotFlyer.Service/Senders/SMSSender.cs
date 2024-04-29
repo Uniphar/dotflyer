@@ -21,10 +21,7 @@ public class SMSSender(
     /// <exception cref="HttpRequestException">Thrown when the SMS message could not be sent.</exception>
     public async Task SendAsync(SMSMessage smsMessage, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(smsMessage.To))
-        {
-            throw new ArgumentException("SMS message must have a recipient in the 'To' field.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(smsMessage.To, nameof(smsMessage.To));
 
         CreateMessageOptions options = new(new PhoneNumber(smsMessage.To))
         {
