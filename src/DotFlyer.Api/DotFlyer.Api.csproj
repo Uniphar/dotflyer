@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotFlyer.Shared\DotFlyer.Shared.csproj" />
+    <ProjectReference Include="..\DotFlyer.Shared\DotFlyer.Common.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,13 +5,13 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Api", "DotFlyer.Api\DotFlyer.Api.csproj", "{AB5370AA-D477-4D80-A02F-432CA5EB0D32}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Shared", "DotFlyer.Shared\DotFlyer.Shared.csproj", "{DC15D7E2-6E05-4930-A20D-411C9A367E3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Common", "DotFlyer.Shared\DotFlyer.Common.csproj", "{DC15D7E2-6E05-4930-A20D-411C9A367E3A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Api.Tests", "DotFlyer.Api.Tests\DotFlyer.Api.Tests.csproj", "{0A2E7D9E-EAF7-489F-83EA-A2603E209D1A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Service.Tests", "DotFlyer.Service.Tests\DotFlyer.Service.Tests.csproj", "{497FE183-79C1-4110-B99F-5A679D8E2898}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotFlyer.Service", "DotFlyer.Service\DotFlyer.Service.csproj", "{C072747D-0406-4A28-9A94-CD5942A24C22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Service", "DotFlyer.Service\DotFlyer.Service.csproj", "{C072747D-0406-4A28-9A94-CD5942A24C22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

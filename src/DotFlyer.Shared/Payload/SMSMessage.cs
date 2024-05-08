@@ -1,13 +1,19 @@
-﻿namespace DotFlyer.Shared.Payload;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-/// <summary>
-/// SMS message payload.
-/// </summary>
-public class SMSMessage
+namespace DotFlyer.Common.Payload
 {
-    public required string To { get; set; }
+    /// <summary>
+    /// SMS message payload.
+    /// </summary>
+    public class SMSMessage
+    {
+        [Required]
+        public string To { get; set; }
 
-    public required string Body { get; set; }
+        [Required]
+        public string Body { get; set; }
 
-    public Dictionary<string, string>? Tags { get; set; }
+        public Dictionary<string, string> Tags { get; set; }
+    }
 }
