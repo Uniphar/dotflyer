@@ -1,0 +1,19 @@
+name: CI for DotFlyer Common Package
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    paths:
+      - .github/workflows/dotflyer-common-package-ci.yaml
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  Package_CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo "hello"
