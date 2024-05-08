@@ -27,4 +27,5 @@ jobs:
           dotnet-version: '8'
 
       - name: Pack
+        working-directory: ./src/DotFlyer.Common
         run: dotnet pack --configuration Release -o ./nupkgs
