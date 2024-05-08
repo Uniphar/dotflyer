@@ -8,6 +8,7 @@ on:
       - main
     paths:
       - .github/workflows/dotflyer-common-package-cd.yaml
+      - src/DotFlyer.Common/**
 
 permissions:
   id-token: write
@@ -18,5 +19,12 @@ jobs:
   Package_CD:
     runs-on: ubuntu-latest
     steps:
-      - name: hello
-        run: echo "hello"
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8'
+
+      - name: Pack
+        run: dotnet pack --configuration Release -o ./nupkgs
