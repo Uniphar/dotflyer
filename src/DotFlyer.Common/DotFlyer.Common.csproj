@@ -2,10 +2,25 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageId>DotFlyer.Common</PackageId>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <Company>Uniphar Group Plc.</Company>
+    <Description>Library that contains payloads for DotFlyer Service.</Description>
+    <RepositoryUrl>https://github.com/Uniphar/dotflyer/tree/feature/common-nuget-package/src/DotFlyer.Common</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Annotations" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE" Pack="True" PackagePath="\" />
+    <None Include="README.md" Pack="True" PackagePath="\" />
   </ItemGroup>
 
 </Project>
