@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Api", "DotFlyer.Api\DotFlyer.Api.csproj", "{AB5370AA-D477-4D80-A02F-432CA5EB0D32}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Common", "DotFlyer.Shared\DotFlyer.Common.csproj", "{DC15D7E2-6E05-4930-A20D-411C9A367E3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Common", "DotFlyer.Common\DotFlyer.Common.csproj", "{DC15D7E2-6E05-4930-A20D-411C9A367E3A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotFlyer.Api.Tests", "DotFlyer.Api.Tests\DotFlyer.Api.Tests.csproj", "{0A2E7D9E-EAF7-489F-83EA-A2603E209D1A}"
 EndProject

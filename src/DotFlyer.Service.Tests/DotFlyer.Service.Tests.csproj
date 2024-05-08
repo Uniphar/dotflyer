@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DotFlyer.Common\DotFlyer.Common.csproj" />
     <ProjectReference Include="..\DotFlyer.Service\DotFlyer.Service.csproj" />
-    <ProjectReference Include="..\DotFlyer.Shared\DotFlyer.Common.csproj" />
   </ItemGroup>
 
 </Project>
