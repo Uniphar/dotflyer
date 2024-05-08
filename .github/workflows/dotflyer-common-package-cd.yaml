@@ -26,6 +26,10 @@ jobs:
         with:
           dotnet-version: '8'
 
+      - name: Determine version number
+        run: |
+          GitVersion
+
       - name: Pack
         working-directory: ./src/DotFlyer.Common
-        run: dotnet pack --configuration Release -o ./nupkgs
+        run: dotnet pack --configuration Release -p:Version=$(GitVersion /showvariable SemVer) -o ./nupkgs
