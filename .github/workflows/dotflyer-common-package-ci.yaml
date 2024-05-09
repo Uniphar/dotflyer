@@ -32,7 +32,6 @@ jobs:
             echo "Analyze dotnet list package command log output..."
             exit (Select-String -Path "build.log" -Pattern "has the following vulnerable packages" -AllMatches).Matches.Count -gt 0 ? 1 : 0
       
-      - name: dotnet build
+      - name: dotnet pack test
         working-directory: ./src/DotFlyer.Common
-        run: |
-          dotnet build
+        run: dotnet pack --configuration Release
