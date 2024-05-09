@@ -55,6 +55,7 @@ jobs:
       - name: get NuGet repository API key
         shell: pwsh
         run: |
+          Import-Module Az.KeyVault -ErrorAction Stop -Force
           Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
           $coreKeyVaultName = Resolve-UniResourceName 'keyvault' $p_corePlatformProject
