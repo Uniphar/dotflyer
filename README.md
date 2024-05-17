@@ -36,8 +36,10 @@ The following payload properties are expected in the Azure Service bus message t
 
 ``` json
 {
-    "FromEmail": "sender@example.io",
-    "FromName": "DotFlyer",
+    "From": {
+        "Email": "sender@example.io",
+        "Name": "DotFlyer"
+    },
     "To": [
         {
             "Email": "recipient1@example.io",
