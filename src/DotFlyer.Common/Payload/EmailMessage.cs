@@ -9,16 +9,14 @@ namespace DotFlyer.Common.Payload
     public class EmailMessage
     {
         [Required]
-        public string FromEmail { get; set; }
+        public Contact From { get; set; }
 
         [Required]
-        public string FromName { get; set; }
+        public IEnumerable<Contact> To { get; set; }
 
-        public List<EmailRecipient> To { get; set; } = new List<EmailRecipient>();
+        public IEnumerable<Contact> Cc { get; set; }
 
-        public List<EmailRecipient> Cc { get; set; } = new List<EmailRecipient>();
-
-        public List<EmailRecipient> Bcc { get; set; } = new List<EmailRecipient>();
+        public IEnumerable<Contact> Bcc { get; set; }
 
         [Required]
         public string Subject { get; set; }
@@ -26,15 +24,15 @@ namespace DotFlyer.Common.Payload
         [Required]
         public string Body { get; set; }
 
-        public List<string> Attachments { get; set; } = new List<string>();
+        public IEnumerable<string> Attachments { get; set; }
 
-        public Dictionary<string, string> Tags { get; set; }
+        public IDictionary<string, string> Tags { get; set; }
     }
 
     /// <summary>
-    /// Email recipient payload.
+    /// Email contact payload.
     /// </summary>
-    public class EmailRecipient
+    public class Contact
     {
         [Required]
         public string Email { get; set; }

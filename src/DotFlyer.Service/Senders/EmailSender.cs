@@ -22,37 +22,57 @@ public class EmailSender(
     /// <exception cref="HttpRequestException">Thrown when the email message could not be sent.</exception>"
     public async Task SendAsync(EmailMessage emailMessage, CancellationToken cancellationToken = default)
     {
-        if (emailMessage.To.Count == 0)
+        if (!emailMessage.To.Any())
         {
             throw new ArgumentException("Email message must have at least one recipient in the 'To' field.");
         }
 
         SendGridMessage sendGridMessage = new()
         {
-            From = new(emailMessage.FromEmail, emailMessage.FromName),
+            From = new(emailMessage.From.Email, emailMessage.From.Name),
             Subject = emailMessage.Subject,
             HtmlContent = emailMessage.Body
         };
 
-        emailMessage.To.ForEach(emailRecipient => sendGridMessage.AddTo(new EmailAddress(emailRecipient.Email, emailRecipient.Name)));
-        emailMessage.Cc.ForEach(emailRecipient => sendGridMessage.AddCc(new EmailAddress(emailRecipient.Email, emailRecipient.Name)));
-        emailMessage.Bcc.ForEach(emailRecipient => sendGridMessage.AddBcc(new EmailAddress(emailRecipient.Email, emailRecipient.Name)));
-
-        foreach (var attachment in emailMessage.Attachments)
+        foreach (var contact in emailMessage.To)
         {
-            BlobClient blobClient = new(new(attachment), credential);
+            sendGridMessage.AddTo(new EmailAddress(contact.Email, contact.Name));
+        }
 
-            if (await blobClient.ExistsAsync(cancellationToken))
+        if (emailMessage.Cc != null)
+        {
+            foreach (var contact in emailMessage.Cc)
             {
-                using MemoryStream blobStream = new();
-
-                await blobClient.DownloadToAsync(blobStream, cancellationToken);
-
-                sendGridMessage.AddAttachment(Path.GetFileName(attachment), Convert.ToBase64String(blobStream.ToArray()));
+                sendGridMessage.AddCc(new EmailAddress(contact.Email, contact.Name));
             }
-            else
+        }
+
+        if (emailMessage.Bcc != null)
+        {
+            foreach (var contact in emailMessage.Bcc)
             {
-                throw new FileNotFoundException($"Attachment not found: {attachment}");
+                sendGridMessage.AddBcc(new EmailAddress(contact.Email, contact.Name));
+            }
+        }
+
+        if (emailMessage.Attachments != null)
+        {
+            foreach (var attachment in emailMessage.Attachments)
+            {
+                BlobClient blobClient = new(new(attachment), credential);
+
+                if (await blobClient.ExistsAsync(cancellationToken))
+                {
+                    using MemoryStream blobStream = new();
+
+                    await blobClient.DownloadToAsync(blobStream, cancellationToken);
+
+                    sendGridMessage.AddAttachment(Path.GetFileName(attachment), Convert.ToBase64String(blobStream.ToArray()));
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Attachment not found: {attachment}");
+                }
             }
         }
 

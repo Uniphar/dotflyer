@@ -14,6 +14,6 @@ namespace DotFlyer.Common.Payload
         [Required]
         public string Body { get; set; }
 
-        public Dictionary<string, string> Tags { get; set; }
+        public IDictionary<string, string> Tags { get; set; }
     }
 }
