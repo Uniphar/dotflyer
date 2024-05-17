@@ -5,6 +5,10 @@
 /// </summary>
 public class EmailData : EmailMessage
 {
+    public required string FromEmail { get; set; }
+
+    public required string FromName { get; set; }
+
     public new required string To { get; set; }
 
     public new required string Cc { get; set; }
@@ -25,12 +29,12 @@ public class EmailData : EmailMessage
 
     public static EmailData ConvertToAdxModel(EmailMessage emailMessage, HttpStatusCode sendgridStatusCode, string sendgridResponseContent) => new()
     {
-        FromEmail = emailMessage.FromEmail,
-        FromName = emailMessage.FromName,
+        FromEmail = emailMessage.From.Email,
+        FromName = emailMessage.From.Name,
         To = JsonSerializer.Serialize(emailMessage.To),
-        Cc = JsonSerializer.Serialize(emailMessage.Cc),
-        Bcc = JsonSerializer.Serialize(emailMessage.Bcc),
-        Attachments = JsonSerializer.Serialize(emailMessage.Attachments.Select(attachment => new Attachment(attachment))),
+        Cc = emailMessage.Cc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Cc),
+        Bcc = emailMessage.Bcc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Bcc),
+        Attachments = emailMessage.Cc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Attachments.Select(attachment => new Attachment(attachment))),
         Subject = emailMessage.Subject,
         Body = emailMessage.Body,
         Tags = emailMessage.Tags == null ? "{}" : JsonSerializer.Serialize(emailMessage.Tags),

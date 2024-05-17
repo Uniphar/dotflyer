@@ -27,8 +27,11 @@ public class EmailSenderTests
         {
             Body = "Test email body",
             Subject = "Test email subject",
-            FromEmail = "unit@test.io",
-            FromName = "Unit Test",
+            From = new()
+            {
+                Email = "unit@test.io",
+                Name = "Unit Test"
+            },
             To =
             [
                 new() { Name = "Test", Email = "test@test.io"}

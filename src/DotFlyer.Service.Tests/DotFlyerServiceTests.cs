@@ -63,8 +63,11 @@ public class DotFlyerServiceTests
         {
             Subject = $"Test email {randomGuid}",
             Body = $"Test email body {randomGuid}",
-            FromEmail = _senderEmail!,
-            FromName = "Integration Test",
+            From = new()
+            {
+                Email = _senderEmail!,
+                Name = "Integration Test"
+            },
             To = [
                 new()
                 {
@@ -72,7 +75,7 @@ public class DotFlyerServiceTests
                     Name = "Integration Test Destination Address"
                 }
             ],
-            Tags = new()
+            Tags = new Dictionary<string, string>()
             {
                 { "TestName", "DotFlyer Service Integration Test" },
                 { "TestRandomGuid", randomGuid.ToString() }
@@ -89,8 +92,8 @@ public class DotFlyerServiceTests
         emailData.Should().NotBeNull();
         emailData.Subject.Should().Be(emailMessage.Subject);
         emailData.Body.Should().Be(emailMessage.Body);
-        emailData.FromEmail.Should().Be(emailMessage.FromEmail);
-        emailData.FromName.Should().Be(emailMessage.FromName);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
         emailData.To.Should().Be(JsonSerializer.Serialize(emailMessage.To));
         emailData.Tags.Should().Be(JsonSerializer.Serialize(emailMessage.Tags));
         emailData.SendGridStatusCodeInt.Should().Be(202);
@@ -106,7 +109,7 @@ public class DotFlyerServiceTests
         {
             Body = $"Test SMS body {randomGuid}",
             To = _receiverNumber!,
-            Tags = new()
+            Tags = new Dictionary<string, string>()
             {
                 { "TestName", "DotFlyer Service Integration Test" },
                 { "TestRandomGuid", randomGuid.ToString() }
