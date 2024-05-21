@@ -75,7 +75,7 @@ The following payload properties are expected in the Azure Service bus message t
 
 ``` json
 {
-    "From": "DotFlyer", // optional, if not provided, the default phone number is used
+    "From": "+XXXXXXXXXXX / DotFlyer", // optional, if not provided, the default phone number is used
     "To": "+XXXXXXXXXXX",
     "Body": "Hello from DotFlyer!",
     "Tags": { // optional, can be any valid flat json object wtih dynamic properties
