@@ -8,6 +8,8 @@ namespace DotFlyer.Common.Payload
     /// </summary>
     public class SMSMessage
     {
+        public string From { get; set; }
+
         [Required]
         public string To { get; set; }
 

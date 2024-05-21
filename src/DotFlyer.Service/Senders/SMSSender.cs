@@ -26,7 +26,7 @@ public class SMSSender(
         CreateMessageOptions options = new(new PhoneNumber(smsMessage.To))
         {
             Body = smsMessage.Body,
-            From = new(configuration.FromPhoneNumber)
+            From = new PhoneNumber(string.IsNullOrWhiteSpace(smsMessage.From) ? configuration.FromPhoneNumber : smsMessage.From),
         };
 
         Request twilioRequest = new(Twilio.Http.HttpMethod.Post,
