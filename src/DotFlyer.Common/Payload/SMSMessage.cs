@@ -8,7 +8,6 @@ namespace DotFlyer.Common.Payload
     /// </summary>
     public class SMSMessage
     {
-        [RegularExpression(@"^[a-zA-Z0-9]*$", ErrorMessage = "Only alphanumeric characters are allowed.")]
         public string From { get; set; }
 
         [Required]
