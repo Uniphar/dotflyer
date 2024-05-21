@@ -38,7 +38,7 @@ public class SMSSender(
 
         var result = await twilioRestClient.HttpClient.MakeRequestAsync(twilioRequest);
 
-        await adxClient.IngestDataAsync(SMSData.ConvertToAdxModel(smsMessage, configuration.FromPhoneNumber, result.StatusCode, result.Content), cancellationToken);
+        await adxClient.IngestDataAsync(SMSData.ConvertToAdxModel(smsMessage, options.From.ToString(), result.StatusCode, result.Content), cancellationToken);
 
         if (result.StatusCode != HttpStatusCode.Created)
         {
