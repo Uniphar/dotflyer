@@ -26,7 +26,7 @@ public class SMSSender(
         CreateMessageOptions options = new(new PhoneNumber(smsMessage.To))
         {
             Body = smsMessage.Body,
-            From = new(configuration.FromPhoneNumber)
+            From = new PhoneNumber(string.IsNullOrWhiteSpace(smsMessage.From) ? configuration.FromPhoneNumber : smsMessage.From),
         };
 
         Request twilioRequest = new(Twilio.Http.HttpMethod.Post,
@@ -38,7 +38,7 @@ public class SMSSender(
 
         var result = await twilioRestClient.HttpClient.MakeRequestAsync(twilioRequest);
 
-        await adxClient.IngestDataAsync(SMSData.ConvertToAdxModel(smsMessage, configuration.FromPhoneNumber, result.StatusCode, result.Content), cancellationToken);
+        await adxClient.IngestDataAsync(SMSData.ConvertToAdxModel(smsMessage, options.From.ToString(), result.StatusCode, result.Content), cancellationToken);
 
         if (result.StatusCode != HttpStatusCode.Created)
         {
