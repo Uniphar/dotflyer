@@ -34,7 +34,7 @@ public class EmailData : EmailMessage
         To = JsonSerializer.Serialize(emailMessage.To),
         Cc = emailMessage.Cc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Cc),
         Bcc = emailMessage.Bcc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Bcc),
-        Attachments = emailMessage.Cc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Attachments.Select(attachment => new Attachment(attachment))),
+        Attachments = emailMessage.Attachments == null ? "[]" : JsonSerializer.Serialize(emailMessage.Attachments.Select(attachment => new Attachment(attachment))),
         Subject = emailMessage.Subject,
         Body = emailMessage.Body,
         Tags = emailMessage.Tags == null ? "{}" : JsonSerializer.Serialize(emailMessage.Tags),
