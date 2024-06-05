@@ -5,7 +5,7 @@
 /// </summary>
 public class SMSData : SMSMessage
 {
-    public required string From { get; set; }
+    public new required string From { get; set; }
 
     public new required string Tags { get; set; }
 
