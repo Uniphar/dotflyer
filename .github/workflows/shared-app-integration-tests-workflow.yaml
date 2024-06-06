@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
 
       - name: azure login
         uses: azure/login@v2
@@ -51,7 +51,7 @@ jobs:
           private_key: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
 
       - name: checkout devops-azure repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: devops-azure
           repository: Uniphar/devops-azure
@@ -66,9 +66,10 @@ jobs:
           enable-AzPSSession: true
 
       - name: compute environment variables
-        uses: azure/powershell@v1
+        uses: azure/powershell@v2
         with:
           azPSVersion: "latest"
+          errorActionPreference: 'stop'
           failOnStandardError: true
           inlineScript: |
             try{
