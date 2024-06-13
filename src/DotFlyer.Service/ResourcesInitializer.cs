@@ -5,13 +5,15 @@
 /// </summary>
 /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance to log messages.</param>
 /// <param name="configuration">The <see cref="IConfiguration"/> instance to access application configuration.</param>
-/// <param name="topicProcessorFactory">The <see cref="ITopicProcessorFactory"/> instance to create topics and subscriptions.</param>
-/// <param name="azureDataExplorerClient"></param>
+/// <param name="serviceBusAdministrationClient">The <see cref="ServiceBusAdministrationClient"/> instance to interact with Azure Service Bus.</param>
+/// <param name="azureDataExplorerClient">The <see cref="IAzureDataExplorerClient"/> instance to interact with Azure Data Explorer.</param>
+/// <param name="blobServiceClient">The <see cref="BlobServiceClient"/> instance to interact with Azure Blob Storage.</param>
 public class ResourcesInitializer(
     ILogger<ResourcesInitializer> logger,
     IConfiguration configuration,
     ServiceBusAdministrationClient serviceBusAdministrationClient,
-    IAzureDataExplorerClient azureDataExplorerClient)
+    IAzureDataExplorerClient azureDataExplorerClient,
+    BlobServiceClient blobServiceClient)
 {
     /// <summary>
     /// Initializes resources required by the application.
@@ -25,6 +27,8 @@ public class ResourcesInitializer(
             await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForSMS"]!, configuration["AzureServiceBus:SubscriptionName"]!);
 
             await azureDataExplorerClient.CreateOrUpdateTablesAsync();
+
+            await blobServiceClient.GetBlobContainerClient(configuration["AzureStorage:EmailAttachmentsContainerName"]!).CreateIfNotExistsAsync();
         }
         catch (Exception ex)
         {
