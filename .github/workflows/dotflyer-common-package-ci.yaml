@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/dotflyer-common-package-ci.yaml
+      - .github/workflows/shared-failed-build-notification-workflow.yaml
       - src/DotFlyer.Common/**
 
 permissions:
@@ -35,3 +36,24 @@ jobs:
       - name: dotnet pack test
         working-directory: ./src/DotFlyer.Common
         run: dotnet pack --configuration Release
+
+  notify:
+    needs: Package_CI
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() && contains(needs.*.result, 'failure') }}
+    steps:
+      - name: gh-app-install token
+        id: gh-app
+        uses: getsentry/action-github-app-token@v2
+        with:
+          app_id: ${{ secrets.ACTIONS_AUTH_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
+
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: 'shared-failed-build-notification-workflow.yaml'
+          inputs: '{
+              "workflowId":"${{ github.run_id }}", 
+              "repository":"${{ github.repository }}"
+            }'
+          token: ${{ steps.gh-app.outputs.token }}

@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/dotflyer-api-ci.yaml
       - .github/workflows/shared-app-ci-workflow.yaml
+      - .github/workflows/shared-failed-build-notification-workflow.yaml
       - src/DotFlyer.Service/**
 
 permissions:

@@ -67,3 +67,24 @@ jobs:
       - name : dotnet nuget push
         working-directory: ./src/DotFlyer.Common
         run: dotnet nuget push ./.nupkgs/*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key $NUGET_API_KEY
+
+  notify:
+    needs: Package_CD
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() && contains(needs.*.result, 'failure') }}
+    steps:
+      - name: gh-app-install token
+        id: gh-app
+        uses: getsentry/action-github-app-token@v2
+        with:
+          app_id: ${{ secrets.ACTIONS_AUTH_APP_ID }}
+          private_key: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
+
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: 'shared-failed-build-notification-workflow.yaml'
+          inputs: '{
+              "workflowId":"${{ github.run_id }}", 
+              "repository":"${{ github.repository }}"
+            }'
+          token: ${{ steps.gh-app.outputs.token }}
