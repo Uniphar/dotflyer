@@ -7,7 +7,6 @@ on:
     paths:
       - .github/workflows/dotflyer-api-ci.yaml
       - .github/workflows/shared-app-ci-workflow.yaml
-      - .github/workflows/shared-failed-build-notification-workflow.yaml
       - src/DotFlyer.Service/**
 
 permissions:
@@ -17,5 +16,8 @@ permissions:
 jobs:
   DotFlyerService_CI:
     uses: ./.github/workflows/shared-app-ci-workflow.yaml
+    secrets:
+      ACTIONS_AUTH_APP_ID: ${{ secrets.ACTIONS_AUTH_APP_ID }}
+      ACTIONS_AUTH_APP_PRIVATE_KEY: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
     with:
       applicationFolder: DotFlyer.Service

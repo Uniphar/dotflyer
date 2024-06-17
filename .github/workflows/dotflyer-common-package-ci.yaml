@@ -6,7 +6,6 @@ on:
   pull_request:
     paths:
       - .github/workflows/dotflyer-common-package-ci.yaml
-      - .github/workflows/shared-failed-build-notification-workflow.yaml
       - src/DotFlyer.Common/**
 
 permissions:
@@ -40,7 +39,7 @@ jobs:
   notify:
     needs: Package_CI
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() && contains(needs.*.result, 'failure') }}
+    #if: ${{ !cancelled() && contains(needs.*.result, 'failure') }}
     steps:
       - name: gh-app-install token
         id: gh-app
@@ -53,7 +52,7 @@ jobs:
         with:
           workflow: 'shared-failed-build-notification-workflow.yaml'
           inputs: '{
-              "workflowId":"${{ github.run_id }}", 
+              "workflowId":"${{ github.run_id }}",
               "repository":"${{ github.repository }}"
             }'
           token: ${{ steps.gh-app.outputs.token }}
