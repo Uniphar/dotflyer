@@ -113,7 +113,7 @@ jobs:
   notify:
     needs: package
     runs-on: ubuntu-latest
-    #if: ${{ !cancelled() && contains(needs.*.result, 'failure') }}
+    if: ${{ !cancelled() && contains(needs.*.result, 'failure') }}
     steps:
       - name: gh-app-install token
         id: gh-app
