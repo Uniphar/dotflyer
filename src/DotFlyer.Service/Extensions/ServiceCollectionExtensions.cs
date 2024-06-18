@@ -50,6 +50,8 @@ public static class ServiceCollectionExtensions
                     .CreateProcessor(configuration["AzureServiceBus:TopicNameForSMS"], configuration["AzureServiceBus:SubscriptionName"]))
                     .WithName(SMSTopicProcessor.ProcessorName);
 
+            clientBuilder.AddBlobServiceClient(new Uri($"https://{configuration["StorageAccount:Name"]}.blob.core.windows.net"));
+
             clientBuilder.UseCredential(credential);
         });
 
