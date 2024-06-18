@@ -12,9 +12,13 @@ on:
 permissions:
   id-token: write
   contents: read
+  pull-requests: read
 
 jobs:
   DotFlyerApi_CI:
     uses: ./.github/workflows/shared-app-ci-workflow.yaml
+    secrets:
+      ACTIONS_AUTH_APP_ID: ${{ secrets.ACTIONS_AUTH_APP_ID }}
+      ACTIONS_AUTH_APP_PRIVATE_KEY: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
     with:
       applicationFolder: DotFlyer.Api
