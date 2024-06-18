@@ -21,8 +21,10 @@ public class ResourcesInitializer(
     {
         try
         {
-            await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForEmail"]!, configuration["AzureServiceBus:SubscriptionName"]!);
-            await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForSMS"]!, configuration["AzureServiceBus:SubscriptionName"]!);
+            var duplicateDetectionTimeWindow = TimeSpan.FromSeconds(int.TryParse(configuration["AzureServiceBus:DuplicateDetectionTimeWindowInSeconds"], out int result) ? result : 600);
+
+            await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForEmail"]!, duplicateDetectionTimeWindow, configuration["AzureServiceBus:SubscriptionName"]!);
+            await CreateTopicAndSubscriptionIfNotExistAsync(configuration["AzureServiceBus:TopicNameForSMS"]!, duplicateDetectionTimeWindow, configuration["AzureServiceBus:SubscriptionName"]!);
 
             await azureDataExplorerClient.CreateOrUpdateTablesAsync();
         }
@@ -37,14 +39,30 @@ public class ResourcesInitializer(
     /// Creates a topic and subscription if they do not exist.
     /// </summary>
     /// <param name="topicName">The name of the topic.</param>
+    /// <param name="duplicateDetectionTimeWindow">The time window for duplicate detection.</param>
     /// <param name="subscriptionName">The name of the subscription.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
     /// <returns></returns>
-    private async Task CreateTopicAndSubscriptionIfNotExistAsync(string topicName, string subscriptionName)
+    private async Task CreateTopicAndSubscriptionIfNotExistAsync(string topicName, TimeSpan duplicateDetectionTimeWindow, string subscriptionName)
     {
-        if (!await serviceBusAdministrationClient.TopicExistsAsync(topicName))
+        if (await serviceBusAdministrationClient.TopicExistsAsync(topicName))
         {
-            await serviceBusAdministrationClient.CreateTopicAsync(new CreateTopicOptions(topicName));
+            var topic = await serviceBusAdministrationClient.GetTopicAsync(topicName);
+
+            if (topic.Value.DuplicateDetectionHistoryTimeWindow != duplicateDetectionTimeWindow)
+            {
+                topic.Value.DuplicateDetectionHistoryTimeWindow = duplicateDetectionTimeWindow;
+
+                await serviceBusAdministrationClient.UpdateTopicAsync(topic.Value);
+            }
+        }
+        else
+        {
+            await serviceBusAdministrationClient.CreateTopicAsync(new CreateTopicOptions(topicName)
+            {
+                RequiresDuplicateDetection = true,
+                DuplicateDetectionHistoryTimeWindow = duplicateDetectionTimeWindow
+            });
         }
 
         if (!await serviceBusAdministrationClient.SubscriptionExistsAsync(topicName, subscriptionName))

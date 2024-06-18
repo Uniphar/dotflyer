@@ -23,6 +23,7 @@ The following configuration settings are required by the service:
 
 - `AzureServiceBus:Name` - Azure Service Bus namespace name
 - `AzureServiceBus:TopicName` - Azure Service Bus topic name, where messages are sent
+- `AzureServiceBus:DuplicateDetectionTimeWindowInSeconds` - Azure Service Bus duplicate detection time window in seconds
 - `AzureServiceBus:SubscriptionName` - Azure Service Bus subscription name, where messages are received
 - `SendGrid:ApiKey` - SendGrid API key for sending emails
 - `Twilio:AccountSID` - Twilio account SID
