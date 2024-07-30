@@ -77,7 +77,12 @@ public static class ServiceCollectionExtensions
             .WithAadTokenProviderAuthentication(async () => (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]))).Token);
 
         serviceCollection.AddSingleton(KustoClientFactory.CreateCslAdminProvider(kcsb));
-        serviceCollection.AddSingleton(KustoIngestFactory.CreateDirectIngestClient(kcsb));
+        serviceCollection.AddSingleton(KustoIngestFactory.CreateDirectIngestClient(kcsb, true, new()
+        {
+            MaxStorageRetries = 5,
+            MaxServiceCallsRetries = 5,
+            ServiceCallsRetryDelay = TimeSpan.FromSeconds(5),
+        }));
         serviceCollection.AddSingleton<IAzureDataExplorerClient, AzureDataExplorerClient>();
 
         return serviceCollection;
