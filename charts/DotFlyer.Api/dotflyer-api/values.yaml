@@ -3,3 +3,5 @@ replicaCount: 1
 resources: {}
 
 port: 8080
+
+appPath: /dotflyer
