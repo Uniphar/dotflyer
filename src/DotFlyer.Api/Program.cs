@@ -19,16 +19,23 @@ builder.Services.AddDependencies(builder.Configuration);
 builder.Services.AddFluentValidators();
 builder.Services.AddFluentValidationAutoValidation();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
 app.MapHealthChecks("/dotflyer/healthz/live");
 
+app.UseSwagger(c => { c.RouteTemplate = "dotflyer/open-api/{documentName}"; });
+
 var dotFlyerRouteGroup = app.MapGroup("/dotflyer")
     .AddFluentValidationAutoValidation();
 
 dotFlyerRouteGroup.MapPost("/sms", async ([FromBody] SMSMessage smsMessage, SmsTopicSender smsTopicSender, CancellationToken cancellationToken) =>
-    await smsTopicSender.SendMessageAsync(smsMessage, cancellationToken));
+    await smsTopicSender.SendMessageAsync(smsMessage, cancellationToken))
+    .WithName("PostSMS")
+    .WithOpenApi();
 
 app.Run();
