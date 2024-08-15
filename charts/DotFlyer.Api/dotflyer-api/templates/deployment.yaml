@@ -34,6 +34,8 @@ spec:
           env:
             - name: "AZURE_KEY_VAULT_NAME"
               value: {{ .Values.AzureKeyVaultName }}
+            - name: "AZURE_ENTRA_EXTERNAL_TENANT_ID"
+              value: {{ .Values.AzureEntraExternalTenantId }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       nodeSelector:

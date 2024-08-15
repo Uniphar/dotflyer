@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="*" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="*" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="*" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="*" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="*" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
