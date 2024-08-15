@@ -78,6 +78,7 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddSingleton(KustoClientFactory.CreateCslAdminProvider(kcsb));
         serviceCollection.AddSingleton(KustoIngestFactory.CreateDirectIngestClient(kcsb));
+        serviceCollection.AddSingleton(KustoIngestFactory.CreateQueuedIngestClient(kcsb));
         serviceCollection.AddSingleton<IAzureDataExplorerClient, AzureDataExplorerClient>();
 
         return serviceCollection;
