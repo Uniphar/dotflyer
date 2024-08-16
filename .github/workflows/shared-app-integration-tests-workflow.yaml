@@ -76,8 +76,13 @@ jobs:
               Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
               $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
+              $AzureEntraExternalTenantId = Resolve-UniEntraExternalTenantId -Environment '${{ inputs.environment }}'
+              $dnsRecordName = Resolve-UniDnsRecordName $p_webApiProject -Environment '${{ inputs.environment }}'
+              $ApiHost = "$($dnsRecordName).$($g_mainPublicDns)"
 
               echo "AZURE_KEY_VAULT_NAME=$AzureKeyVaultName" >> $env:GITHUB_ENV
+              echo "AZURE_ENTRA_EXTERNAL_TENANT_ID=$AzureEntraExternalTenantId" >> $env:GITHUB_ENV
+              echo "API_HOST=$ApiHost" >> $env:GITHUB_ENV
             }
             catch {
               Write-Error $_
