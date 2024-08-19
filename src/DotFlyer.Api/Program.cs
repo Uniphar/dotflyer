@@ -27,10 +27,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(builder.Configuration);
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AllOrSMS", policy => policy.RequireRole("dotflyer.sender.all", "dotflyer.sender.sms"));
-});
+builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("AllOrSMS", policy => policy.RequireRole("dotflyer.sender.all", "dotflyer.sender.sms"))
+                .AddPolicy("AllOrEmail", policy => policy.RequireRole("dotflyer.sender.all", "dotflyer.sender.email"));
 
 builder.Services.AddHealthChecks();
 
@@ -48,5 +47,11 @@ dotFlyerRouteGroup.MapPost("/sms", async ([FromBody] SMSMessage smsMessage, SmsT
     .WithName("PostSMS")
     .WithOpenApi()
     .RequireAuthorization("AllOrSMS");
+
+dotFlyerRouteGroup.MapPost("/email", async ([FromBody] EmailMessage emailMessage, EmailTopicSender emailTopicSender, CancellationToken cancellationToken) =>
+    await emailTopicSender.SendMessageAsync(emailMessage, cancellationToken))
+    .WithName("PostEmail")
+    .WithOpenApi()
+    .RequireAuthorization("AllOrEmail");
 
 app.Run();

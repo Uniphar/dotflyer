@@ -28,10 +28,16 @@ public static class ServiceCollectionExtensions
                     .CreateSender(configuration["AzureServiceBus:TopicNameForSMS"]))
                     .WithName(SmsTopicSender.Name);
 
+            clientBuilder.AddClient<ServiceBusSender, ServiceBusSenderOptions>(
+                (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
+                    .CreateSender(configuration["AzureServiceBus:TopicNameForEmail"]))
+                    .WithName(EmailTopicSender.Name);
+
             clientBuilder.UseCredential(credential);
         });
 
         serviceCollection.AddSingleton<SmsTopicSender>();
+        serviceCollection.AddSingleton<EmailTopicSender>();
 
         return serviceCollection;
     }
