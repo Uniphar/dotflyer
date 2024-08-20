@@ -15,6 +15,7 @@ global using Kusto.Data.Common;
 global using Kusto.Data.Ingestion;
 global using Kusto.Data.Net.Client;
 global using Kusto.Ingest;
+global using Kusto.Ingest.Exceptions;
 global using Microsoft.Extensions.Azure;
 global using SendGrid;
 global using SendGrid.Extensions.DependencyInjection;

@@ -9,7 +9,8 @@
 public class AzureDataExplorerClient(
     ILogger<AzureDataExplorerClient> logger,
     ICslAdminProvider cslAdminProvider,
-    IKustoIngestClient kustoIngestClient) : IAzureDataExplorerClient
+    IKustoIngestClient kustoIngestClient,
+    IKustoQueuedIngestClient kustoQueuedIngestClient) : IAzureDataExplorerClient
 {
     /// <summary>
     /// Creates or updates tables in Azure Data Explorer.
@@ -93,9 +94,35 @@ public class AzureDataExplorerClient(
     /// <returns>The <see cref="Task"/> representing the asynchronous operation.</returns>
     private async Task IngestDataAsync<TData>(TData data, string tableName, string tableMapping, CancellationToken cancellationToken = default)
     {
+        try
+        {
+            await IngestDataAsync(kustoIngestClient, data, tableName, tableMapping, cancellationToken);
+
+            return;
+        }
+        catch (DirectIngestClientException ex) when (ex.Error.Contains("429-TooManyRequests"))
+        {
+            logger.LogWarning("Too many requests for direct ingestion. Switching to queued ingestion.");
+        }
+
+        await IngestDataAsync(kustoQueuedIngestClient, data, tableName, tableMapping, cancellationToken);
+    }
+
+    /// <summary>
+    /// Ingests data into Azure Data Explorer using provided Kusto ingest client.
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
+    /// <param name="ingestClient">The <see cref="IKustoIngestClient"/> instance that allows to ingest data into Azure Data Explorer.</param>
+    /// <param name="data">The data to ingest.</param>
+    /// <param name="tableName">The name of the table to ingest data into.</param>
+    /// <param name="tableMapping">The name of the table mapping to use for ingestion.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance to signal the request to cancel the operation.</param>
+    /// <returns></returns>
+    private async Task IngestDataAsync<TData>(IKustoIngestClient ingestClient, TData data, string tableName, string tableMapping, CancellationToken cancellationToken = default)
+    {
         using MemoryStream dataStream = new(JsonSerializer.SerializeToUtf8Bytes(data));
 
-        await kustoIngestClient.IngestFromStreamAsync(dataStream, new(cslAdminProvider.DefaultDatabaseName, tableName)
+        await ingestClient.IngestFromStreamAsync(dataStream, new(cslAdminProvider.DefaultDatabaseName, tableName)
         {
             Format = DataSourceFormat.json,
             IngestionMapping = new() { IngestionMappingReference = tableMapping }
