@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFluentValidators(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IValidator<SMSMessage>, SMSMessageValidator>();
+        serviceCollection.AddScoped<IValidator<EmailMessage>, EmailMessageValidator>();
 
         return serviceCollection;
     }
