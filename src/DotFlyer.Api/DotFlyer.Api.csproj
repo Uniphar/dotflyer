@@ -17,6 +17,8 @@
     <PackageReference Include="Microsoft.Identity.Web" Version="*" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="*" />
+    <PackageReference Include="System.Formats.Asn1" Version="*" />
+    <PackageReference Include="System.Text.Json" Version="*" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
   </ItemGroup>
 
