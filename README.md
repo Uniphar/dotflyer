@@ -22,9 +22,11 @@ All required dependencies/services can be added with `WithDependencies` extensio
 The following configuration settings are required by the service:
 
 - `AzureServiceBus:Name` - Azure Service Bus namespace name
-- `AzureServiceBus:TopicName` - Azure Service Bus topic name, where messages are sent
+- `AzureServiceBus:TopicNameForEmail` - Azure Service Bus topic name, where messages for email sending are received
+- `AzureServiceBus:TopicNameForSms` - Azure Service Bus topic name, where messages for SMS sending are received
 - `AzureServiceBus:DuplicateDetectionTimeWindowInSeconds` - Azure Service Bus duplicate detection time window in seconds
 - `AzureServiceBus:SubscriptionName` - Azure Service Bus subscription name, where messages are received
+- `AzureStorage:EmailAttachmentsContainerName` - Azure Blob Storage container name, which is created to store email attachments by default
 - `SendGrid:ApiKey` - SendGrid API key for sending emails
 - `Twilio:AccountSID` - Twilio account SID
 - `Twilio:ApiKeySID` - Twilio API key SID
@@ -33,7 +35,21 @@ The following configuration settings are required by the service:
 - `AzureDataExplorer:HostAddress` - Azure Data Explorer host address, where email information is saved
 - `AzureDataExplorer:DatabaseName` - Azure Data Explorer database name, which is used to save email information
 
-The following payload properties are expected in the Azure Service bus message to send emails:
+### DotFlyer.Api
+
+DotFlyer.Api is a .NET [web API](https://learn.microsoft.com/en-us/aspnet/core/web-api/) project that provides endpoints to send messages into the message broker. The project uses Azure Service Bus client to send messages to the Azure Service Bus topic.
+
+The configuration of the API is driven by settings loaded via `AddDotFlyerConfiguration` extension method, where any required configuration source can be added. The API uses `appsettings.json` file (loaded by default) and Azure KeyVault for storing secrets and configuration settings. `AZURE_KEY_VAULT_NAME` environment variable specifies the name of the Azure KeyVault resource. The application authentication is also configured in this method.
+
+The following configuration settings are required by the API:
+
+- `AzureServiceBus:Name` - Azure Service Bus namespace name
+- `AzureServiceBus:TopicNameForEmail` - Azure Service Bus topic name, where messages for email sending are sent
+- `AzureServiceBus:TopicNameForSms` - Azure Service Bus topic name, where messages for SMS sending are sent
+
+### Payload
+
+The following payload properties are expected in the Azure Service bus message and API endpoint body to send emails:
 
 ``` json
 {
@@ -72,7 +88,7 @@ The following payload properties are expected in the Azure Service bus message t
 }
 ```
 
-The following payload properties are expected in the Azure Service bus message to send SMS:
+The following payload properties are expected in the Azure Service bus message and API endpoint body to send SMS:
 
 ``` json
 {
