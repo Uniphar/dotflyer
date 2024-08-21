@@ -3,6 +3,8 @@
 [TestClass, TestCategory("Integration")]
 public class APITests
 {
+    private static IServiceProvider? _serviceProvider;
+
     private static string? _apiHost;
     private static string? _instance;
     private static string? _scope;
@@ -26,6 +28,12 @@ public class APITests
     [ClassInitialize]
     public static async Task ClassInitialize(TestContext context)
     {
+        var services = new ServiceCollection();
+
+        services.AddHttpClient();
+
+        _serviceProvider = services.BuildServiceProvider();
+
         _cancellationToken = context.CancellationTokenSource.Token;
 
         DefaultAzureCredential credential = new();
@@ -61,7 +69,7 @@ public class APITests
             Body = Guid.NewGuid().ToString()
         };
 
-        using var httpClient = GetHttpClient();
+        var httpClient = GetHttpClient();
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -77,7 +85,7 @@ public class APITests
             Body = Guid.NewGuid().ToString()
         };
 
-        using var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -97,7 +105,7 @@ public class APITests
             }
         };
 
-        using var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -127,7 +135,7 @@ public class APITests
             }
         };
 
-        using var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -149,7 +157,7 @@ public class APITests
     {
         var smsMessage = new { };
 
-        using var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -299,7 +307,11 @@ public class APITests
 
     public static HttpClient GetHttpClient(string? token = null)
     {
-        HttpClient httpClient = new() { BaseAddress = new($"https://{_apiHost}") };
+        var httpClientFactory = _serviceProvider!.GetRequiredService<IHttpClientFactory>();
+
+        HttpClient httpClient = httpClientFactory.CreateClient();
+
+        httpClient.BaseAddress = new($"https://{_apiHost}");
 
         if (token != null) httpClient.DefaultRequestHeaders.Authorization = new("Bearer", token);
 
