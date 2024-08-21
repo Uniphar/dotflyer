@@ -306,7 +306,7 @@ public class APITests
         return httpClient;
     }
 
-    public static StringContent GetStringContent(object content) => new(JsonSerializer.Serialize(content), Encoding.UTF8, "application/json");
+    public static StringContent GetStringContent(object content) => new(JsonSerializer.Serialize(content), Encoding.UTF8, MediaTypeNames.Application.Json);
 
     public static async Task<string> GetSenderAccessTokenAsync() =>
         await GetAccessTokenAsync(_senderRoleClientIdKeyVaultName, _senderRoleClientSecretKeyVaultName);
