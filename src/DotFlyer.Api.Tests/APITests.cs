@@ -193,7 +193,7 @@ public class APITests
             }
         };
 
-        using var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
@@ -238,7 +238,7 @@ public class APITests
             }
         };
 
-        using var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
@@ -263,7 +263,7 @@ public class APITests
     {
         EmailMessage emailMessage = new();
 
-        using var httpClient = GetHttpClient();
+        var httpClient = GetHttpClient();
 
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
@@ -275,7 +275,7 @@ public class APITests
     {
         EmailMessage emailMessage = new();
 
-        using var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
@@ -291,7 +291,7 @@ public class APITests
             To = new List<Contact>()
         };
 
-        using var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
