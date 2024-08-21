@@ -11,5 +11,6 @@ global using Kusto.Data.Net.Client;
 global using Microsoft.Identity.Client;
 global using Polly;
 global using System.Net;
+global using System.Net.Mime;
 global using System.Text;
 global using System.Text.Json;
