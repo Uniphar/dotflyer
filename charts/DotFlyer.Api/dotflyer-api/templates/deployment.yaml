@@ -3,15 +3,20 @@ apiVersion: apps/v1
 metadata:
   name: {{ .Chart.Name }}
   labels:
+    app: {{ .Chart.Name }}-app
+    service: {{ .Chart.Name }}-service
     app.kubernetes.io/name: {{ .Chart.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Chart.Name }}
+      service: {{ .Chart.Name }}-service
   template:
     metadata:
       labels:
+        app: {{ .Chart.Name }}-app
+        service: {{ .Chart.Name }}-service
         app.kubernetes.io/name: {{ .Chart.Name }}
         azure.workload.identity/use: "true"
       annotations:
@@ -23,10 +28,14 @@ spec:
           image: {{ .Values.ACRName }}.azurecr.io/{{ .Chart.Name }}:{{ .Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.port }}
+            - name: {{ .Chart.Name }}
+              containerPort: {{ .Values.port }}
+              protocol: TCP
           env:
             - name: "AZURE_KEY_VAULT_NAME"
               value: {{ .Values.AzureKeyVaultName }}
+            - name: "AZURE_ENTRA_EXTERNAL_TENANT_ID"
+              value: {{ .Values.AzureEntraExternalTenantId }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       nodeSelector:

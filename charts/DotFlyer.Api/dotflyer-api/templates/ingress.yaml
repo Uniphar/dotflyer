@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/health-probe-path: {{ .Values.appPath }}/healthz/live
+spec:
+  rules:
+  - http:
+      paths:
+      - path: {{ .Values.appPath }}
+        backend:
+          service:
+            name: {{ .Chart.Name }}-srv
+            port:
+              number: 80
+        pathType: Prefix
