@@ -15,6 +15,9 @@ public class APITests
 
     private static string? _smsReceiverNumber;
 
+    private static string? _senderEmail;
+    private static string? _receiverEmail;
+
     private static readonly string _senderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-id";
     private static readonly string _senderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-secret";
     private static readonly string _smsSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-id";
@@ -52,6 +55,9 @@ public class APITests
         _cslQueryProvider = KustoClientFactory.CreateCslQueryProvider(kcsb);
 
         _smsReceiverNumber = (await _secretClient.GetSecretAsync("integration-test-dotflyer-receiver-number", cancellationToken: _cancellationToken)).Value.Value;
+
+        _senderEmail = (await _secretClient.GetSecretAsync("integration-test-dotflyer-sender", cancellationToken: _cancellationToken)).Value.Value;
+        _receiverEmail = (await _secretClient.GetSecretAsync("integration-test-dotflyer-receiver", cancellationToken: _cancellationToken)).Value.Value;
     }
 
     [TestMethod]
@@ -160,6 +166,143 @@ public class APITests
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Contain("'To' field is required");
         responseContent.Should().Contain("'Body' field is required");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_ShouldReturn_200_When_SenderRoleAndPayloadIsValid()
+    {
+        EmailMessage emailMessage = new()
+        {
+            Subject = "DotFlyer API Test Automation",
+            Body = Guid.NewGuid().ToString(),
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To = [
+                new()
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Tags = new Dictionary<string, string>()
+            {
+                { "TestName", "DotFlyer API Integration Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>($"[\"{EmailTable.Instance.TableName}\"] | where Body == \"{emailMessage.Body}\"", TimeSpan.FromMinutes(10), _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.Body.Should().Be(emailMessage.Body);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.To.Should().Be(JsonSerializer.Serialize(emailMessage.To));
+        emailData.Tags.Should().Be(JsonSerializer.Serialize(emailMessage.Tags));
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_ShouldReturn_200_When_EmailSenderRoleAndPayloadIsValid()
+    {
+        EmailMessage emailMessage = new()
+        {
+            Subject = "DotFlyer API Test Automation",
+            Body = Guid.NewGuid().ToString(),
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To = [
+                new()
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Tags = new Dictionary<string, string>()
+            {
+                { "TestName", "DotFlyer API Integration Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>($"[\"{EmailTable.Instance.TableName}\"] | where Body == \"{emailMessage.Body}\"", TimeSpan.FromMinutes(10), _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.Body.Should().Be(emailMessage.Body);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.To.Should().Be(JsonSerializer.Serialize(emailMessage.To));
+        emailData.Tags.Should().Be(JsonSerializer.Serialize(emailMessage.Tags));
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_ShouldReturn_401_When_NoTokenProvided()
+    {
+        EmailMessage emailMessage = new();
+
+        var httpClient = GetHttpClient();
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [TestMethod]
+    public async Task Post_Email_ShouldReturn_403_When_SMSSenderRoleAndPayloadIsValid()
+    {
+        EmailMessage emailMessage = new();
+
+        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [TestMethod]
+    public async Task Post_Email_ShouldReturn_400_When_EmailSenderRoleAndPayloadIsNotValid()
+    {
+        var emailMessage = new
+        {
+            From = new { },
+            To = new List<Contact>()
+        };
+
+        var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseContent.Should().Contain("'Subject' field is required");
+        responseContent.Should().Contain("'Body' field is required");
+        responseContent.Should().Contain("'Email' field is required");
+        responseContent.Should().Contain("'Name' field is required");
+        responseContent.Should().Contain("'To' field is required and should contain at least one contact");
     }
 
     public static HttpClient GetHttpClient(string? token = null)

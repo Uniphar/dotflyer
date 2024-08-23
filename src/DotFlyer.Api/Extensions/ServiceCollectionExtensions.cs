@@ -28,10 +28,16 @@ public static class ServiceCollectionExtensions
                     .CreateSender(configuration["AzureServiceBus:TopicNameForSMS"]))
                     .WithName(SmsTopicSender.Name);
 
+            clientBuilder.AddClient<ServiceBusSender, ServiceBusSenderOptions>(
+                (_, _, provider) => provider.GetRequiredService<ServiceBusClient>()
+                    .CreateSender(configuration["AzureServiceBus:TopicNameForEmail"]))
+                    .WithName(EmailTopicSender.Name);
+
             clientBuilder.UseCredential(credential);
         });
 
         serviceCollection.AddSingleton<SmsTopicSender>();
+        serviceCollection.AddSingleton<EmailTopicSender>();
 
         return serviceCollection;
     }
@@ -44,6 +50,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFluentValidators(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IValidator<SMSMessage>, SMSMessageValidator>();
+        serviceCollection.AddScoped<IValidator<EmailMessage>, EmailMessageValidator>();
 
         return serviceCollection;
     }

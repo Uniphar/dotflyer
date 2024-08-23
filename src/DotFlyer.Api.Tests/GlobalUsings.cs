@@ -10,6 +10,7 @@ global using Kusto.Data.Common;
 global using Kusto.Data.Net.Client;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Identity.Client;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Polly;
 global using System.Net;
 global using System.Net.Mime;
