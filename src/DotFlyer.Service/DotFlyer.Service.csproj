@@ -15,14 +15,14 @@
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="*" />
     <PackageReference Include="Microsoft.Azure.Kusto.Ingest" Version="*" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="*" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="*" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="*" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="SendGrid" Version="*" />
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="*" />
-    <PackageReference Include="System.Formats.Asn1" Version="*" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.*" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="*" />
-    <PackageReference Include="System.Text.Json" Version="*" />
+    <PackageReference Include="System.Text.Json" Version="8.*" />
     <PackageReference Include="Twilio" Version="*" />
   </ItemGroup>
 
