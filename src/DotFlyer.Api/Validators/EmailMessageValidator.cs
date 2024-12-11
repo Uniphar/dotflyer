@@ -17,7 +17,10 @@ public class EmailMessageContactValidator : AbstractValidator<Contact>
 {
     public EmailMessageContactValidator()
     {
-        RuleFor(x => x.Email).NotEmpty().WithMessage("'Email' field is required");
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("'Email' field is required")
+            .EmailAddress().WithMessage("'Email' field should be a valid email address");
+
         RuleFor(x => x.Name).NotEmpty().WithMessage("'Name' field is required");
     }
 }
