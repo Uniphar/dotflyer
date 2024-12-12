@@ -12,6 +12,8 @@ global using Microsoft.Identity.Web;
 global using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 global using System.Text;
 global using System.Text.Json;
+global using Twilio;
+global using Twilio.Rest.Lookups.V2;
 
 var builder = WebApplication.CreateBuilder(args);
 

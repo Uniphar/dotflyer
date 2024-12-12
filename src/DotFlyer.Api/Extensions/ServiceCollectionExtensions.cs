@@ -39,6 +39,8 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<SmsTopicSender>();
         serviceCollection.AddSingleton<EmailTopicSender>();
 
+        TwilioClient.Init(configuration["Twilio:ApiKeySID"], configuration["Twilio:ApiKeySecret"]);
+
         return serviceCollection;
     }
 

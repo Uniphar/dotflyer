@@ -169,6 +169,29 @@ public class APITests
     }
 
     [TestMethod]
+    public async Task Post_SMS_ShouldReturn_400_When_ReceiverPhoneNumberIsInvalid()
+    {
+        SMSMessage smsMessage = new()
+        {
+            To = "+0871111111111",
+            Body = Guid.NewGuid().ToString(),
+            Tags = new Dictionary<string, string>()
+            {
+                { "TestName", "DotFlyer API Integration Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseContent.Should().Contain("'To' field should be a valid phone number in E.164 format");
+    }
+
+    [TestMethod]
     public async Task Post_Email_ShouldReturn_200_When_SenderRoleAndPayloadIsValid()
     {
         EmailMessage emailMessage = new()
@@ -303,6 +326,42 @@ public class APITests
         responseContent.Should().Contain("'Email' field is required");
         responseContent.Should().Contain("'Name' field is required");
         responseContent.Should().Contain("'To' field is required and should contain at least one contact");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_ShouldReturn_400_When_EmailIsNotValid()
+    {
+        EmailMessage emailMessage = new()
+        {
+            Subject = "DotFlyer API Test Automation",
+            Body = Guid.NewGuid().ToString(),
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new()
+                {
+                    Email = "invalid_email",
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Tags = new Dictionary<string, string>()
+            {
+                { "TestName", "DotFlyer API Integration Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        responseContent.Should().Contain("'Email' field should be a valid email address");
     }
 
     public static HttpClient GetHttpClient(string? token = null)
