@@ -5,10 +5,12 @@
 /// </summary>
 /// <param name="configuration">The <see cref="SMSSenderConfiguration"/> instance that contains the Twilio configuration.</param>
 /// <param name="twilioRestClient">The <see cref="ITwilioRestClient"/> instance that is used to send SMS messages.</param>
+/// <param name="telemetryClient">The <see cref="TelemetryClient"/> instance that is used to log telemetry data.</param>
 /// <param name="adxClient">The <see cref="IAzureDataExplorerClient"/> instance that is used to ingest data into Azure Data Explorer.</param>
 public class SMSSender(
     SMSSenderConfiguration configuration,
     ITwilioRestClient twilioRestClient,
+    TelemetryClient telemetryClient,
     IAzureDataExplorerClient adxClient) : ISMSSender
 {
     /// <summary>
@@ -40,9 +42,17 @@ public class SMSSender(
 
         await adxClient.IngestDataAsync(SMSData.ConvertToAdxModel(smsMessage, options.From.ToString(), result.StatusCode, result.Content), cancellationToken);
 
-        if (result.StatusCode != HttpStatusCode.Created)
+        switch (result.StatusCode)
         {
-            throw new HttpRequestException($"Failed to send SMS message: {result.Content}");
+            case HttpStatusCode.Created:
+                break;
+
+            case HttpStatusCode.BadRequest:
+                telemetryClient.TrackInvalidSMSPayload(result.Content);
+                break;
+
+            default:
+                throw new HttpRequestException($"Failed to send SMS message: {result.Content}");
         }
     }
 }
