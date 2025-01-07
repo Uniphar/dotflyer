@@ -5,10 +5,12 @@
 /// </summary>
 /// <param name="credential">The <see cref="DefaultAzureCredential"/> instance to authenticate with Azure services.</param>
 /// <param name="sendGridClient">The <see cref="ISendGridClient"/> instance to send emails.</param>
+/// <param name="telemetryClient">The <see cref="TelemetryClient"/> instance to log telemetry data.</param>
 /// <param name="adxClient">The <see cref="IAzureDataExplorerClient"/> instance to ingest email data.</param>
 public class EmailSender(
     DefaultAzureCredential credential,
     ISendGridClient sendGridClient,
+    TelemetryClient telemetryClient,
     IAzureDataExplorerClient adxClient) : IEmailSender
 {
     /// <summary>
@@ -82,9 +84,17 @@ public class EmailSender(
 
         await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode, resultContent), cancellationToken);
 
-        if (result.StatusCode != HttpStatusCode.Accepted)
+        switch (result.StatusCode)
         {
-            throw new HttpRequestException(resultContent);
+            case HttpStatusCode.Accepted:
+                break;
+
+            case HttpStatusCode.BadRequest:
+                telemetryClient.TrackInvalidEmailPayload(resultContent);
+                break;
+
+            default:
+                throw new HttpRequestException(resultContent);
         }
     }
 }
