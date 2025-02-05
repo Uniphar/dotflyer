@@ -56,4 +56,8 @@ dotFlyerRouteGroup.MapPost("/email", async ([FromBody] EmailMessage emailMessage
     .WithOpenApi()
     .RequireAuthorization("AllOrEmail");
 
+dotFlyerRouteGroup.MapGet("/danny", () => Results.Ok())
+    .WithName("GetDannyTest")
+    .WithOpenApi();
+
 app.Run();
