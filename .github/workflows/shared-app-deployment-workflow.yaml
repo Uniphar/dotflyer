@@ -138,11 +138,14 @@ jobs:
 
   import-to-apim:
     if: ${{ inputs.environment == 'dev' && inputs.applicationName == 'dotflyer-api' }}
+    needs: deploy_app
     uses: ./.github/workflows/import-to-apim.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ACTIONS_AUTH_APP_ID: ${{ secrets.ACTIONS_AUTH_APP_ID }}
+      ACTIONS_AUTH_APP_PRIVATE_KEY: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
     with:
       environment: dev
 
