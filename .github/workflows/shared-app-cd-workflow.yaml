@@ -78,7 +78,7 @@ jobs:
   import-to-apim-dev:
     if: ${{ inputs.applicationName == 'dotflyer-api' }}
     needs: app_integration_tests_dev
-    uses: Uniphar/shared-workflows/.github/workflows/import-api-to-apim.yaml@feature/apim-import
+    uses: Uniphar/shared-workflows/.github/workflows/import-api-to-apim.yaml@main
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
