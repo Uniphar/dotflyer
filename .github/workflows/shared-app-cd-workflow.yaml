@@ -158,3 +158,17 @@ jobs:
     with:
       environment: prod
       applicationFolder: ${{ inputs.applicationFolder }}
+
+  import-to-apim-prod:
+    if: ${{ inputs.applicationName == 'dotflyer-api' }}
+    needs: app_integration_tests_prod
+    uses: Uniphar/shared-workflows/.github/workflows/import-api-to-apim.yaml@main
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_PROD_SUBSCRIPTION_ID }}
+    with:
+      environment: prod
+      apiName: 'DotFlyer.Api'
+      apiPath: 'dotflyer'
+      openApiSpecPath: 'dotflyer/open-api/v1'
