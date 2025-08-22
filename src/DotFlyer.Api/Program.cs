@@ -19,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddDotFlyerConfiguration();
 builder.Services.AddDependencies(builder.Configuration);
+builder.Services.AddControllers();
 
 builder.Services.AddFluentValidators();
 builder.Services.AddFluentValidationAutoValidation();
@@ -41,19 +42,9 @@ app.MapHealthChecks("/dotflyer/healthz/live");
 
 app.UseSwagger(c => { c.RouteTemplate = "dotflyer/open-api/{documentName}"; });
 
-var dotFlyerRouteGroup = app.MapGroup("/dotflyer")
-    .AddFluentValidationAutoValidation();
+app.UseAuthentication();
+app.UseAuthorization();
 
-dotFlyerRouteGroup.MapPost("/sms", async ([FromBody] SMSMessage smsMessage, SmsTopicSender smsTopicSender, CancellationToken cancellationToken) =>
-    await smsTopicSender.SendMessageAsync(smsMessage, cancellationToken))
-    .WithName("PostSMS")
-    .WithOpenApi()
-    .RequireAuthorization("AllOrSMS");
-
-dotFlyerRouteGroup.MapPost("/email", async ([FromBody] EmailMessage emailMessage, EmailTopicSender emailTopicSender, CancellationToken cancellationToken) =>
-    await emailTopicSender.SendMessageAsync(emailMessage, cancellationToken))
-    .WithName("PostEmail")
-    .WithOpenApi()
-    .RequireAuthorization("AllOrEmail");
+app.MapControllers();
 
 app.Run();
