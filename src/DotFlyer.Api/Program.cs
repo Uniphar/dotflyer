@@ -35,6 +35,7 @@ builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("AllOrEmail", policy => policy.RequireRole("dotflyer.sender.all", "dotflyer.sender.email"));
 
 builder.Services.AddHealthChecks();
+builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
 
