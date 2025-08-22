@@ -22,7 +22,7 @@
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="*" />
     <PackageReference Include="System.Formats.Asn1" Version="8.*" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="*" />
-    <PackageReference Include="System.Text.Json" Version="8.*" />
+    <PackageReference Include="System.Text.Json" Version="9.*" />
     <PackageReference Include="Twilio" Version="*" />
   </ItemGroup>
 
