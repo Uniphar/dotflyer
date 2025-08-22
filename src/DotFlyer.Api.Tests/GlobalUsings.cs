@@ -1,9 +1,9 @@
-﻿global using Azure.Identity;
+﻿global using AwesomeAssertions;
+global using Azure.Identity;
 global using Azure.Security.KeyVault.Secrets;
 global using DotFlyer.Common.Payload;
 global using DotFlyer.Service.AzureDataExplorer.Models;
 global using DotFlyer.Service.AzureDataExplorer.Tables;
-global using FluentAssertions;
 global using Kusto.Cloud.Platform.Data;
 global using Kusto.Data;
 global using Kusto.Data.Common;
