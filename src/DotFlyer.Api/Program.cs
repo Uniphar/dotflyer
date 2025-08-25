@@ -9,7 +9,7 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Azure;
 global using Microsoft.Identity.Web;
-global using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
+global using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 global using System.Text;
 global using System.Text.Json;
 global using Twilio;
@@ -22,7 +22,10 @@ builder.Services.AddDependencies(builder.Configuration);
 builder.Services.AddControllers();
 
 builder.Services.AddFluentValidators();
-builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationAutoValidation(options =>
+{
+    options.DisableBuiltInModelValidation = true;
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -35,7 +38,6 @@ builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("AllOrEmail", policy => policy.RequireRole("dotflyer.sender.all", "dotflyer.sender.email"));
 
 builder.Services.AddHealthChecks();
-builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
 var app = builder.Build();
 

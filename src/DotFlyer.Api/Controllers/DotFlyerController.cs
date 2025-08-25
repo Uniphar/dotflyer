@@ -18,12 +18,6 @@ public class DotFlyerController : ControllerBase
         [FromServices] IValidator<SMSMessage> validator,
         CancellationToken cancellationToken)
     {
-        var validationErrors = await ValidateAsync(validator, smsMessage, cancellationToken);
-        if (validationErrors is not null)
-        {
-            return BadRequest(new { validationErrors });
-        }
-
         await smsTopicSender.SendMessageAsync(smsMessage, cancellationToken);
         return Ok();
     }
@@ -40,31 +34,7 @@ public class DotFlyerController : ControllerBase
         [FromServices] IValidator<EmailMessage> validator,  
         CancellationToken cancellationToken)
     {
-        var validationErrors = await ValidateAsync(validator, emailMessage, cancellationToken);
-        if (validationErrors is not null)
-        {
-            return BadRequest(new { validationErrors });
-        }
-
         await emailTopicSender.SendMessageAsync(emailMessage, cancellationToken);
         return Ok();
-    }
-
-    private static async Task<Dictionary<string, string[]>?> ValidateAsync<T>(IValidator<T> validator, T message, CancellationToken cancellationToken)
-    {
-        var validationResult = await validator.ValidateAsync(message, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors
-                .GroupBy(e => e.PropertyName)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(e => e.ErrorMessage).ToArray()
-                );
-
-            return errors;
-        }
-
-        return null;
     }
 }
