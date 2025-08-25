@@ -9,7 +9,7 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Azure;
 global using Microsoft.Identity.Web;
-global using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
+global using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 global using System.Text;
 global using System.Text.Json;
 global using Twilio;
@@ -19,9 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddDotFlyerConfiguration();
 builder.Services.AddDependencies(builder.Configuration);
+builder.Services.AddControllers();
 
 builder.Services.AddFluentValidators();
-builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationAutoValidation(options =>
+{
+    options.DisableBuiltInModelValidation = true;
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -41,19 +45,9 @@ app.MapHealthChecks("/dotflyer/healthz/live");
 
 app.UseSwagger(c => { c.RouteTemplate = "dotflyer/open-api/{documentName}"; });
 
-var dotFlyerRouteGroup = app.MapGroup("/dotflyer")
-    .AddFluentValidationAutoValidation();
+app.UseAuthentication();
+app.UseAuthorization();
 
-dotFlyerRouteGroup.MapPost("/sms", async ([FromBody] SMSMessage smsMessage, SmsTopicSender smsTopicSender, CancellationToken cancellationToken) =>
-    await smsTopicSender.SendMessageAsync(smsMessage, cancellationToken))
-    .WithName("PostSMS")
-    .WithOpenApi()
-    .RequireAuthorization("AllOrSMS");
-
-dotFlyerRouteGroup.MapPost("/email", async ([FromBody] EmailMessage emailMessage, EmailTopicSender emailTopicSender, CancellationToken cancellationToken) =>
-    await emailTopicSender.SendMessageAsync(emailMessage, cancellationToken))
-    .WithName("PostEmail")
-    .WithOpenApi()
-    .RequireAuthorization("AllOrEmail");
+app.MapControllers();
 
 app.Run();
