@@ -10,7 +10,8 @@ public class DotFlyerController : ControllerBase
     [Authorize(Policy = "AllOrSMS")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesDefaultResponseType]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> PostSMS(
         [FromBody] SMSMessage smsMessage,
         [FromServices] SmsTopicSender smsTopicSender,
@@ -31,7 +32,8 @@ public class DotFlyerController : ControllerBase
     [Authorize(Policy = "AllOrEmail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesDefaultResponseType]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> PostEmail(
         [FromBody] EmailMessage emailMessage,
         [FromServices] EmailTopicSender emailTopicSender,
