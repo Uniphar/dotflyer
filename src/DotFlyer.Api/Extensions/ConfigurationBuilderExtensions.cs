@@ -1,4 +1,6 @@
-﻿namespace DotFlyer.Api.Extensions;
+﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
+
+namespace DotFlyer.Api.Extensions;
 
 /// <summary>
 /// Extension methods for the <see cref="ConfigurationManager"/> class.
@@ -13,7 +15,10 @@ public static class ConfigurationBuilderExtensions
     {
         configurationManager.AddAzureKeyVault(
             new Uri($"https://{Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME")}.vault.azure.net/"),
-            new DefaultAzureCredential());
+            new DefaultAzureCredential(), new AzureKeyVaultConfigurationOptions
+            {
+                ReloadInterval = TimeSpan.FromMinutes(2)
+            });
 
         Dictionary<string, string?> azureAuthConfiguration = new()
         {
