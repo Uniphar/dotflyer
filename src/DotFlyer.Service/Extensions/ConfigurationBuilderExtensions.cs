@@ -19,7 +19,7 @@ public static class ConfigurationBuilderExtensions
             new DefaultAzureCredential(),
             new AzureKeyVaultConfigurationOptions
             {
-                ReloadInterval = TimeSpan.FromMinutes(2)
+                ReloadInterval = TimeSpan.FromMinutes(60)
             });
 
         return configurationBuilder;
