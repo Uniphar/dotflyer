@@ -17,7 +17,7 @@ public static class ConfigurationBuilderExtensions
             new Uri($"https://{Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME")}.vault.azure.net/"),
             new DefaultAzureCredential(), new AzureKeyVaultConfigurationOptions
             {
-                ReloadInterval = TimeSpan.FromMinutes(60)
+                ReloadInterval = TimeSpan.FromMinutes(20)
             });
 
         Dictionary<string, string?> azureAuthConfiguration = new()
