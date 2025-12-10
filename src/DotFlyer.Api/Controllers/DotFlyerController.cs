@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotFlyer.Api.Controllers;
 
@@ -30,11 +31,12 @@ public class DotFlyerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> PostEmail(
         [FromBody] EmailMessage emailMessage,
+        [FromHeader(Name= "Message-Id"), MaxLength(128)] string messageId,
         [FromServices] EmailTopicSender emailTopicSender,
         [FromServices] IValidator<EmailMessage> validator,  
         CancellationToken cancellationToken)
     {
-        await emailTopicSender.SendMessageAsync(emailMessage, cancellationToken);
+        await emailTopicSender.SendMessageAsync(emailMessage, cancellationToken, messageId);
         return Ok();
     }
 }
