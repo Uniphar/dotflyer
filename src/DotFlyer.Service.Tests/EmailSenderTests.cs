@@ -46,7 +46,7 @@ public class EmailSenderTests
     {
         _emailMessage!.To = [];
 
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => _emailSender.SendAsync(_emailMessage!));
+        await Assert.ThrowsAsync<ArgumentException>(async () => await _emailSender.SendAsync(_emailMessage!));
     }
 
     [TestMethod]
@@ -66,6 +66,6 @@ public class EmailSenderTests
             .Setup(x => x.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new SendGrid.Response(HttpStatusCode.Unauthorized, new StringContent("Unauthorized"), null));
 
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(() => _emailSender.SendAsync(_emailMessage!));
+        await Assert.ThrowsAsync<HttpRequestException>(async () => await _emailSender.SendAsync(_emailMessage!));
     }
 }
