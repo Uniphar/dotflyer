@@ -406,9 +406,9 @@ public class APITests
         var response2 = await httpClient.SendAsync(request2, _cancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var count = await _cslQueryProvider!
-            .WaitSingleQueryResult<EmailData>($"[\"{EmailTable.Instance.TableName}\"] | where Body == \"{emailMessage.Body}\"| summarize Count = count()", TimeSpan.FromMinutes(10), _cancellationToken);
-        count.Should().Be(1, "posting the same Message-Id twice must be idempotent");
+        var result = await _cslQueryProvider!
+            .WaitSingleQueryResult<CountResult>($"[\"{EmailTable.Instance.TableName}\"] | where Body == \"{emailMessage.Body}\"| summarize Count = count()", TimeSpan.FromMinutes(10), _cancellationToken);
+        result.Count.Should().Be(1, "posting the same Message-Id twice must be idempotent");
     }
 
     public static HttpClient GetHttpClient(string? token = null)
@@ -450,4 +450,6 @@ public class APITests
 
         return result.AccessToken;
     }
+
+    private sealed record CountResult(int Count);
 }
