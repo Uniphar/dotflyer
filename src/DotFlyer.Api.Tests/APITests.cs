@@ -364,6 +364,53 @@ public class APITests
         responseContent.Should().Contain("'Email' field should be a valid email address");
     }
 
+    [TestMethod]
+    public async Task Post_Email_ShouldBe_Idempotent_When_Same_MessageId_Is_Reused()
+    {
+        EmailMessage emailMessage = new()
+        {
+            Subject = "DotFlyer API Idempotency Test",
+            Body = Guid.NewGuid().ToString(),
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new()
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Tags = new Dictionary<string, string>()
+            {
+                { "TestName", "DotFlyer API Idempotency Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var messageId = $"test-message-id-{Guid.NewGuid():N}";
+
+        using var request1 = new HttpRequestMessage(HttpMethod.Post, "dotflyer/email");
+        request1.Content = GetStringContent(emailMessage);
+        request1.Headers.Add("Message-Id", messageId);
+        var response1 = await httpClient.SendAsync(request1, _cancellationToken);
+        response1.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using var request2 = new HttpRequestMessage(HttpMethod.Post, "dotflyer/email");
+        request2.Content = GetStringContent(emailMessage);
+        request2.Headers.Add("Message-Id", messageId);
+        var response2 = await httpClient.SendAsync(request2, _cancellationToken);
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var result = await _cslQueryProvider!
+            .WaitSingleQueryResult<CountResult>($"[\"{EmailTable.Instance.TableName}\"] | where Body == \"{emailMessage.Body}\"| summarize Count = count()", TimeSpan.FromMinutes(10), _cancellationToken);
+        result.Count.Should().Be(1, "posting the same Message-Id twice must be idempotent");
+    }
+
     public static HttpClient GetHttpClient(string? token = null)
     {
         var httpClientFactory = _serviceProvider!.GetRequiredService<IHttpClientFactory>();
@@ -403,4 +450,6 @@ public class APITests
 
         return result.AccessToken;
     }
+
+    private sealed record CountResult(int Count);
 }

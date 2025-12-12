@@ -20,7 +20,15 @@ public abstract class BaseTopicSender
     /// <typeparam name="T">The message type.</typeparam>
     /// <param name="message">The message to send.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <param name="messageId">The message unique identifier used for deduplication.</param>
     /// <returns>The <see cref="Task"/>.</returns>
-    public async Task SendMessageAsync<T>(T message, CancellationToken cancellationToken) =>
-        await _serviceBusSender.SendMessageAsync(new(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message))), cancellationToken);
+    public async Task SendMessageAsync<T>(T message, CancellationToken cancellationToken, string messageId = null)
+    {
+        var serviceBusMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
+        if (!string.IsNullOrWhiteSpace(messageId))
+        {
+            serviceBusMessage.MessageId = messageId;
+        }
+        await _serviceBusSender.SendMessageAsync(serviceBusMessage, cancellationToken);
+    }
 }

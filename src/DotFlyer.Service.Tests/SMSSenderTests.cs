@@ -43,7 +43,7 @@ public class SMSSenderTests
     {
         _smsMessage!.To = "";
 
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => _smsSender.SendAsync(_smsMessage!));
+        await Assert.ThrowsAsync<ArgumentException>(() => _smsSender.SendAsync(_smsMessage!));
     }
 
     [TestMethod]
@@ -75,6 +75,6 @@ public class SMSSenderTests
             .SetupGet(x => x.HttpClient)
             .Returns(httpClientMock.Object);
 
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(() => _smsSender.SendAsync(_smsMessage!));
+        await Assert.ThrowsAsync<HttpRequestException>(() => _smsSender.SendAsync(_smsMessage!));
     }
 }
