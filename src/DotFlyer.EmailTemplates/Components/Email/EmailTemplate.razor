@@ -32,7 +32,7 @@
     }
   </div>
   <div class="section">
-    @((MarkupString)Model?.Body)
+      @((MarkupString)(Model?.Body ?? string.Empty))
   </div>
   @if (Model?.Attachments != null && Model.Attachments.Any()) {
     <div class="section small">

@@ -1,11 +1,11 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 using DotFlyer.Common.Payload;
 
 namespace DotFlyer.EmailTemplates.Tests
 {
     [TestClass]
-    public class EmailHtmlRendererIntegrationTests
+    public class EmailHtmlRendererTests
     {
         private ServiceProvider _provider = null!;
 
@@ -35,7 +35,7 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Test",
                 Body = "This is an integration test email",
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
-                To = new[] { new Contact { Email = "to@test.local", Name = "To" } },
+                To = [new Contact { Email = "to@test.local", Name = "To" }],
                 Tags = new Dictionary<string, string> { ["k"] = "v" }
             };
 
@@ -57,8 +57,8 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Attachments Test",
                 Body = "Body",
                 From = new Contact { Email = "a@test.local", Name = "A" },
-                To = new[] { new Contact { Email = "b@test.local", Name = "B" } },
-                Attachments = new[] { "https://storage/att1.txt", "https://storage/att2.csv" }
+                To = [new Contact { Email = "b@test.local", Name = "B" }],
+                Attachments = ["https://storage/att1.txt", "https://storage/att2.csv"]
             };
 
             var html = await renderer.RenderAsync(message);
@@ -79,7 +79,7 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Tags Test",
                 Body = "Body",
                 From = new Contact { Email = "a@test.local", Name = "A" },
-                To = new[] { new Contact { Email = "b@test.local", Name = "B" } },
+                To = [new Contact { Email = "b@test.local", Name = "B" }],
                 Tags = new Dictionary<string, string> { ["Environment"] = "Integration", ["Id"] = "123" }
             };
 
@@ -100,8 +100,8 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Cc Test",
                 Body = "Body",
                 From = new Contact { Email = "a@test.local", Name = "A" },
-                To = new[] { new Contact { Email = "b@test.local", Name = "B" } },
-                Cc = new[] { new Contact { Email = "cc1@test.local", Name = "CC1" } }
+                To = [new Contact { Email = "b@test.local", Name = "B" }],
+                Cc = [new Contact { Email = "cc1@test.local", Name = "CC1" }]
             };
 
             var html = await renderer.RenderAsync(message);
@@ -121,7 +121,7 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Markup Test",
                 Body = "<b>Bold content</b>",
                 From = new Contact { Email = "a@test.local", Name = "A" },
-                To = new[] { new Contact { Email = "b@test.local", Name = "B" } }
+                To = [new Contact { Email = "b@test.local", Name = "B" }]
             };
 
             var html = await renderer.RenderAsync(message);
@@ -140,7 +140,7 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Minimal",
                 Body = "Body",
                 From = new Contact { Email = "a@test.local", Name = "A" },
-                To = new[] { new Contact { Email = "b@test.local", Name = "B" } },
+                To = [new Contact { Email = "b@test.local", Name = "B" }],
                 Cc = null,
                 Bcc = null,
                 Attachments = null,
@@ -153,6 +153,52 @@ namespace DotFlyer.EmailTemplates.Tests
             // Should at least contain subject and body
             StringAssert.Contains(html, message.Subject);
             StringAssert.Contains(html, message.Body);
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WriteHtmlToDisk()
+        {
+            var renderer = new EmailHtmlRenderer(_provider);
+
+            var message = new EmailMessage
+            {
+                Subject = "Test Email Template",
+                Body = "Test Email" +
+                       "<p>This email contains <strong>HTML</strong> content.</p>",
+                From = new Contact { Email = "sender@test.local", Name = "Sender Name" },
+                To = [
+                    new Contact { Email = "to1@test.local", Name = "Primary Recipient" },
+                    new Contact { Email = "to2@test.local", Name = "Secondary Recipient" }
+                ],
+                Cc = [
+                    new Contact { Email = "cc1@test.local", Name = "CC One" },
+                    new Contact { Email = "cc2@test.local", Name = "CC Two" }
+                ],
+                Bcc = [
+                    new Contact { Email = "bcc1@test.local", Name = "BCC One" }
+                ],
+                Attachments = [
+                    "https://storage.example/attachments/report.pdf",
+                    "https://storage.example/attachments/data.csv",
+                    "https://storage.example/attachments/image.png"
+                ],
+                Tags = new Dictionary<string, string>
+                {
+                    ["Environment"] = "IntegrationTest",
+                    ["RunId"] = Guid.NewGuid().ToString(),
+                    ["Feature"] = "EmailTemplates"
+                }
+            };
+
+            var html = await renderer.RenderAsync(message);
+
+            var outDir = Path.Combine(Environment.CurrentDirectory, "TestOutputs");
+            Directory.CreateDirectory(outDir);
+            var filePath = Path.Combine(outDir, $"email_test.html");
+            await File.WriteAllTextAsync(filePath, html ?? string.Empty);
+
+            // ensure file was created
+            Assert.IsTrue(File.Exists(filePath), $"Expected output file to exist: {filePath}");
         }
     }
 }
