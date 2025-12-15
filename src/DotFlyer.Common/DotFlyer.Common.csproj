@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <EnablePackageValidation>true</EnablePackageValidation>
     <PackageId>DotFlyer.Common</PackageId>
-    <Version>1.2.0</Version>
-    <AssemblyVersion>1.2.0</AssemblyVersion>
+    <Version>1.2.1</Version>
+    <AssemblyVersion>1.2.1</AssemblyVersion>
     <Company>Uniphar Group Plc.</Company>
     <Description>Library that contains payloads for DotFlyer Service.</Description>
     <RepositoryUrl>https://github.com/Uniphar/dotflyer/tree/main/src/DotFlyer.Common</RepositoryUrl>

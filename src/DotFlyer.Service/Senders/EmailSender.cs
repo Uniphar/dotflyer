@@ -1,4 +1,7 @@
-﻿namespace DotFlyer.Service.Senders;
+﻿using DotFlyer.EmailTemplates;
+using Microsoft.AspNetCore.Components;
+
+namespace DotFlyer.Service.Senders;
 
 /// <summary>
 /// The email sender service.
@@ -11,7 +14,8 @@ public class EmailSender(
     DefaultAzureCredential credential,
     ISendGridClient sendGridClient,
     TelemetryClient telemetryClient,
-    IAzureDataExplorerClient adxClient) : IEmailSender
+    IAzureDataExplorerClient adxClient,
+    EmailHtmlRenderer? htmlRenderer = null) : IEmailSender
 {
     /// <summary>
     /// Sends an email message.
@@ -29,11 +33,19 @@ public class EmailSender(
             throw new ArgumentException("Email message must have at least one recipient in the 'To' field.");
         }
 
+        string htmlBody = emailMessage.Body;
+
+        if (htmlRenderer != null)
+        {
+            htmlBody = await htmlRenderer.RenderAsync(emailMessage);
+        }
+
         SendGridMessage sendGridMessage = new()
         {
             From = new(emailMessage.From.Email, emailMessage.From.Name),
             Subject = emailMessage.Subject,
-            HtmlContent = emailMessage.Body
+            HtmlContent = htmlBody,
+            PlainTextContent = emailMessage.Body
         };
 
         foreach (var contact in emailMessage.To)
