@@ -26,7 +26,7 @@ namespace DotFlyer.EmailTemplates.Tests
         }
 
         [TestMethod]
-        public async Task RenderAsync_ShouldProduce_HtmlContainingModel()
+        public async Task RenderAsync_ShouldRenderEmailAsHtml()
         {
             var renderer = new EmailHtmlRenderer(_provider);
 
@@ -48,7 +48,7 @@ namespace DotFlyer.EmailTemplates.Tests
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithAttachments_ShouldIncludeAttachmentsSection()
+        public async Task RenderAsync_WithAttachments_ShouldIncludeAttachments()
         {
             var renderer = new EmailHtmlRenderer(_provider);
 
@@ -70,7 +70,7 @@ namespace DotFlyer.EmailTemplates.Tests
         }
 
         [TestMethod]
-        public async Task RenderAsync_WithTags_ShouldIncludeTagsSection()
+        public async Task RenderAsync_WithTags_ShouldIncludeTags()
         {
             var renderer = new EmailHtmlRenderer(_provider);
 
@@ -88,27 +88,6 @@ namespace DotFlyer.EmailTemplates.Tests
             StringAssert.Contains(html, "Tags:");
             StringAssert.Contains(html, "Environment: Integration");
             StringAssert.Contains(html, "Id: 123");
-        }
-
-        [TestMethod]
-        public async Task RenderAsync_WithCc_ShouldIncludeCcAddresses()
-        {
-            var renderer = new EmailHtmlRenderer(_provider);
-
-            var message = new EmailMessage
-            {
-                Subject = "Cc Test",
-                Body = "Body",
-                From = new Contact { Email = "a@test.local", Name = "A" },
-                To = [new Contact { Email = "b@test.local", Name = "B" }],
-                Cc = [new Contact { Email = "cc1@test.local", Name = "CC1" }]
-            };
-
-            var html = await renderer.RenderAsync(message);
-
-            StringAssert.Contains(html, "Cc:");
-            StringAssert.Contains(html, "CC1");
-            StringAssert.Contains(html, "cc1@test.local");
         }
 
         [TestMethod]

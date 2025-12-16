@@ -3,14 +3,14 @@
 
 @code {
     [Parameter]
-    public EmailMessage Model { get; set; }
+    public required EmailMessage Model { get; set; }
 }
 
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>@Model?.Subject</title>
+  <title>@Model.Subject</title>
   <style>
     body { font-family: Arial, sans-serif; color:#111; }
     .header { margin-bottom: 10px; }
@@ -20,21 +20,12 @@
 </head>
 <body>
   <div class="header">
-    <strong>@Model?.Subject</strong>
-    @if (Model?.From != null) {
-      <div class="small">From: @Model.From.Name &lt;@Model.From.Email&gt;</div>
-    }
-    @if (Model?.To != null) {
-      <div class="small">To: @string.Join(", ", Model.To.Select(t => t.Name + " <" + t.Email + ">"))</div>
-    }
-    @if (Model?.Cc != null && Model.Cc.Any()) {
-      <div class="small">Cc: @string.Join(", ", Model.Cc.Select(c => c.Name + " <" + c.Email + ">"))</div>
-    }
+    <strong>@Model.Subject</strong>
   </div>
   <div class="section">
-      @((MarkupString)(Model?.Body ?? string.Empty))
+      @((MarkupString)(Model.Body ?? string.Empty))
   </div>
-  @if (Model?.Attachments != null && Model.Attachments.Any()) {
+  @if (Model.Attachments != null && Model.Attachments.Any()) {
     <div class="section small">
       <div>Attachments:</div>
       <ul>
@@ -44,7 +35,7 @@
       </ul>
     </div>
   }
-  @if (Model?.Tags != null && Model.Tags.Any()) {
+  @if (Model.Tags != null && Model.Tags.Any()) {
     <div class="section small">
       <div>Tags:</div>
       <ul>
