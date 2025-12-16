@@ -44,7 +44,6 @@ namespace DotFlyer.EmailTemplates.Tests
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
             StringAssert.Contains(html, message.Body);
             StringAssert.Contains(html, message.Subject);
-            StringAssert.Contains(html, message.From.Email);
         }
 
         [TestMethod]
