@@ -80,8 +80,8 @@ namespace DotFlyer.EmailTemplates.Tests
             var model = new SalesReportModel
             {
                 Title = "Sales Report - January 2024",
-                ClientName = "Acme Corporation",
-                ContactEmailAddress = "support@acme.com",
+                ClientName = "Test Corporation",
+                ContactEmailAddress = "support@test.com",
             };
             var message = new EmailMessage
             {

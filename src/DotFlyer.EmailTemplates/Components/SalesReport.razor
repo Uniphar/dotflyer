@@ -8,9 +8,25 @@
     public required SalesReportModel Model { get; set; }
 }
 
-<BaseEmailLayout Title="@Model.Title">
-    <div class="subject"> Monthly Sales Report - @Model.ClientName Extracts</div>
-  <div class="body">
-        <p>Attached please find @Model.ClientName monthly extracts, for queries please email @Model.ContactEmailAddress</p>
-  </div>
+<BaseEmailLayout>
+    <div class="subject">Monthly Sales Report - <b>@Model.ClientName</b> Extracts</div>
+
+    <div class="info-card">
+        <p class="info-card-title">Report Details</p>
+
+        <p>
+            Attached please find the monthly extracts for <strong>@Model.ClientName</strong>.
+        </p>
+
+        <p>
+            <strong>Report title:</strong> @Model.Title
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ContactEmailAddress))
+        {
+            <p>
+                <strong>For queries:</strong> <a href="mailto:@Model.ContactEmailAddress">@Model.ContactEmailAddress</a>
+            </p>
+        }
+    </div>
 </BaseEmailLayout>
