@@ -1,5 +1,4 @@
 using DotFlyer.Common.Payload;
-using DotFlyer.EmailTemplates.Components.Email;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,24 +8,51 @@ namespace DotFlyer.EmailTemplates
 {
     public class EmailHtmlRenderer(IServiceProvider serviceProvider)
     {
-        public async Task<string> RenderAsync(EmailMessage model)
+        private readonly ILogger<EmailHtmlRenderer> _logger = serviceProvider.GetRequiredService<ILogger<EmailHtmlRenderer>>();
+
+        public async Task<string> RenderAsync(EmailMessage emailMessage)
         {
+            // No template, use Body instead (legacy behavior).
+            if (emailMessage.TemplateModel == null)
+            {
+                return emailMessage.Body;
+            }
+
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             await using var htmlRenderer = new HtmlRenderer(serviceProvider, loggerFactory);
 
-            var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
+            // If a template id is provided, try to resolve a registered component for it.
+            try
             {
-                var dictionary = new Dictionary<string, object?>
+                var componentType = serviceProvider.GetKeyedService<Type>(emailMessage.TemplateId);
+                if (componentType != null)
                 {
-                    ["Model"] = model
-                };
+                    var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+                    {
+                        ["Model"] = emailMessage.TemplateModel
+                    });
 
-                var parameters = ParameterView.FromDictionary(dictionary);
-                var output = await htmlRenderer.RenderComponentAsync<EmailTemplate>(parameters);
+                    var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
+                    {
+                        var output = await htmlRenderer.RenderComponentAsync(componentType, parameters);
+                        return output.ToHtmlString();
+                    });
 
-                return output.ToHtmlString();
-            });
-            return html;
+                    return html;
+                }
+
+                _logger.LogWarning("No component registered for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "No keyed service found for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while rendering email template for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
+            }
+
+            return emailMessage.Body;
         }
     }
 }

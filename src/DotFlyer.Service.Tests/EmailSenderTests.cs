@@ -1,4 +1,6 @@
-﻿namespace DotFlyer.Service.Tests;
+﻿using DotFlyer.EmailTemplates;
+
+namespace DotFlyer.Service.Tests;
 
 [TestClass, TestCategory("Unit")]
 public class EmailSenderTests
@@ -10,7 +12,7 @@ public class EmailSenderTests
 
     private EmailMessage? _emailMessage;
 
-    private EmailSender _emailSender;
+    private readonly EmailSender _emailSender;
 
     public EmailSenderTests()
     {
@@ -19,7 +21,9 @@ public class EmailSenderTests
         _telemetryChannelMock = new Mock<ITelemetryChannel>();
         _azureDataExplorerClientMock = new Mock<IAzureDataExplorerClient>();
 
-        _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, new TelemetryClient(new() { TelemetryChannel = _telemetryChannelMock.Object }), _azureDataExplorerClientMock.Object);
+        var emailHtmlRenderer = new EmailHtmlRenderer(new Mock<IServiceProvider>().Object);
+
+        _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, new TelemetryClient(new() { TelemetryChannel = _telemetryChannelMock.Object }), _azureDataExplorerClientMock.Object, emailHtmlRenderer);
     }
 
     [TestInitialize]

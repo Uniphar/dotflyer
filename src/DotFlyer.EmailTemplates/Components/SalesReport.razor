@@ -1,0 +1,16 @@
+@namespace DotFlyer.EmailTemplates.Components.Templates
+@using DotFlyer.EmailTemplates.Models
+@using DotFlyer.EmailTemplates.Components
+@inherits Microsoft.AspNetCore.Components.ComponentBase
+
+@code {
+    [Parameter]
+    public required SalesReportModel Model { get; set; }
+}
+
+<EmailLayout Title="@Model.Title">
+    <div class="subject"> Monthly Sales Report - @Model.ClientName Extracts</div>
+  <div class="body">
+        <p>Attached please find @Model.ClientName monthly extracts, for queries please email @Model.ContactEmailAddress</p>
+  </div>
+</EmailLayout>

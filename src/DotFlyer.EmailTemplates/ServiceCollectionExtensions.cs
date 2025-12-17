@@ -1,8 +1,4 @@
-using System;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DotFlyer.EmailTemplates
 {
@@ -10,10 +6,10 @@ namespace DotFlyer.EmailTemplates
     {
         public static IServiceCollection AddEmailTemplates(this IServiceCollection services)
         {
-            services.AddSingleton<EmailHtmlRenderer>(serviceProvider =>
-            {
-                return new EmailHtmlRenderer(serviceProvider);
-            });
+            services.AddSingleton(serviceProvider => new EmailHtmlRenderer(serviceProvider));
+
+            services.AddKeyedSingleton(nameof(SalesReportModel), typeof(Components.Templates.SalesReport))
+                .AddKeyedSingleton(nameof(ManualSecretRotationModel), typeof(Components.Templates.ManualSecretRotation));
 
             return services;
         }

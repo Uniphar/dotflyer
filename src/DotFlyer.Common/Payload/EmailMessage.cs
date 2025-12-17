@@ -21,12 +21,24 @@ namespace DotFlyer.Common.Payload
         [Required]
         public string Subject { get; set; }
 
-        [Required]
+        // We keep Body for legacy usage.It is optional so templates can be used instead,
+        // but either Body or TemplateModel must be provided.
         public string Body { get; set; }
 
         public IEnumerable<string> Attachments { get; set; }
 
         public IDictionary<string, string> Tags { get; set; }
+
+        /// <summary>
+        /// Template-specific model. When provided, the email templating
+        /// will be used to render HTML. If this is null, the Body will be used.
+        /// </summary>
+        public object TemplateModel { get; set; }
+
+        /// <summary>
+        /// Template identifier. Should correspond to a registered template and its model in the system.
+        /// </summary>
+        public string TemplateId { get; set; }
     }
 
     /// <summary>

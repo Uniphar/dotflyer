@@ -1,5 +1,4 @@
 ﻿using DotFlyer.EmailTemplates;
-using Microsoft.AspNetCore.Components;
 
 namespace DotFlyer.Service.Senders;
 
@@ -15,7 +14,7 @@ public class EmailSender(
     ISendGridClient sendGridClient,
     TelemetryClient telemetryClient,
     IAzureDataExplorerClient adxClient,
-    EmailHtmlRenderer? htmlRenderer = null) : IEmailSender
+    EmailHtmlRenderer htmlRenderer) : IEmailSender
 {
     /// <summary>
     /// Sends an email message.
@@ -33,18 +32,13 @@ public class EmailSender(
             throw new ArgumentException("Email message must have at least one recipient in the 'To' field.");
         }
 
-        string htmlBody = emailMessage.Body;
-
-        if (htmlRenderer != null)
-        {
-            htmlBody = await htmlRenderer.RenderAsync(emailMessage);
-        }
+        string htmlContent =  await htmlRenderer.RenderAsync(emailMessage);
 
         SendGridMessage sendGridMessage = new()
         {
             From = new(emailMessage.From.Email, emailMessage.From.Name),
             Subject = emailMessage.Subject,
-            HtmlContent = htmlBody,
+            HtmlContent = htmlContent,
             PlainTextContent = emailMessage.Body
         };
 
