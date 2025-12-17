@@ -35,27 +35,28 @@ namespace DotFlyer.EmailTemplates.Tests
         {
             var renderer = new EmailHtmlRenderer(_provider);
 
+            var model = new ManualSecretRotationModel
+            {
+                SecretName = "DbPassword",
+                TenantId = Guid.NewGuid().ToString(),
+                AppId = Guid.NewGuid().ToString(),  
+                ResourceName = "sqlserver1",
+                KeyVaults = new List<string>
+                {
+                    "https://kv1.vault.local",
+                    "https://kv2.vault.local"
+                },
+                OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
+                PwPushUrl = "https://pwpush.local/p/abcdefg",
+                PwPushExpiresAfterViews = 5,
+                PwPushExpiresInDays = 3
+            };
             var message = new EmailMessage
             {
                 Subject = "Manual Secret Rotation Required",
                 Body = "Fallback body",
                 TemplateId = nameof(ManualSecretRotationModel),
-                TemplateModel = new ManualSecretRotationModel
-                {
-                    SecretName = "DbPassword",
-                    ResourceId = "/subscriptions/0000/resourceGroups/rg1/providers/Microsoft.Sql/servers/sqlserver1",
-                    ResourceName = "sqlserver1",
-                    ResourceType = "SQL Server",
-                    KeyVaults = new List<string>
-                    {
-                        "https://kv1.vault.local",
-                        "https://kv2.vault.local"
-                    },
-                    OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
-                    PwPushUrl = "https://pwpush.local/p/abcdefg",
-                    PwPushExpiresAfterViews = 5,
-                    PwPushExpiresInDays = 3
-                },
+                TemplateModel = model,
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
                 To = [new Contact { Email = "to@test.local", Name = "To" }]
             };
@@ -63,8 +64,10 @@ namespace DotFlyer.EmailTemplates.Tests
             var html = await renderer.RenderAsync(message);
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
-            StringAssert.Contains(html, "sqlserver1");
-            StringAssert.Contains(html, "DbPassword");
+            StringAssert.Contains(html, model.TenantId);
+            StringAssert.Contains(html, model.AppId);
+            StringAssert.Contains(html, model.ResourceName);
+            StringAssert.Contains(html, model.PwPushUrl);
 
             await WriteHtmlToFile("ManualSecretRotation.html", html);
         }
@@ -74,17 +77,18 @@ namespace DotFlyer.EmailTemplates.Tests
         {
             var renderer = new EmailHtmlRenderer(_provider);
 
+            var model = new SalesReportModel
+            {
+                Title = "Sales Report - January 2024",
+                ClientName = "Acme Corporation",
+                ContactEmailAddress = "support@acme.com",
+            };
             var message = new EmailMessage
             {
                 Subject = "Monthly Sales Report",
                 Body = "Fallback body",
                 TemplateId = nameof(SalesReportModel),
-                TemplateModel = new SalesReportModel
-                {
-                    Title = "Sales Report - January 2024",
-                    ClientName = "Acme Corporation",
-                    ContactEmailAddress = "support@acme.com",
-                },
+                TemplateModel = model,
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
                 To = [new Contact { Email = "to@test.local", Name = "To" }]
             };
@@ -92,9 +96,9 @@ namespace DotFlyer.EmailTemplates.Tests
             var html = await renderer.RenderAsync(message);
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
-            StringAssert.Contains(html, "Acme Corporation");
-            StringAssert.Contains(html, "support@acme.com");
-            StringAssert.Contains(html, "Monthly Sales Report - Acme Corporation Extracts");
+            StringAssert.Contains(html, model.Title);
+            StringAssert.Contains(html, model.ClientName);
+            StringAssert.Contains(html, model.ContactEmailAddress);
 
             await WriteHtmlToFile("SalesReport.html", html);
         }
