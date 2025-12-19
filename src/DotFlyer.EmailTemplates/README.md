@@ -1,19 +1,39 @@
 # DotFlyer EmailTemplates
 
-Razor Class Library containing email templates for DotFlyer. 
-It expects templates to be stored in `Views/Email` folder and provides a minimal `TemplateRenderer` which uses Razor engine.
+Razor Component Library containing email templates for DotFlyer. It provides reusable Razor components that render HTML email templates using server-side rendering.
 
 ## Usage:
 
-1. Add a project reference to `DotFlyer.EmailTemplates`.
-2. In your ASP.NET Core host, you can render a view to string using `IRazorViewEngine` or a small helper. Example helper usage:
-
-   ```csharp
-   public async Task<string> RenderEmailAsync(EmailMessage model, IViewRenderService viewRenderService)
-   {
-       // view path is "~/Views/Email/EmailMessage.cshtml"
-       return await viewRenderService.RenderToStringAsync("/Views/Email/EmailMessage.cshtml", model);
-   }
+1. Add the NuGet package to your project:
+   ```bash
+   dotnet add package DotFlyer.EmailTemplates
    ```
 
-Minimal templates are stored in `Views/Email/EmailMessage.cshtml`.
+1. Create an email message with a template:
+   ```csharp
+   var emailMessage = new EmailMessage
+   {
+       Subject = "Sales Report",
+       TemplateId = EmailTemplateId.SalesReport,
+       TemplateModel = new SalesReportModel
+       {
+           Title = "Q1 Sales Report",
+           ClientName = "Acme Corp",
+           ContactEmailAddress = "contact@acme.com"
+       }
+   };
+   ```
+
+1. Send the email:
+   ```csharp
+   await emailSender.SendAsync(emailMessage);
+   ```
+
+The DotFlyer API will render the specified template with the provided model and send the email.
+
+## Available Templates
+
+- `EmailTemplateId.SalesReport` - Sales report template
+- `EmailTemplateId.ManualSecretRotation` - Manual secret rotation template
+
+Templates are stored as Razor components in the `Components/` folder.

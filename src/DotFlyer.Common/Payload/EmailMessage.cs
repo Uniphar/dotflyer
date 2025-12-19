@@ -21,7 +21,8 @@ namespace DotFlyer.Common.Payload
         [Required]
         public string Subject { get; set; }
 
-        // We keep Body for legacy usage.It is optional so templates can be used instead,
+        // We keep Body for legacy usage.
+        // It is used as fallback if TemplateModel is not specified or rendering fails,
         // but either Body or TemplateModel must be provided.
         public string Body { get; set; }
 

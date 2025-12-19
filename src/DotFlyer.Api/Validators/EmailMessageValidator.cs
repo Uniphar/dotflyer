@@ -6,11 +6,11 @@ public class EmailMessageValidator : AbstractValidator<EmailMessage>
     {
         RuleFor(x => x.Subject).NotEmpty().WithMessage("'Subject' field is required");
 
-        // Either Body (non-empty) or a non-string TemplateModel must be provided
+        // Either Body (non-empty) or TemplateModel must be provided
         RuleFor(x => x).Custom((email, context) =>
         {
             bool hasBody = !string.IsNullOrWhiteSpace(email.Body);
-            bool hasTemplateModel = email.TemplateModel != null && !(email.TemplateModel is string);
+            bool hasTemplateModel = email.TemplateModel != null;
 
             if (!hasBody && !hasTemplateModel)
             {

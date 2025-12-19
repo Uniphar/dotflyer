@@ -411,6 +411,128 @@ public class APITests
         result.Count.Should().Be(1, "posting the same Message-Id twice must be idempotent");
     }
 
+    [TestMethod]
+    public async Task Post_Email_WithSalesReportTemplate_ShouldReturn_200_And_RenderTemplate()
+    {
+        var testGuid = Guid.NewGuid();
+        
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Sales Report Template Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateModel = new EmailTemplates.Models.SalesReportModel
+            {
+                Title = $"Q1 2024 Sales Report - {testGuid}",
+                ClientName = "Test Corporation",
+                ContactEmailAddress = "support@test.com"
+            },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Integration Test" },
+                { "TemplateType", "SalesReport" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed and ingested into ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_WithManualSecretRotationTemplate_ShouldReturn_200_And_RenderTemplate()
+    {
+        var testGuid = Guid.NewGuid();
+        
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Manual Secret Rotation Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateModel = new EmailTemplates.Models.ManualSecretRotationModel
+            {
+                TenantId = Guid.NewGuid().ToString(),
+                AppId = Guid.NewGuid().ToString(),
+                ResourceName = "TestDatabase",
+                KeyVaults = ["https://kv-test.vault.azure.net"],
+                SecretName = "TestSecret",
+                OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
+                PwPushUrl = "https://pwpush.test/p/test123",
+                PwPushExpiresInDays = 3,
+                PwPushExpiresAfterViews = 5
+            },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Integration Test" },
+                { "TemplateType", "ManualSecretRotation" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed and ingested into ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+    }
+
     public static HttpClient GetHttpClient(string? token = null)
     {
         var httpClientFactory = _serviceProvider!.GetRequiredService<IHttpClientFactory>();

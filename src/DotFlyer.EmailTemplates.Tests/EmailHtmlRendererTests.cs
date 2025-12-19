@@ -55,8 +55,8 @@ namespace DotFlyer.EmailTemplates.Tests
             {
                 Subject = "Manual Secret Rotation Required",
                 Body = "Fallback body",
-                TemplateId = nameof(ManualSecretRotationModel),
                 TemplateModel = model,
+                TemplateId = EmailTemplates.ManualSecretRotation,
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
                 To = [new Contact { Email = "to@test.local", Name = "To" }]
             };
@@ -87,8 +87,8 @@ namespace DotFlyer.EmailTemplates.Tests
             {
                 Subject = "Monthly Sales Report",
                 Body = "Fallback body",
-                TemplateId = nameof(SalesReportModel),
                 TemplateModel = model,
+                TemplateId = EmailTemplates.SalesReport,
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
                 To = [new Contact { Email = "to@test.local", Name = "To" }]
             };
@@ -120,6 +120,74 @@ namespace DotFlyer.EmailTemplates.Tests
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
             StringAssert.Contains(html, "This is a plain email without template");
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_SalesReport_WithoutTemplateId_ShouldFallbackToBody()
+        {
+            var renderer = new EmailHtmlRenderer(_provider);
+
+            var model = new SalesReportModel
+            {
+                Title = "Sales Report - Auto-Resolved",
+                ClientName = "Auto Test Corporation",
+                ContactEmailAddress = "auto@test.com",
+            };
+            var message = new EmailMessage
+            {
+                Subject = "Monthly Sales Report (Auto-Resolved)",
+                Body = "Fallback body",
+                // TemplateId is NOT set - should be auto-resolved from model type
+                TemplateModel = model,
+                From = new Contact { Email = "sender@test.local", Name = "Sender" },
+                To = [new Contact { Email = "to@test.local", Name = "To" }]
+            };
+
+            var html = await renderer.RenderAsync(message);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
+            StringAssert.Contains(html, message.Body);
+
+            await WriteHtmlToFile("SalesReport_Fallback.html", html);
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_ManualSecretRotation_WithoutTemplateId_ShouldFallbackToBody()
+        {
+            var renderer = new EmailHtmlRenderer(_provider);
+
+            var model = new ManualSecretRotationModel
+            {
+                SecretName = "DbPassword-AutoResolved",
+                TenantId = Guid.NewGuid().ToString(),
+                AppId = Guid.NewGuid().ToString(),
+                ResourceName = "sqlserver1",
+                KeyVaults = new List<string>
+                {
+                    "https://kv1.vault.local",
+                    "https://kv2.vault.local"
+                },
+                OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
+                PwPushUrl = "https://pwpush.local/p/xyz123",
+                PwPushExpiresAfterViews = 5,
+                PwPushExpiresInDays = 3
+            };
+            var message = new EmailMessage
+            {
+                Subject = "Manual Secret Rotation Required (Auto-Resolved)",
+                Body = "Fallback body",
+                // TemplateId is NOT set - should be auto-resolved from model type
+                TemplateModel = model,
+                From = new Contact { Email = "sender@test.local", Name = "Sender" },
+                To = [new Contact { Email = "to@test.local", Name = "To" }]
+            };
+
+            var html = await renderer.RenderAsync(message);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
+            StringAssert.Contains(html, message.Body);
+
+            await WriteHtmlToFile("ManualSecretRotation_Fallback.html", html);
         }
 
         private async Task WriteHtmlToFile(string fileName, string html)
