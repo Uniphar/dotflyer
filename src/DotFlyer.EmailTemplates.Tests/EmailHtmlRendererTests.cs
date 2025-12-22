@@ -192,8 +192,7 @@ namespace DotFlyer.EmailTemplates.Tests
         private async Task WriteHtmlToFile(string fileName, string html)
         {
             var filePath = Path.Combine(_outputDirectory, fileName);
-            await File.WriteAllTextAsync(filePath, html ?? string.Empty);
-            Console.WriteLine($"HTML output written to: {filePath}");
+            await File.WriteAllTextAsync(filePath, html);
             Assert.IsTrue(File.Exists(filePath), $"Expected output file to exist: {filePath}");
         }
     }

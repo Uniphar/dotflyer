@@ -42,6 +42,9 @@
     .footer-address { margin:0 0 8px 0; line-height:1.6; }
     .footer-meta { color:#c5cedd; font-size:11px; }
 
+    /* Fallback notice */
+    .fallback-notice { display:none; white-space:nowrap; font:15px monospace; }
+
     a { color:#2b4cbd; text-decoration:none; }
     a:hover { text-decoration:underline; }
   </style>
@@ -101,6 +104,6 @@
     </div>
   </div>
   <!-- Fallback notice for clients with HTML disabled: this will show as plain text -->
-  <div style="display:none; white-space:nowrap; font:15px monospace;">If you cannot view this email correctly, please open it in a modern email client or browser.</div>
+  <div class="fallback-notice">If you cannot view this email correctly, please open it in a modern email client or browser.</div>
 </body>
 </html>

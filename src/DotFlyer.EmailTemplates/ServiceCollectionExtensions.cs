@@ -1,6 +1,3 @@
-using DotFlyer.Common.EmailTemplates;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace DotFlyer.EmailTemplates
 {
     public static class ServiceCollectionExtensions
