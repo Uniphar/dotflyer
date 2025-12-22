@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace DotFlyer.EmailTemplates
 {
     public class EmailHtmlRenderer(IServiceProvider serviceProvider)
@@ -54,7 +56,8 @@ namespace DotFlyer.EmailTemplates
                 _logger.LogError(ex, "Error occurred while rendering email template for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
             }
 
-            return emailMessage.Body;
+            //if failed to render html template, fall back to json serialized model
+            return JsonSerializer.Serialize(emailMessage.TemplateModel);
         }
     }
 }
