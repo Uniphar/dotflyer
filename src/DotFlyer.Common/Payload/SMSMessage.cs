@@ -8,14 +8,14 @@ namespace DotFlyer.Common.Payload
     /// </summary>
     public class SMSMessage
     {
-        public string From { get; set; }
+        public string? From { get; set; }
 
         [Required]
-        public string To { get; set; }
+        public string? To { get; set; }
 
         [Required]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
-        public IDictionary<string, string> Tags { get; set; }
+        public IDictionary<string, string>? Tags { get; set; }
     }
 }

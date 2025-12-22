@@ -322,7 +322,7 @@ public class APITests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Contain("'Subject' field is required");
-        responseContent.Should().Contain("'Body' field is required");
+        responseContent.Should().Contain("Either 'Body' or 'TemplateModel' must be provided.");
         responseContent.Should().Contain("'Email' field is required");
         responseContent.Should().Contain("'Name' field is required");
         responseContent.Should().Contain("'To' field is required and should contain at least one contact");
@@ -409,6 +409,176 @@ public class APITests
         var result = await _cslQueryProvider!
             .WaitSingleQueryResult<CountResult>($"[\"{EmailTable.Instance.TableName}\"] | where Body == \"{emailMessage.Body}\"| summarize Count = count()", TimeSpan.FromMinutes(10), _cancellationToken);
         result.Count.Should().Be(1, "posting the same Message-Id twice must be idempotent");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_WithManualSecretRotationTemplate_ShouldReturn_200_And_RenderTemplate()
+    {
+        var testGuid = Guid.NewGuid();
+        
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Manual Secret Rotation Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateId = EmailTemplateIds.ManualSecretRotation,
+            TemplateModel = new ManualSecretRotationModel
+            {
+                TenantId = Guid.NewGuid().ToString(),
+                AppId = Guid.NewGuid().ToString(),
+                ResourceName = "TestDatabase",
+                KeyVaults = ["https://kv-test.vault.azure.net"],
+                SecretName = "TestSecret",
+                OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
+                PwPushUrl = "https://pwpush.test/p/test123",
+                PwPushExpiresInDays = 3,
+                PwPushExpiresAfterViews = 5
+            },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Integration Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed and ingested into ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_WithSalesReportTemplate_ShouldReturn_200_And_RenderTemplate()
+    {
+        var testGuid = Guid.NewGuid();
+        
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Sales Report Serialization Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateId = EmailTemplateIds.SalesReport,
+            TemplateModel = new SalesReportModel
+            {
+                Title = $"Serialization Test Report - {testGuid}",
+                ClientName = "Serialization Test Corp",
+                ContactEmailAddress = "serialization@test.com"
+            },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Serialization Test" }
+            }
+        };
+
+        // Call API to verify serialization and deserialization
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed and ingested into ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+    }
+
+    [TestMethod]
+    public async Task Post_Email_WithInvalidTemplateId_ShouldFallbackToJson()
+    {
+        var testGuid = Guid.NewGuid();
+
+        // Create a raw JSON payload with an invalid TemplateId to test fallback behavior
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Sales Report Serialization Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateId = "Unknown",
+            TemplateModel = new {Test = "test"},
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Serialization Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Body.Should().Be(JsonSerializer.Serialize(emailMessage.TemplateModel));
+        emailData.SendGridStatusCodeInt.Should().Be(202);
     }
 
     public static HttpClient GetHttpClient(string? token = null)

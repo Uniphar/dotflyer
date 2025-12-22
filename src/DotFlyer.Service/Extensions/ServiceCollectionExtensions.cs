@@ -1,5 +1,7 @@
 ﻿namespace DotFlyer.Service.Extensions;
 
+using DotFlyer.EmailTemplates;
+
 /// <summary>
 /// Extension methods for the <see cref="IServiceCollection"/> interface.
 /// </summary>
@@ -30,6 +32,8 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddSingleton<IEmailSender, EmailSender>();
         serviceCollection.AddSingleton<ISMSSender, SMSSender>();
+
+        serviceCollection.AddEmailTemplates();
 
         DefaultAzureCredential credential = new();
 

@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotFlyer.Common\DotFlyer.Common.csproj" />
+    <ProjectReference Include="..\DotFlyer.EmailTemplates\DotFlyer.EmailTemplates.csproj" />
   </ItemGroup>
 
 </Project>
