@@ -13,6 +13,7 @@
     <RepositoryUrl>https://github.com/Uniphar/dotflyer/tree/main/src/DotFlyer.EmailTemplates</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+	<GenerateStaticWebAssets>false</GenerateStaticWebAssets>
   </PropertyGroup>
 
   <ItemGroup>
