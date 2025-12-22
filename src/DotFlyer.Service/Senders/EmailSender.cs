@@ -27,16 +27,16 @@ public class EmailSender(
     /// <exception cref="HttpRequestException">Thrown when the email message could not be sent.</exception>"
     public async Task SendAsync(EmailMessage emailMessage, CancellationToken cancellationToken = default)
     {
-        if (!emailMessage.To.Any())
+        if (emailMessage.To?.Any() != true)
         {
             throw new ArgumentException("Email message must have at least one recipient in the 'To' field.");
         }
 
-        string htmlContent =  await htmlRenderer.RenderAsync(emailMessage);
+        string htmlContent = await htmlRenderer.RenderAsync(emailMessage) ?? string.Empty;
 
         SendGridMessage sendGridMessage = new()
         {
-            From = new(emailMessage.From.Email, emailMessage.From.Name),
+            From = new(emailMessage.From?.Email ?? string.Empty, emailMessage.From?.Name ?? string.Empty),
             Subject = emailMessage.Subject,
             HtmlContent = htmlContent,
             PlainTextContent = emailMessage.Body

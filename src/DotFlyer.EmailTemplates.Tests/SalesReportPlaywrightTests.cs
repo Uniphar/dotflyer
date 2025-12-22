@@ -118,7 +118,7 @@ public class SalesReportPlaywrightTests : PlaywrightTestBase
         await LoadHtml(html);
 
         var link = Page.Locator($"a[href='mailto:{_testModel.ContactEmailAddress}']");
-        Assert.IsTrue(await link.CountAsync() > 0, "Contact email link should exist");
+        Assert.IsGreaterThan(0, await link.CountAsync(), "Contact email link should exist");
         
         var linkText = await link.TextContentAsync();
         Assert.AreEqual(_testModel.ContactEmailAddress, linkText, "Link text should match email address");

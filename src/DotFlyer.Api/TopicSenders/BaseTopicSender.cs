@@ -22,7 +22,7 @@ public abstract class BaseTopicSender
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <param name="messageId">The message unique identifier used for deduplication.</param>
     /// <returns>The <see cref="Task"/>.</returns>
-    public async Task SendMessageAsync<T>(T message, CancellationToken cancellationToken, string messageId = null)
+    public async Task SendMessageAsync<T>(T message, CancellationToken cancellationToken, string? messageId = null)
     {
         var serviceBusMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
         if (!string.IsNullOrWhiteSpace(messageId))

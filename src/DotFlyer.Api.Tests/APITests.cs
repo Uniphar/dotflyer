@@ -324,7 +324,7 @@ public class APITests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Contain("'Subject' field is required");
-        responseContent.Should().Contain("'Body' field is required");
+        responseContent.Should().Contain("Either 'Body' or 'TemplateModel' must be provided.");
         responseContent.Should().Contain("'Email' field is required");
         responseContent.Should().Contain("'Name' field is required");
         responseContent.Should().Contain("'To' field is required and should contain at least one contact");

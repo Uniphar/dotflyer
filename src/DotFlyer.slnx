@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="DotFlyer.Api.Tests/DotFlyer.Api.Tests.csproj" />
+  <Project Path="DotFlyer.Api/DotFlyer.Api.csproj" />
+  <Project Path="DotFlyer.Common/DotFlyer.Common.csproj" />
+  <Project Path="DotFlyer.EmailTemplates.Tests/DotFlyer.EmailTemplates.Tests.csproj" />
+  <Project Path="DotFlyer.EmailTemplates/DotFlyer.EmailTemplates.csproj" />
+  <Project Path="DotFlyer.Service.Tests/DotFlyer.Service.Tests.csproj" />
+  <Project Path="DotFlyer.Service/DotFlyer.Service.csproj" />
+</Solution>

@@ -4,14 +4,15 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <EnablePackageValidation>true</EnablePackageValidation>
     <PackageId>DotFlyer.Common</PackageId>
-    <Version>1.2.1</Version>
-    <AssemblyVersion>1.2.1</AssemblyVersion>
+    <Version>1.3.0</Version>
+    <AssemblyVersion>1.3.0</AssemblyVersion>
     <Company>Uniphar Group Plc.</Company>
     <Description>Library that contains payloads for DotFlyer Service.</Description>
     <RepositoryUrl>https://github.com/Uniphar/dotflyer/tree/main/src/DotFlyer.Common</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

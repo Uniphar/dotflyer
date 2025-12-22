@@ -111,11 +111,11 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
         Assert.IsTrue(await ElementExists(".info-card ul"), "Key vaults list should exist");
         
         var listItemsCount = await Page.Locator(".info-card ul li").CountAsync();
-        var expectedCount = _testModel.KeyVaults!.Count();
+        var expectedCount = _testModel.KeyVaults?.Count();
         Assert.AreEqual(expectedCount, listItemsCount, 
             $"Should display all {expectedCount} key vaults");
 
-        foreach (var kv in _testModel.KeyVaults)
+        foreach (var kv in _testModel.KeyVaults!)
         {
             var bodyText = await GetElementText(".email-body");
             StringAssert.Contains(bodyText, kv, $"Key vault {kv} should be displayed");
@@ -129,7 +129,7 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
         await LoadHtml(html);
 
         var link = Page.Locator($"a[href='{_testModel.PwPushUrl}']");
-        Assert.IsTrue(await link.CountAsync() > 0, "Password push link should exist");
+        Assert.IsGreaterThan(0, await link.CountAsync(), "Password push link should exist");
         
         var bodyText = await GetElementText(".email-body");
         Assert.IsNotNull(bodyText);

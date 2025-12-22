@@ -48,7 +48,7 @@ public abstract class PlaywrightTestBase
         Provider?.Dispose();
     }
 
-    protected async Task<string> RenderEmailHtml<T>(EmailMessage message) where T : class
+    protected async Task<string?> RenderEmailHtml<T>(EmailMessage message) where T : class
     {
         var renderer = new EmailHtmlRenderer(Provider);
         var html = await renderer.RenderAsync(message);
@@ -59,9 +59,12 @@ public abstract class PlaywrightTestBase
         return html;
     }
 
-    protected async Task LoadHtml(string html)
+    protected async Task LoadHtml(string? html)
     {
-        await Page.SetContentAsync(html);
+        if (html != null)
+        {
+            await Page.SetContentAsync(html);
+        }
     }
 
     protected async Task<bool> ElementExists(string selector)

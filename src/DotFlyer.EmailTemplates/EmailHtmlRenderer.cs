@@ -10,7 +10,15 @@ namespace DotFlyer.EmailTemplates
     {
         private readonly ILogger<EmailHtmlRenderer> _logger = serviceProvider.GetRequiredService<ILogger<EmailHtmlRenderer>>();
 
-        public async Task<string> RenderAsync(EmailMessage emailMessage)
+        /// <summary>
+        /// Renders an email message to HTML using a Razor component template or falls back to the email body.
+        /// </summary>
+        /// <remarks>
+        /// If the email message has a TemplateModel, the method attempts to resolve and render a registered Razor component
+        /// using the TemplateId as a keyed service. If no template is found or an error occurs during rendering,
+        /// it falls back to returning the Body property of the email message.
+        /// </remarks>
+        public async Task<string?> RenderAsync(EmailMessage emailMessage)
         {
             // No template, use Body instead (legacy behavior).
             if (emailMessage.TemplateModel == null)
