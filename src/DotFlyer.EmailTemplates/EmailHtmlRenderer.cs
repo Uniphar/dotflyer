@@ -17,7 +17,7 @@ namespace DotFlyer.EmailTemplates
         public async Task<string?> RenderAsync(EmailMessage emailMessage)
         {
             // No template, use Body instead (legacy behavior).
-            if (emailMessage.TemplateModel == null)
+            if (emailMessage.TemplateId == null && emailMessage.TemplateModel == null)
             {
                 return emailMessage.Body;
             }
@@ -57,6 +57,7 @@ namespace DotFlyer.EmailTemplates
             }
 
             //if failed to render html template, fall back to json serialized model
+            _logger.LogWarning("Failed to render email template for model type {TemplateId}, falling back to JSON serialization", emailMessage.TemplateId);
             return JsonSerializer.Serialize(emailMessage.TemplateModel);
         }
     }
