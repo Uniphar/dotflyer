@@ -1,5 +1,7 @@
 ﻿namespace DotFlyer.Service.Tests;
 
+using Microsoft.Extensions.Logging.Abstractions;
+
 [TestClass, TestCategory("Unit")]
 public class EmailSenderTests
 {
@@ -20,12 +22,7 @@ public class EmailSenderTests
         _azureDataExplorerClientMock = new Mock<IAzureDataExplorerClient>();
 
         var serviceProviderMock = new Mock<IServiceProvider>();
-        var loggerMock = new Mock<ILogger<EmailHtmlRenderer>>();
-        serviceProviderMock
-            .Setup(x => x.GetService(typeof(ILogger<EmailHtmlRenderer>)))
-            .Returns(loggerMock.Object);
-
-        var emailHtmlRenderer = new EmailHtmlRenderer(serviceProviderMock.Object);
+        var emailHtmlRenderer = new EmailHtmlRenderer(serviceProviderMock.Object, NullLogger<EmailHtmlRenderer>.Instance);
 
         _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, new TelemetryClient(new() { TelemetryChannel = _telemetryChannelMock.Object }), _azureDataExplorerClientMock.Object, emailHtmlRenderer);
     }

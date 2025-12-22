@@ -2,10 +2,8 @@ using System.Text.Json;
 
 namespace DotFlyer.EmailTemplates
 {
-    public class EmailHtmlRenderer(IServiceProvider serviceProvider)
+    public class EmailHtmlRenderer(IServiceProvider serviceProvider, ILogger<EmailHtmlRenderer> logger)
     {
-        private readonly ILogger<EmailHtmlRenderer> _logger = serviceProvider.GetRequiredService<ILogger<EmailHtmlRenderer>>();
-
         /// <summary>
         /// Renders an email message to HTML using a Razor component template or falls back to the email body.
         /// </summary>
@@ -17,7 +15,7 @@ namespace DotFlyer.EmailTemplates
         public async Task<string?> RenderAsync(EmailMessage emailMessage)
         {
             // No template, use Body instead (legacy behavior).
-            if (emailMessage.TemplateId == null && emailMessage.TemplateModel == null)
+            if (emailMessage.TemplateId == null)
             {
                 return emailMessage.Body;
             }
@@ -49,15 +47,11 @@ namespace DotFlyer.EmailTemplates
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogWarning(ex, "No keyed service found for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while rendering email template for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
+                logger.LogError(ex, "No keyed service found for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
             }
 
             //if failed to render html template, fall back to json serialized model
-            _logger.LogWarning("Failed to render email template for model type {TemplateId}, falling back to JSON serialization", emailMessage.TemplateId);
+            logger.LogError("Failed to render email template for model type {TemplateId}, falling back to JSON serialization", emailMessage.TemplateId);
             return JsonSerializer.Serialize(emailMessage.TemplateModel);
         }
     }

@@ -32,7 +32,7 @@ namespace DotFlyer.EmailTemplates.Tests
         [TestMethod]
         public async Task RenderAsync_ManualSecretRotation_ShouldRenderTemplateSuccessfully()
         {
-            var renderer = new EmailHtmlRenderer(_provider);
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
 
             var model = new ManualSecretRotationModel
             {
@@ -74,7 +74,7 @@ namespace DotFlyer.EmailTemplates.Tests
         [TestMethod]
         public async Task RenderAsync_SalesReport_ShouldRenderTemplateSuccessfully()
         {
-            var renderer = new EmailHtmlRenderer(_provider);
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
 
             var model = new SalesReportModel
             {
@@ -105,7 +105,7 @@ namespace DotFlyer.EmailTemplates.Tests
         [TestMethod]
         public async Task RenderAsync_NoTemplate_ShouldReturnBody()
         {
-            var renderer = new EmailHtmlRenderer(_provider);
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
 
             var message = new EmailMessage
             {
@@ -124,7 +124,7 @@ namespace DotFlyer.EmailTemplates.Tests
         [TestMethod]
         public async Task RenderAsync_SalesReport_WithoutTemplateId_ShouldFallbackToBody()
         {
-            var renderer = new EmailHtmlRenderer(_provider);
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
 
             var model = new SalesReportModel
             {
@@ -153,7 +153,7 @@ namespace DotFlyer.EmailTemplates.Tests
         [TestMethod]
         public async Task RenderAsync_ManualSecretRotation_WithoutTemplateId_ShouldFallbackToBody()
         {
-            var renderer = new EmailHtmlRenderer(_provider);
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
 
             var model = new ManualSecretRotationModel
             {

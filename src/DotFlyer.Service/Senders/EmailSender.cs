@@ -88,7 +88,7 @@ public class EmailSender(
 
         var resultContent = await result.Body.ReadAsStringAsync(cancellationToken);
 
-        await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode, resultContent), cancellationToken);
+        await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode, resultContent, htmlContent), cancellationToken);
 
         switch (result.StatusCode)
         {

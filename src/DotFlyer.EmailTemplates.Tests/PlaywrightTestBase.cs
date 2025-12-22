@@ -50,7 +50,7 @@ public abstract class PlaywrightTestBase
 
     protected async Task<string?> RenderEmailHtml<T>(EmailMessage message) where T : class
     {
-        var renderer = new EmailHtmlRenderer(Provider);
+        var renderer = Provider.GetRequiredService<EmailHtmlRenderer>();
         var html = await renderer.RenderAsync(message);
         
         var fileName = $"{typeof(T).Name}_{DateTime.Now:yyyyMMddHHmmss}.html";
