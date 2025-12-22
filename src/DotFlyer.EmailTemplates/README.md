@@ -4,11 +4,6 @@ Razor Component Library containing email templates for DotFlyer. It provides reu
 
 ## Usage:
 
-1. Add the NuGet package to your project:
-   ```bash
-   dotnet add package DotFlyer.EmailTemplates
-   ```
-
 1. Create an email message with a template:
    ```csharp
    var emailMessage = new EmailMessage

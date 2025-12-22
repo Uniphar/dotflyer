@@ -1,4 +1,6 @@
-﻿namespace DotFlyer.Api.Tests;
+﻿using DotFlyer.Common.EmailTemplates;
+
+namespace DotFlyer.Api.Tests;
 
 [TestClass, TestCategory("Integration")]
 public class APITests
@@ -433,7 +435,7 @@ public class APITests
                     Name = "Integration Test Destination"
                 }
             ],
-            TemplateModel = new EmailTemplates.Models.SalesReportModel
+            TemplateModel = new SalesReportModel
             {
                 Title = $"Q1 2024 Sales Report - {testGuid}",
                 ClientName = "Test Corporation",
@@ -491,7 +493,7 @@ public class APITests
                     Name = "Integration Test Destination"
                 }
             ],
-            TemplateModel = new EmailTemplates.Models.ManualSecretRotationModel
+            TemplateModel = new ManualSecretRotationModel
             {
                 TenantId = Guid.NewGuid().ToString(),
                 AppId = Guid.NewGuid().ToString(),

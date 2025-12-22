@@ -1,4 +1,7 @@
-namespace DotFlyer.EmailTemplates.Models
+using System;
+using System.Collections.Generic;
+
+namespace DotFlyer.Common.EmailTemplates
 {
     public class ManualSecretRotationModel
     {

@@ -1,5 +1,5 @@
-﻿using DotFlyer.Common.Payload;
-using DotFlyer.EmailTemplates.Models;
+﻿using DotFlyer.Common.EmailTemplates;
+using DotFlyer.Common.Payload;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DotFlyer.EmailTemplates.Tests
@@ -55,7 +55,7 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Manual Secret Rotation Required",
                 Body = "Fallback body",
                 TemplateModel = model,
-                TemplateId = EmailTemplates.ManualSecretRotation,
+                TemplateId = EmailTemplateIds.ManualSecretRotation,
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
                 To = [new Contact { Email = "to@test.local", Name = "To" }]
             };
@@ -87,7 +87,7 @@ namespace DotFlyer.EmailTemplates.Tests
                 Subject = "Monthly Sales Report",
                 Body = "Fallback body",
                 TemplateModel = model,
-                TemplateId = EmailTemplates.SalesReport,
+                TemplateId = EmailTemplateIds.SalesReport,
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
                 To = [new Contact { Email = "to@test.local", Name = "To" }]
             };

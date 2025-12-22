@@ -1,3 +1,4 @@
+using DotFlyer.Common.EmailTemplates;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DotFlyer.EmailTemplates
@@ -8,8 +9,8 @@ namespace DotFlyer.EmailTemplates
         {
             services.AddSingleton(serviceProvider => new EmailHtmlRenderer(serviceProvider));
 
-            services.AddKeyedSingleton(EmailTemplates.SalesReport, typeof(Components.Templates.SalesReport))
-                .AddKeyedSingleton(EmailTemplates.ManualSecretRotation, typeof(Components.Templates.ManualSecretRotation));
+            services.AddKeyedSingleton(EmailTemplateIds.SalesReport, typeof(Components.SalesReport))
+                .AddKeyedSingleton(EmailTemplateIds.ManualSecretRotation, typeof(Components.ManualSecretRotation));
 
             return services;
         }

@@ -1,10 +1,10 @@
-namespace DotFlyer.EmailTemplates
+namespace DotFlyer.Common.EmailTemplates
 {
     /// <summary>
     /// Constants for email template identifiers.
     /// These must match the TemplateId property values in the corresponding model classes.
     /// </summary>
-    public static class EmailTemplates
+    public static class EmailTemplateIds
     {
         /// <summary>
         /// Sales report email template.

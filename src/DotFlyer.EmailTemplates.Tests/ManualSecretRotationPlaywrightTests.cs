@@ -1,4 +1,4 @@
-using DotFlyer.EmailTemplates.Models;
+using DotFlyer.Common.EmailTemplates;
 using DotFlyer.Common.Payload;
 
 namespace DotFlyer.EmailTemplates.Tests;
@@ -37,7 +37,7 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
             Subject = "Manual Secret Rotation Required",
             Body = "Fallback body",
             TemplateModel = _testModel,
-            TemplateId = EmailTemplates.ManualSecretRotation,
+            TemplateId = EmailTemplateIds.ManualSecretRotation,
             From = new Contact { Email = "sender@test.local", Name = "Sender" },
             To = [new Contact { Email = "to@test.local", Name = "To" }]
         };

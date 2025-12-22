@@ -1,4 +1,4 @@
-using DotFlyer.EmailTemplates.Models;
+using DotFlyer.Common.EmailTemplates;
 using DotFlyer.Common.Payload;
 
 namespace DotFlyer.EmailTemplates.Tests;
@@ -26,7 +26,7 @@ public class SalesReportPlaywrightTests : PlaywrightTestBase
             Subject = "Monthly Sales Report",
             Body = "Fallback body",
             TemplateModel = _testModel,
-            TemplateId = EmailTemplates.SalesReport,
+            TemplateId = EmailTemplateIds.SalesReport,
             From = new Contact { Email = "sender@test.local", Name = "Sender" },
             To = [new Contact { Email = "to@test.local", Name = "To" }]
         };

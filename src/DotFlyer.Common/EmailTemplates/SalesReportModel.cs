@@ -1,4 +1,4 @@
-namespace DotFlyer.EmailTemplates.Models
+namespace DotFlyer.Common.EmailTemplates
 {
     public class SalesReportModel
     {
