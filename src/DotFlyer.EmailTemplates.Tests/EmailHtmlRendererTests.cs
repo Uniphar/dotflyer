@@ -1,11 +1,10 @@
 ﻿using DotFlyer.Common.Payload;
 using DotFlyer.EmailTemplates.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DotFlyer.EmailTemplates.Tests
 {
-    [TestClass]
+    [TestClass, TestCategory("Unit")]
     public class EmailHtmlRendererTests
     {
         private ServiceProvider _provider = null!;
