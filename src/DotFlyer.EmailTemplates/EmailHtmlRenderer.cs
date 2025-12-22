@@ -27,23 +27,23 @@ namespace DotFlyer.EmailTemplates
             try
             {
                 var componentType = serviceProvider.GetKeyedService<Type>(emailMessage.TemplateId);
-                if (componentType != null)
+                if (componentType == null)
                 {
-                    var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
-                    {
-                        ["Model"] = emailMessage.TemplateModel
-                    });
-
-                    var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
-                    {
-                        var output = await htmlRenderer.RenderComponentAsync(componentType, parameters);
-                        return output.ToHtmlString();
-                    });
-
-                    return html;
+                    throw new InvalidOperationException($"No component registered for template id {emailMessage.TemplateId}");
                 }
+                
+                var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+                {
+                    ["Model"] = emailMessage.TemplateModel
+                });
 
-                _logger.LogWarning("No component registered for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
+                var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
+                {
+                    var output = await htmlRenderer.RenderComponentAsync(componentType, parameters);
+                    return output.ToHtmlString();
+                });
+
+                return html;
             }
             catch (InvalidOperationException ex)
             {
