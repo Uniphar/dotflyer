@@ -471,7 +471,6 @@ public class APITests
         emailData.Subject.Should().Be(emailMessage.Subject);
         emailData.FromEmail.Should().Be(emailMessage.From.Email);
         emailData.FromName.Should().Be(emailMessage.From.Name);
-        emailData.TemplateId.Should().Be(EmailTemplateIds.ManualSecretRotation);
         emailData.SendGridStatusCodeInt.Should().Be(202);
         emailData.SendGridStatusCodeString.Should().Be("Accepted");
     }

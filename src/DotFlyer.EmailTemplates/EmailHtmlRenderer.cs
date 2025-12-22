@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Reflection;
 
 namespace DotFlyer.EmailTemplates
 {
@@ -31,10 +32,24 @@ namespace DotFlyer.EmailTemplates
                 {
                     throw new InvalidOperationException($"No component registered for template id {emailMessage.TemplateId}");
                 }
+
+                var model = emailMessage.TemplateModel;
+
+                // Deserialize the model if it's a JsonElement (from API requests)
+                if (model is JsonElement jsonElement)
+                {
+                    // Get the model type from the component's Model parameter
+                    var modelType = componentType.GetProperty("Model")?.PropertyType;
+                    if (modelType == null)
+                    {
+                        throw new InvalidOperationException($"Component {componentType.FullName} does not have a required Model property");
+                    }
+                    model = JsonSerializer.Deserialize(jsonElement.GetRawText(), modelType);
+                }
                 
                 var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
                 {
-                    ["Model"] = emailMessage.TemplateModel
+                    ["Model"] = model
                 });
 
                 var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
@@ -49,9 +64,12 @@ namespace DotFlyer.EmailTemplates
             {
                 logger.LogError(ex, "No keyed service found for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
             }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to render email template for template id {TemplateId}", emailMessage.TemplateId);
+            }
 
             //if failed to render html template, fall back to json serialized model
-            logger.LogError("Failed to render email template for model type {TemplateId}, falling back to JSON serialization", emailMessage.TemplateId);
             return JsonSerializer.Serialize(emailMessage.TemplateModel);
         }
     }
