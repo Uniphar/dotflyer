@@ -24,7 +24,7 @@ jobs:
         with:
           dotnet-version: '8'
       
-      - name: check for NuGet vulnerabilites
+      - name: check DotFlyer.Common for NuGet vulnerabilites
         working-directory: ./src/DotFlyer.Common
         shell: pwsh
         run: |
@@ -33,8 +33,21 @@ jobs:
             echo "Analyze dotnet list package command log output..."
             exit (Select-String -Path "build.log" -Pattern "has the following vulnerable packages" -AllMatches).Matches.Count -gt 0 ? 1 : 0
       
-      - name: dotnet pack test
+      - name: pack DotFlyer.Common
         working-directory: ./src/DotFlyer.Common
+        run: dotnet pack --configuration Release
+
+      - name: check DotFlyer.EmailTemplates for NuGet vulnerabilites
+        working-directory: ./src/DotFlyer.EmailTemplates
+        shell: pwsh
+        run: |
+            dotnet restore
+            dotnet list package --vulnerable --include-transitive 2>&1 | tee build.log
+            echo "Analyze dotnet list package command log output..."
+            exit (Select-String -Path "build.log" -Pattern "has the following vulnerable packages" -AllMatches).Matches.Count -gt 0 ? 1 : 0
+      
+      - name: pack DotFlyer.EmailTemplates
+        working-directory: ./src/DotFlyer.EmailTemplates
         run: dotnet pack --configuration Release
 
   notify:

@@ -60,12 +60,20 @@ jobs:
 
           echo "NUGET_API_KEY=$nuGetAPIKey" >> $env:GITHUB_ENV
       
-      - name: dotnet pack
+      - name: dotnet pack DotFlyer.Common
         working-directory: ./src/DotFlyer.Common
         run: dotnet pack --configuration Release -o ./.nupkgs
 
-      - name : dotnet nuget push
+      - name : dotnet nuget push DotFlyer.Common
         working-directory: ./src/DotFlyer.Common
+        run: dotnet nuget push ./.nupkgs/*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key $NUGET_API_KEY
+
+      - name: dotnet pack DotFlyer.EmailTemplates
+        working-directory: ./src/DotFlyer.EmailTemplates
+        run: dotnet pack --configuration Release -o ./.nupkgs
+
+      - name : dotnet nuget push DotFlyer.EmailTemplates
+        working-directory: ./src/DotFlyer.EmailTemplates
         run: dotnet nuget push ./.nupkgs/*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key $NUGET_API_KEY
 
   notify:
