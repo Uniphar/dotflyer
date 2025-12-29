@@ -72,37 +72,6 @@ namespace DotFlyer.EmailTemplates.Tests
         }
 
         [TestMethod]
-        public async Task RenderAsync_SalesReport_ShouldRenderTemplateSuccessfully()
-        {
-            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
-
-            var model = new SalesReportModel
-            {
-                Title = "Sales Report - January 2024",
-                ClientName = "Test Corporation",
-                ContactEmailAddress = "support@test.com",
-            };
-            var message = new EmailMessage
-            {
-                Subject = "Monthly Sales Report",
-                Body = "Fallback body",
-                TemplateModel = model,
-                TemplateId = EmailTemplateIds.SalesReport,
-                From = new Contact { Email = "sender@test.local", Name = "Sender" },
-                To = [new Contact { Email = "to@test.local", Name = "To" }]
-            };
-
-            var html = await renderer.RenderAsync(message);
-
-            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
-            StringAssert.Contains(html, model.Title);
-            StringAssert.Contains(html, model.ClientName);
-            StringAssert.Contains(html, model.ContactEmailAddress);
-
-            await WriteHtmlToFile("SalesReport.html", html);
-        }
-
-        [TestMethod]
         public async Task RenderAsync_NoTemplate_ShouldReturnBody()
         {
             var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
@@ -119,35 +88,6 @@ namespace DotFlyer.EmailTemplates.Tests
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
             StringAssert.Contains(html, "This is a plain email without template");
-        }
-
-        [TestMethod]
-        public async Task RenderAsync_SalesReport_WithoutTemplateId_ShouldFallbackToBody()
-        {
-            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
-
-            var model = new SalesReportModel
-            {
-                Title = "Sales Report - Auto-Resolved",
-                ClientName = "Auto Test Corporation",
-                ContactEmailAddress = "auto@test.com",
-            };
-            var message = new EmailMessage
-            {
-                Subject = "Monthly Sales Report (Auto-Resolved)",
-                Body = "Fallback body",
-                // TemplateId is NOT set - should be auto-resolved from model type
-                TemplateModel = model,
-                From = new Contact { Email = "sender@test.local", Name = "Sender" },
-                To = [new Contact { Email = "to@test.local", Name = "To" }]
-            };
-
-            var html = await renderer.RenderAsync(message);
-
-            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
-            StringAssert.Contains(html, message.Body);
-
-            await WriteHtmlToFile("SalesReport_Fallback.html", html);
         }
 
         [TestMethod]
@@ -175,7 +115,7 @@ namespace DotFlyer.EmailTemplates.Tests
             {
                 Subject = "Manual Secret Rotation Required (Auto-Resolved)",
                 Body = "Fallback body",
-                // TemplateId is NOT set - should be auto-resolved from model type
+                // TemplateId is NOT set - should fallback to Body
                 TemplateModel = model,
                 From = new Contact { Email = "sender@test.local", Name = "Sender" },
                 To = [new Contact { Email = "to@test.local", Name = "To" }]

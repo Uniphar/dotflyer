@@ -8,13 +8,13 @@ Razor Component Library containing email templates for DotFlyer. It provides reu
    ```csharp
    var emailMessage = new EmailMessage
    {
-       Subject = "Sales Report",
-       TemplateId = EmailTemplateId.SalesReport,
-       TemplateModel = new SalesReportModel
+       Subject = "Manual Secret Rotation",
+       TemplateId = EmailTemplateId.ManualSecretRotation,
+       TemplateModel = new ManualSecretRotationModel
        {
-           Title = "Q1 Sales Report",
-           ClientName = "Acme Corp",
-           ContactEmailAddress = "contact@acme.com"
+           Title = "Manual Secret Rotation",
+           ResourceName = "AzureKeyVault1",
+           SecretName = "secret1"
        }
    };
    ```
@@ -28,7 +28,6 @@ The DotFlyer API will render the specified template with the provided model and 
 
 ## Available Templates
 
-- `EmailTemplateId.SalesReport` - Sales report template
 - `EmailTemplateId.ManualSecretRotation` - Manual secret rotation template
 
 Templates are stored as Razor components in the `Components/` folder.

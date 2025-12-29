@@ -82,8 +82,8 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
         var html = await RenderEmailHtml<ManualSecretRotationModel>(_testMessage);
         await LoadHtml(html);
 
-        Assert.IsTrue(await ElementExists(".email-header svg"), "Header logo should exist");
-        Assert.IsTrue(await ElementExists(".footer-logo svg"), "Footer logo should exist");
+        Assert.IsTrue(await ElementExists(".email-header img"), "Header logo should exist");
+        Assert.IsTrue(await ElementExists(".email-footer img"), "Footer logo should exist");
     }
 
     [TestMethod]

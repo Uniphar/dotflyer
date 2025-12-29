@@ -8,8 +8,7 @@ namespace DotFlyer.EmailTemplates
                 serviceProvider,
                 serviceProvider.GetRequiredService<ILogger<EmailHtmlRenderer>>()));
 
-            services.AddKeyedSingleton(EmailTemplateIds.SalesReport, typeof(Components.SalesReport))
-                .AddKeyedSingleton(EmailTemplateIds.ManualSecretRotation, typeof(Components.ManualSecretRotation));
+            services.AddKeyedSingleton(EmailTemplateIds.ManualSecretRotation, typeof(Components.ManualSecretRotation));
 
             return services;
         }

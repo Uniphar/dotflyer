@@ -473,63 +473,12 @@ public class APITests
         emailData.FromName.Should().Be(emailMessage.From.Name);
         emailData.SendGridStatusCodeInt.Should().Be(202);
         emailData.SendGridStatusCodeString.Should().Be("Accepted");
-    }
 
-    [TestMethod]
-    public async Task Post_Email_WithSalesReportTemplate_ShouldReturn_200_And_RenderTemplate()
-    {
-        var testGuid = Guid.NewGuid();
-        
-        var emailMessage = new EmailMessage
-        {
-            Subject = $"Sales Report Serialization Test - {testGuid}",
-            Body = "Fallback body if template fails",
-            From = new Contact
-            {
-                Email = _senderEmail,
-                Name = "Integration Test"
-            },
-            To =
-            [
-                new Contact
-                {
-                    Email = _receiverEmail,
-                    Name = "Integration Test Destination"
-                }
-            ],
-            TemplateId = EmailTemplateIds.SalesReport,
-            TemplateModel = new SalesReportModel
-            {
-                Title = $"Serialization Test Report - {testGuid}",
-                ClientName = "Serialization Test Corp",
-                ContactEmailAddress = "serialization@test.com"
-            },
-            Tags = new Dictionary<string, string>
-            {
-                { "TestName", "Email Template Serialization Test" }
-            }
-        };
-
-        // Call API to verify serialization and deserialization
-        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
-        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
-
-        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
-
-        // Wait for the email to be processed and ingested into ADX
-        EmailData emailData = await _cslQueryProvider!
-            .WaitSingleQueryResult<EmailData>(
-                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
-                TimeSpan.FromMinutes(10),
-                _cancellationToken);
-
-        emailData.Should().NotBeNull();
-        emailData.Subject.Should().Be(emailMessage.Subject);
-        emailData.FromEmail.Should().Be(emailMessage.From.Email);
-        emailData.FromName.Should().Be(emailMessage.From.Name);
-        emailData.SendGridStatusCodeInt.Should().Be(202);
-        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+        emailData.Body.Should().NotBeNullOrWhiteSpace();
+        emailData.Body.Should().Contain("<html", because: "templated emails must store rendered HTML in ADX");
+       
+        var model = (ManualSecretRotationModel)emailMessage.TemplateModel;
+        emailData.Body.Should().Contain(model.SecretName);
     }
 
     [TestMethod]

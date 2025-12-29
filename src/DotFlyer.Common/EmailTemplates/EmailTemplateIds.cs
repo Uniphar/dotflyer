@@ -7,11 +7,6 @@ namespace DotFlyer.Common.EmailTemplates
     public static class EmailTemplateIds
     {
         /// <summary>
-        /// Sales report email template.
-        /// </summary>
-        public const string SalesReport = nameof(SalesReportModel);
-
-        /// <summary>
         /// Manual secret rotation notification email template.
         /// </summary>
         public const string ManualSecretRotation = nameof(ManualSecretRotationModel);

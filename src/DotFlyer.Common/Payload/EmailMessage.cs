@@ -8,8 +8,7 @@ namespace DotFlyer.Common.Payload
     /// </summary>
     public class EmailMessage
     {
-        [Required]
-        public Contact? From { get; set; }
+        [Required] public Contact? From { get; set; }
 
         [Required]
         public IEnumerable<Contact>? To { get; set; }
