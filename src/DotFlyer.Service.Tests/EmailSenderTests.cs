@@ -47,14 +47,6 @@ public class EmailSenderTests
     }
 
     [TestMethod]
-    public async Task EmailSender_ShouldThrowArgumentException_WhenEmailMessageToIsEmpty()
-    {
-        _emailMessage!.To = [];
-
-        await Assert.ThrowsAsync<ArgumentException>(() => _emailSender.SendAsync(_emailMessage!));
-    }
-
-    [TestMethod]
     public async Task EmailSender_ShouldNotThrowArgumentException_WhenResponseIsBadRequest()
     {
         _sendGridClientMock

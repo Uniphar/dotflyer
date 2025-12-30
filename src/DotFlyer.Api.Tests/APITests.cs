@@ -1,7 +1,7 @@
 ﻿namespace DotFlyer.Api.Tests;
 
 [TestClass, TestCategory("Integration")]
-public class APITests
+public class ApiTests
 {
     private static IServiceProvider? _serviceProvider;
 
@@ -13,17 +13,17 @@ public class APITests
     private static SecretClient? _secretClient;
     private static ICslQueryProvider? _cslQueryProvider;
 
-    private static string? _smsReceiverNumber;
+    // these will be initialized before use
+    private static string _smsReceiverNumber = null!;
+    private static string _senderEmail = null!;
+    private static string _receiverEmail = null!;
 
-    private static string? _senderEmail;
-    private static string? _receiverEmail;
-
-    private static readonly string _senderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-id";
-    private static readonly string _senderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-secret";
-    private static readonly string _smsSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-id";
-    private static readonly string _smsSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-secret";
-    private static readonly string _emailSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-id";
-    private static readonly string _emailSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-secret";
+    private static readonly string SenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-id";
+    private static readonly string SenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-secret";
+    private static readonly string SmsSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-id";
+    private static readonly string SmsSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-secret";
+    private static readonly string EmailSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-id";
+    private static readonly string EmailSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-secret";
 
     [ClassInitialize]
     public static async Task ClassInitialize(TestContext context)
@@ -46,9 +46,9 @@ public class APITests
         var appClientId = (await _secretClient!.GetSecretAsync("dotflyer-api-client-id", cancellationToken: _cancellationToken)).Value.Value;
         _scope = $"api://dotflyer-api/{appClientId}/.default";
 
-        var _adxHostAddress = (await _secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
+        var adxHostAddress = (await _secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
 
-        var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, "devops")
+        var kcsb = new KustoConnectionStringBuilder(adxHostAddress, "devops")
             .WithAadTokenProviderAuthentication(async () =>
                 (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]), cancellationToken: _cancellationToken)).Token);
 
@@ -65,7 +65,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString()
         };
 
@@ -81,7 +81,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString()
         };
 
@@ -97,7 +97,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString(),
             Tags = new Dictionary<string, string>()
             {
@@ -105,7 +105,7 @@ public class APITests
             }
         };
 
-        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSmsSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -127,7 +127,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString(),
             Tags = new Dictionary<string, string>()
             {
@@ -157,7 +157,7 @@ public class APITests
     {
         var smsMessage = new { };
 
-        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSmsSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -200,13 +200,13 @@ public class APITests
             Body = Guid.NewGuid().ToString(),
             From = new()
             {
-                Email = _senderEmail,
+                Email = _senderEmail!,
                 Name = "Integration Test"
             },
             To = [
                 new()
                 {
-                    Email = _receiverEmail,
+                    Email = _receiverEmail!,
                     Name = "Integration Test Destination Address"
                 }
             ],
@@ -245,13 +245,13 @@ public class APITests
             Body = Guid.NewGuid().ToString(),
             From = new()
             {
-                Email = _senderEmail,
+                Email = _senderEmail!,
                 Name = "Integration Test"
             },
             To = [
                 new()
                 {
-                    Email = _receiverEmail,
+                    Email = _receiverEmail!,
                     Name = "Integration Test Destination Address"
                 }
             ],
@@ -284,7 +284,23 @@ public class APITests
     [TestMethod]
     public async Task Post_Email_ShouldReturn_401_When_NoTokenProvided()
     {
-        EmailMessage emailMessage = new();
+        EmailMessage emailMessage = new()
+        {
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new()
+                {
+                    Email = "invalid_email",
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Subject = "DotFlyer API Test Automation",
+        };
 
         var httpClient = GetHttpClient();
 
@@ -296,9 +312,24 @@ public class APITests
     [TestMethod]
     public async Task Post_Email_ShouldReturn_403_When_SMSSenderRoleAndPayloadIsValid()
     {
-        EmailMessage emailMessage = new();
-
-        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        EmailMessage emailMessage = new()
+        {
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new()
+                {
+                    Email = "invalid_email",
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Subject = "DotFlyer API Test Automation",
+        };
+        var httpClient = GetHttpClient(await GetSmsSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
@@ -493,14 +524,14 @@ public class APITests
             Body = "Fallback body if template fails",
             From = new Contact
             {
-                Email = _senderEmail,
+                Email = _senderEmail!,
                 Name = "Integration Test"
             },
             To =
             [
                 new Contact
                 {
-                    Email = _receiverEmail,
+                    Email = _receiverEmail!,
                     Name = "Integration Test Destination"
                 }
             ],
@@ -546,13 +577,13 @@ public class APITests
     public static StringContent GetStringContent(object content) => new(JsonSerializer.Serialize(content), Encoding.UTF8, MediaTypeNames.Application.Json);
 
     public static async Task<string> GetSenderAccessTokenAsync() =>
-        await GetAccessTokenAsync(_senderRoleClientIdKeyVaultName, _senderRoleClientSecretKeyVaultName);
+        await GetAccessTokenAsync(SenderRoleClientIdKeyVaultName, SenderRoleClientSecretKeyVaultName);
 
-    public static async Task<string> GetSMSSenderAccessTokenAsync() =>
-        await GetAccessTokenAsync(_smsSenderRoleClientIdKeyVaultName, _smsSenderRoleClientSecretKeyVaultName);
+    public static async Task<string> GetSmsSenderAccessTokenAsync() =>
+        await GetAccessTokenAsync(SmsSenderRoleClientIdKeyVaultName, SmsSenderRoleClientSecretKeyVaultName);
 
     public static async Task<string> GetEmailSenderAccessTokenAsync() =>
-        await GetAccessTokenAsync(_emailSenderRoleClientIdKeyVaultName, _emailSenderRoleClientSecretKeyVaultName);
+        await GetAccessTokenAsync(EmailSenderRoleClientIdKeyVaultName, EmailSenderRoleClientSecretKeyVaultName);
 
     public static async Task<string> GetAccessTokenAsync(string clientId, string clientSecret)
     {
