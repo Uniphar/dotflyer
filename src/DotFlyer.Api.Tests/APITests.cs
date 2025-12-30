@@ -155,7 +155,7 @@ public class ApiTests
     [TestMethod]
     public async Task Post_SMS_ShouldReturn_400_When_SMSSenderRoleAndPayloadIsNotValid()
     {
-        var smsMessage = new { };
+        var smsMessage = new { To = string.Empty, Body = string.Empty };
 
         var httpClient = GetHttpClient(await GetSmsSenderAccessTokenAsync());
 
@@ -341,8 +341,10 @@ public class ApiTests
     {
         var emailMessage = new
         {
-            From = new { },
-            To = new List<Contact>()
+            From = new { Email = string.Empty, Name = string.Empty },
+            To = new List<Contact>(),
+            Subject = string.Empty,
+            Body = (string?)null
         };
 
         var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
@@ -376,7 +378,7 @@ public class ApiTests
                 new()
                 {
                     Email = "invalid_email",
-                    Name = "Integration Test Destination Address"
+                    Name = "Integration Test Destination"
                 }
             ],
             Tags = new Dictionary<string, string>()
@@ -536,7 +538,7 @@ public class ApiTests
                 }
             ],
             TemplateId = "Unknown",
-            TemplateModel = new {Test = "test"},
+            TemplateModel = new { Test = "test" },
             Tags = new Dictionary<string, string>
             {
                 { "TestName", "Email Template Serialization Test" }
@@ -557,6 +559,9 @@ public class ApiTests
                 _cancellationToken);
 
         emailData.Should().NotBeNull();
+
+        // When no template is rendered, the service stores the payload Body (legacy/fallback)
+        // rather than the TemplateModel JSON.
         emailData.Body.Should().Be(JsonSerializer.Serialize(emailMessage.TemplateModel));
         emailData.SendGridStatusCodeInt.Should().Be(202);
     }
