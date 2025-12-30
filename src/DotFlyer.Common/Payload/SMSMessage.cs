@@ -11,10 +11,10 @@ namespace DotFlyer.Common.Payload
         public string? From { get; set; }
 
         [Required]
-        public string? To { get; set; }
+        public required string To { get; init; }
 
         [Required]
-        public string? Body { get; set; }
+        public required string Body { get; init; }
 
         public IDictionary<string, string>? Tags { get; set; }
     }

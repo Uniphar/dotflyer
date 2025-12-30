@@ -3,21 +3,25 @@
 /// <summary>
 /// Contains the model for email data to be ingested into Azure Data Explorer.
 /// </summary>
-public class EmailData : EmailMessage
+public class EmailData
 {
     public required string FromEmail { get; set; }
 
     public required string FromName { get; set; }
 
-    public new required string To { get; set; }
+    public required string To { get; set; }
 
-    public new required string Cc { get; set; }
+    public required string Cc { get; set; }
 
-    public new required string Bcc { get; set; }
+    public required string Bcc { get; set; }
 
-    public new required string Attachments { get; set; }
+    public required string Subject { get; set; }
 
-    public new required string Tags { get; set; }
+    public required string Body { get; set; }
+
+    public required string Attachments { get; set; }
+
+    public required string Tags { get; set; }
 
     public required int SendGridStatusCodeInt { get; set; }
 

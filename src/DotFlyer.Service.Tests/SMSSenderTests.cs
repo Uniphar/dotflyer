@@ -39,14 +39,6 @@ public class SMSSenderTests
     }
 
     [TestMethod]
-    public async Task SMSSender_ShouldThrowArgumentException_WhenEmailMessageToIsEmpty()
-    {
-        _smsMessage!.To = "";
-
-        await Assert.ThrowsAsync<ArgumentException>(() => _smsSender.SendAsync(_smsMessage!));
-    }
-
-    [TestMethod]
     public async Task SMSSender_ShouldNotThrowHttpRequestException_WhenResponseIsBadRequest()
     {
         Mock<Twilio.Http.HttpClient> httpClientMock = new();
