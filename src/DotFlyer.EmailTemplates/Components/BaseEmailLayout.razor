@@ -1,0 +1,86 @@
+@inherits ComponentBase
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>@Title - Uniphar</title>
+  <style>
+    /* Basic reset */
+    body { margin:0; padding:0; background:#f5f7fb; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color:#111; }
+
+    /* Layout */
+    .email-root { width:100%; background:#f5f7fb; padding:24px 8px; }
+    .email-container { max-width:800px; margin:0 auto; background:#ffffff; border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.04); overflow:hidden; border:1px solid #e4e7f0; }
+
+    /* Header */
+    .email-header { padding:20px 32px 12px 32px; border-bottom:1px solid #edf0f7; display:flex; align-items:center; }
+    .email-header-left { display:flex; align-items:center; }
+    .logo { width:202px; height:auto; display:block; }
+    .email-title { font-size:20px; font-weight:600; color:#111; margin:0 0 0 16px; }
+    .brand-bar { height:4px; width:100%; background:#2b4cbd; }
+
+    /* Body */
+    .email-body { padding:24px 32px 28px 32px; background:#ffffff; font-size:14px; line-height:1.6; color:#222; }
+    .subject { font-size:18px; font-weight:600; margin:0 0 12px 0; color:#111; }
+
+    /* Reusable text helpers */
+    .email-muted { font-size:12px; color:#6b7280; }
+
+    /* Info card style similar to website */
+    .info-card { background:#f7f8fc; border-radius:12px; padding:18px 20px; border:1px solid #e3e6f2;  border-top: 15px solid #2B4CBD; }
+    .info-card-title { font-size:16px; font-weight:600; margin:0 0 8px 0; }
+
+    /* Footer */
+    .email-footer { padding:20px 32px 24px 32px; background:#243845; color:#f5f7fb; font-size:12px; }
+    .footer-logo-img { width:120px; height:auto; display:block; margin-bottom:8px; }
+    .footer-address { margin:0 0 8px 0; line-height:1.6; }
+    .footer-meta { color:#c5cedd; font-size:11px; }
+
+    /* Fallback notice */
+    .fallback-notice { display:none; white-space:nowrap; font:15px monospace; }
+
+    a { color:#2b4cbd; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <div class="email-root">
+    <div class="email-container">
+      <div class="brand-bar"></div>
+      <div class="email-header">
+        <div class="email-header-left">
+            <img src="https://raw.githubusercontent.com/Uniphar/dotflyer/feature/emai-templates/src/DotFlyer.EmailTemplates/Assets/uniphar-logo-header.png" alt="Uniphar" class="logo" />
+            @if (!string.IsNullOrWhiteSpace(Title))
+            {
+                <h1 class="email-title">@Title</h1>
+            }
+        </div>
+      </div>
+      <div class="email-body">
+        @ChildContent
+      </div>
+      <div class="email-footer">
+        <img src="https://raw.githubusercontent.com/Uniphar/dotflyer/feature/emai-templates/src/DotFlyer.EmailTemplates/Assets/uniphar-logo-footer.png" alt="Uniphar" class="footer-logo-img" />
+        <p class="footer-address">
+            Uniphar Group, 4045 Kingswood Road,<br />
+            Citywest Business Park, Co. Dublin, D24 V06K
+        </p>
+        <p class="footer-meta">
+            This message and any attachments are confidential. If you are not the intended recipient please notify the sender and delete this message.
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- Fallback notice for clients with HTML disabled: this will show as plain text -->
+  <div class="fallback-notice">If you cannot view this email correctly, please open it in a modern email client or browser.</div>
+</body>
+</html>

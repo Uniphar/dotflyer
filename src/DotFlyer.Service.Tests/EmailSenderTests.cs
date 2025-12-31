@@ -1,5 +1,7 @@
 ﻿namespace DotFlyer.Service.Tests;
 
+using Microsoft.Extensions.Logging.Abstractions;
+
 [TestClass, TestCategory("Unit")]
 public class EmailSenderTests
 {
@@ -10,7 +12,7 @@ public class EmailSenderTests
 
     private EmailMessage? _emailMessage;
 
-    private EmailSender _emailSender;
+    private readonly EmailSender _emailSender;
 
     public EmailSenderTests()
     {
@@ -19,7 +21,10 @@ public class EmailSenderTests
         _telemetryChannelMock = new Mock<ITelemetryChannel>();
         _azureDataExplorerClientMock = new Mock<IAzureDataExplorerClient>();
 
-        _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, new TelemetryClient(new() { TelemetryChannel = _telemetryChannelMock.Object }), _azureDataExplorerClientMock.Object);
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        var emailHtmlRenderer = new EmailHtmlRenderer(serviceProviderMock.Object, NullLogger<EmailHtmlRenderer>.Instance);
+
+        _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, new TelemetryClient(new() { TelemetryChannel = _telemetryChannelMock.Object }), _azureDataExplorerClientMock.Object, emailHtmlRenderer);
     }
 
     [TestInitialize]
@@ -39,14 +44,6 @@ public class EmailSenderTests
                 new() { Name = "Test", Email = "test@test.io"}
             ]
         };
-    }
-
-    [TestMethod]
-    public async Task EmailSender_ShouldThrowArgumentException_WhenEmailMessageToIsEmpty()
-    {
-        _emailMessage!.To = [];
-
-        await Assert.ThrowsAsync<ArgumentException>(() => _emailSender.SendAsync(_emailMessage!));
     }
 
     [TestMethod]

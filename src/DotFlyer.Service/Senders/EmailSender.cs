@@ -1,4 +1,6 @@
-﻿namespace DotFlyer.Service.Senders;
+﻿using DotFlyer.EmailTemplates;
+
+namespace DotFlyer.Service.Senders;
 
 /// <summary>
 /// The email sender service.
@@ -11,7 +13,8 @@ public class EmailSender(
     DefaultAzureCredential credential,
     ISendGridClient sendGridClient,
     TelemetryClient telemetryClient,
-    IAzureDataExplorerClient adxClient) : IEmailSender
+    IAzureDataExplorerClient adxClient,
+    EmailHtmlRenderer htmlRenderer) : IEmailSender
 {
     /// <summary>
     /// Sends an email message.
@@ -24,16 +27,19 @@ public class EmailSender(
     /// <exception cref="HttpRequestException">Thrown when the email message could not be sent.</exception>"
     public async Task SendAsync(EmailMessage emailMessage, CancellationToken cancellationToken = default)
     {
-        if (!emailMessage.To.Any())
+        if (emailMessage.To?.Any() != true)
         {
             throw new ArgumentException("Email message must have at least one recipient in the 'To' field.");
         }
 
+        string htmlContent = await htmlRenderer.RenderAsync(emailMessage) ?? string.Empty;
+
         SendGridMessage sendGridMessage = new()
         {
-            From = new(emailMessage.From.Email, emailMessage.From.Name),
+            From = new(emailMessage.From?.Email ?? string.Empty, emailMessage.From?.Name ?? string.Empty),
             Subject = emailMessage.Subject,
-            HtmlContent = emailMessage.Body
+            HtmlContent = htmlContent,
+            PlainTextContent = emailMessage.Body
         };
 
         foreach (var contact in emailMessage.To)
@@ -82,7 +88,7 @@ public class EmailSender(
 
         var resultContent = await result.Body.ReadAsStringAsync(cancellationToken);
 
-        await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode, resultContent), cancellationToken);
+        await adxClient.IngestDataAsync(EmailData.ConvertToAdxModel(emailMessage, result.StatusCode, resultContent, htmlContent), cancellationToken);
 
         switch (result.StatusCode)
         {

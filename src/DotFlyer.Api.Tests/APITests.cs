@@ -1,7 +1,7 @@
 ﻿namespace DotFlyer.Api.Tests;
 
 [TestClass, TestCategory("Integration")]
-public class APITests
+public class ApiTests
 {
     private static IServiceProvider? _serviceProvider;
 
@@ -13,17 +13,17 @@ public class APITests
     private static SecretClient? _secretClient;
     private static ICslQueryProvider? _cslQueryProvider;
 
-    private static string? _smsReceiverNumber;
+    // these will be initialized before use
+    private static string _smsReceiverNumber = null!;
+    private static string _senderEmail = null!;
+    private static string _receiverEmail = null!;
 
-    private static string? _senderEmail;
-    private static string? _receiverEmail;
-
-    private static readonly string _senderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-id";
-    private static readonly string _senderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-secret";
-    private static readonly string _smsSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-id";
-    private static readonly string _smsSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-secret";
-    private static readonly string _emailSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-id";
-    private static readonly string _emailSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-secret";
+    private static readonly string SenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-id";
+    private static readonly string SenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-all-client-secret";
+    private static readonly string SmsSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-id";
+    private static readonly string SmsSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-sms-client-secret";
+    private static readonly string EmailSenderRoleClientIdKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-id";
+    private static readonly string EmailSenderRoleClientSecretKeyVaultName = "integration-test-dotflyer-api-dotflyer-sender-email-client-secret";
 
     [ClassInitialize]
     public static async Task ClassInitialize(TestContext context)
@@ -46,9 +46,9 @@ public class APITests
         var appClientId = (await _secretClient!.GetSecretAsync("dotflyer-api-client-id", cancellationToken: _cancellationToken)).Value.Value;
         _scope = $"api://dotflyer-api/{appClientId}/.default";
 
-        var _adxHostAddress = (await _secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
+        var adxHostAddress = (await _secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
 
-        var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, "devops")
+        var kcsb = new KustoConnectionStringBuilder(adxHostAddress, "devops")
             .WithAadTokenProviderAuthentication(async () =>
                 (await credential.GetTokenAsync(new(["https://kusto.kusto.windows.net/.default"]), cancellationToken: _cancellationToken)).Token);
 
@@ -65,7 +65,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString()
         };
 
@@ -81,7 +81,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString()
         };
 
@@ -97,7 +97,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString(),
             Tags = new Dictionary<string, string>()
             {
@@ -105,7 +105,7 @@ public class APITests
             }
         };
 
-        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSmsSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -127,7 +127,7 @@ public class APITests
     {
         SMSMessage smsMessage = new()
         {
-            To = _smsReceiverNumber,
+            To = _smsReceiverNumber!,
             Body = Guid.NewGuid().ToString(),
             Tags = new Dictionary<string, string>()
             {
@@ -155,9 +155,9 @@ public class APITests
     [TestMethod]
     public async Task Post_SMS_ShouldReturn_400_When_SMSSenderRoleAndPayloadIsNotValid()
     {
-        var smsMessage = new { };
+        var smsMessage = new { To = string.Empty, Body = string.Empty };
 
-        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        var httpClient = GetHttpClient(await GetSmsSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/sms", GetStringContent(smsMessage), _cancellationToken);
 
@@ -200,13 +200,13 @@ public class APITests
             Body = Guid.NewGuid().ToString(),
             From = new()
             {
-                Email = _senderEmail,
+                Email = _senderEmail!,
                 Name = "Integration Test"
             },
             To = [
                 new()
                 {
-                    Email = _receiverEmail,
+                    Email = _receiverEmail!,
                     Name = "Integration Test Destination Address"
                 }
             ],
@@ -245,13 +245,13 @@ public class APITests
             Body = Guid.NewGuid().ToString(),
             From = new()
             {
-                Email = _senderEmail,
+                Email = _senderEmail!,
                 Name = "Integration Test"
             },
             To = [
                 new()
                 {
-                    Email = _receiverEmail,
+                    Email = _receiverEmail!,
                     Name = "Integration Test Destination Address"
                 }
             ],
@@ -284,7 +284,23 @@ public class APITests
     [TestMethod]
     public async Task Post_Email_ShouldReturn_401_When_NoTokenProvided()
     {
-        EmailMessage emailMessage = new();
+        EmailMessage emailMessage = new()
+        {
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new()
+                {
+                    Email = "invalid_email",
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Subject = "DotFlyer API Test Automation",
+        };
 
         var httpClient = GetHttpClient();
 
@@ -296,9 +312,24 @@ public class APITests
     [TestMethod]
     public async Task Post_Email_ShouldReturn_403_When_SMSSenderRoleAndPayloadIsValid()
     {
-        EmailMessage emailMessage = new();
-
-        var httpClient = GetHttpClient(await GetSMSSenderAccessTokenAsync());
+        EmailMessage emailMessage = new()
+        {
+            From = new()
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new()
+                {
+                    Email = "invalid_email",
+                    Name = "Integration Test Destination Address"
+                }
+            ],
+            Subject = "DotFlyer API Test Automation",
+        };
+        var httpClient = GetHttpClient(await GetSmsSenderAccessTokenAsync());
 
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
@@ -310,8 +341,10 @@ public class APITests
     {
         var emailMessage = new
         {
-            From = new { },
-            To = new List<Contact>()
+            From = new { Email = string.Empty, Name = string.Empty },
+            To = new List<Contact>(),
+            Subject = string.Empty,
+            Body = (string?)null
         };
 
         var httpClient = GetHttpClient(await GetEmailSenderAccessTokenAsync());
@@ -322,7 +355,7 @@ public class APITests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         responseContent.Should().Contain("'Subject' field is required");
-        responseContent.Should().Contain("'Body' field is required");
+        responseContent.Should().Contain("Either 'Body' or 'TemplateModel' must be provided.");
         responseContent.Should().Contain("'Email' field is required");
         responseContent.Should().Contain("'Name' field is required");
         responseContent.Should().Contain("'To' field is required and should contain at least one contact");
@@ -345,7 +378,7 @@ public class APITests
                 new()
                 {
                     Email = "invalid_email",
-                    Name = "Integration Test Destination Address"
+                    Name = "Integration Test Destination"
                 }
             ],
             Tags = new Dictionary<string, string>()
@@ -411,6 +444,128 @@ public class APITests
         result.Count.Should().Be(1, "posting the same Message-Id twice must be idempotent");
     }
 
+    [TestMethod]
+    public async Task Post_Email_WithManualSecretRotationTemplate_ShouldReturn_200_And_RenderTemplate()
+    {
+        var testGuid = Guid.NewGuid();
+        
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Manual Secret Rotation Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateId = EmailTemplateIds.ManualSecretRotation,
+            TemplateModel = new ManualSecretRotationModel
+            {
+                TenantId = Guid.NewGuid().ToString(),
+                AppId = Guid.NewGuid().ToString(),
+                ResourceName = "TestDatabase",
+                KeyVaults = ["https://kv-test.vault.azure.net"],
+                SecretName = "TestSecret",
+                OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
+                PwPushUrl = "https://pwpush.test/p/test123",
+                PwPushExpiresInDays = 3,
+                PwPushExpiresAfterViews = 5
+            },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Integration Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed and ingested into ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+
+        emailData.Body.Should().NotBeNullOrWhiteSpace();
+        emailData.Body.Should().Contain("<html", because: "templated emails must store rendered HTML in ADX");
+       
+        var model = (ManualSecretRotationModel)emailMessage.TemplateModel;
+        emailData.Body.Should().Contain(model.SecretName);
+    }
+
+    [TestMethod]
+    public async Task Post_Email_WithInvalidTemplateId_ShouldFallbackToJson()
+    {
+        var testGuid = Guid.NewGuid();
+
+        // Create a raw JSON payload with an invalid TemplateId to test fallback behavior
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Sales Report Serialization Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail!,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail!,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateId = "Unknown",
+            TemplateModel = new { Test = "test" },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Serialization Test" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+
+        // When no template is rendered, the service stores the payload Body (legacy/fallback)
+        // rather than the TemplateModel JSON.
+        emailData.Body.Should().Be(JsonSerializer.Serialize(emailMessage.TemplateModel));
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+    }
+
     public static HttpClient GetHttpClient(string? token = null)
     {
         var httpClientFactory = _serviceProvider!.GetRequiredService<IHttpClientFactory>();
@@ -427,13 +582,13 @@ public class APITests
     public static StringContent GetStringContent(object content) => new(JsonSerializer.Serialize(content), Encoding.UTF8, MediaTypeNames.Application.Json);
 
     public static async Task<string> GetSenderAccessTokenAsync() =>
-        await GetAccessTokenAsync(_senderRoleClientIdKeyVaultName, _senderRoleClientSecretKeyVaultName);
+        await GetAccessTokenAsync(SenderRoleClientIdKeyVaultName, SenderRoleClientSecretKeyVaultName);
 
-    public static async Task<string> GetSMSSenderAccessTokenAsync() =>
-        await GetAccessTokenAsync(_smsSenderRoleClientIdKeyVaultName, _smsSenderRoleClientSecretKeyVaultName);
+    public static async Task<string> GetSmsSenderAccessTokenAsync() =>
+        await GetAccessTokenAsync(SmsSenderRoleClientIdKeyVaultName, SmsSenderRoleClientSecretKeyVaultName);
 
     public static async Task<string> GetEmailSenderAccessTokenAsync() =>
-        await GetAccessTokenAsync(_emailSenderRoleClientIdKeyVaultName, _emailSenderRoleClientSecretKeyVaultName);
+        await GetAccessTokenAsync(EmailSenderRoleClientIdKeyVaultName, EmailSenderRoleClientSecretKeyVaultName);
 
     public static async Task<string> GetAccessTokenAsync(string clientId, string clientSecret)
     {
