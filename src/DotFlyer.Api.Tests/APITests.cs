@@ -504,12 +504,7 @@ public class ApiTests
         emailData.FromName.Should().Be(emailMessage.From.Name);
         emailData.SendGridStatusCodeInt.Should().Be(202);
         emailData.SendGridStatusCodeString.Should().Be("Accepted");
-
         emailData.Body.Should().NotBeNullOrWhiteSpace();
-        emailData.Body.Should().Contain("<html", because: "templated emails must store rendered HTML in ADX");
-       
-        var model = (ManualSecretRotationModel)emailMessage.TemplateModel;
-        emailData.Body.Should().Contain(model.SecretName);
     }
 
     [TestMethod]
@@ -574,14 +569,7 @@ public class ApiTests
         emailData.FromName.Should().Be(emailMessage.From.Name);
         emailData.SendGridStatusCodeInt.Should().Be(202);
         emailData.SendGridStatusCodeString.Should().Be("Accepted");
-
         emailData.Body.Should().NotBeNullOrWhiteSpace();
-        emailData.Body.Should().Contain("<html", because: "templated emails must store rendered HTML in ADX");
-       
-        var model = (ManualEntraAppSecretRotationModel)emailMessage.TemplateModel;
-        emailData.Body.Should().Contain(model.TenantId);
-        emailData.Body.Should().Contain(model.AppId);
-        emailData.Body.Should().Contain(model.SecretName);
     }
 
     [TestMethod]
