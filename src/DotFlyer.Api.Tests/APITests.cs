@@ -469,8 +469,6 @@ public class ApiTests
             TemplateId = EmailTemplateIds.ManualSecretRotation,
             TemplateModel = new ManualSecretRotationModel
             {
-                TenantId = Guid.NewGuid().ToString(),
-                AppId = Guid.NewGuid().ToString(),
                 ResourceName = "TestDatabase",
                 KeyVaults = ["https://kv-test.vault.azure.net"],
                 SecretName = "TestSecret",
@@ -511,6 +509,78 @@ public class ApiTests
         emailData.Body.Should().Contain("<html", because: "templated emails must store rendered HTML in ADX");
        
         var model = (ManualSecretRotationModel)emailMessage.TemplateModel;
+        emailData.Body.Should().Contain(model.SecretName);
+    }
+
+    [TestMethod]
+    public async Task Post_Email_WithManualEntraAppSecretRotationTemplate_ShouldReturn_200_And_RenderTemplate()
+    {
+        var testGuid = Guid.NewGuid();
+        
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"Manual Entra App Secret Rotation Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateId = EmailTemplateIds.ManualEntraAppSecretRotation,
+            TemplateModel = new ManualEntraAppSecretRotationModel
+            {
+                TenantId = Guid.NewGuid().ToString(),
+                AppId = Guid.NewGuid().ToString(),
+                ResourceName = "TestServicePrincipal",
+                KeyVaults = ["https://kv-test.vault.azure.net"],
+                SecretName = "TestSecret",
+                OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
+                PwPushUrl = "https://pwpush.test/p/test456",
+                PwPushExpiresInDays = 3,
+                PwPushExpiresAfterViews = 5
+            },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Integration Test - Entra App" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed and ingested into ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+
+        emailData.Body.Should().NotBeNullOrWhiteSpace();
+        emailData.Body.Should().Contain("<html", because: "templated emails must store rendered HTML in ADX");
+       
+        var model = (ManualEntraAppSecretRotationModel)emailMessage.TemplateModel;
+        emailData.Body.Should().Contain(model.TenantId);
+        emailData.Body.Should().Contain(model.AppId);
         emailData.Body.Should().Contain(model.SecretName);
     }
 

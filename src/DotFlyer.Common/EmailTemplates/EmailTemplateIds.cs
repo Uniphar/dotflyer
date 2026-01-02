@@ -10,4 +10,9 @@ public static class EmailTemplateIds
     /// Manual secret rotation notification email template.
     /// </summary>
     public const string ManualSecretRotation = nameof(ManualSecretRotationModel);
+
+    /// <summary>
+    /// Manual secret rotation notification email template for Entra App (Service Principal) secrets.
+    /// </summary>
+    public const string ManualEntraAppSecretRotation = nameof(ManualEntraAppSecretRotationModel);
 }

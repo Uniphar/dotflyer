@@ -105,11 +105,79 @@ public class ManualSecretRotationModelTests
         var model = JsonSerializer.Deserialize<ManualSecretRotationModel>(json);
 
         Assert.IsNotNull(model);
-        Assert.IsNull(model.TenantId);
-        Assert.IsNull(model.AppId);
         Assert.IsNull(model.PwPushUrl);
         Assert.AreEqual(0, model.PwPushExpiresInDays);
         Assert.AreEqual(0, model.PwPushExpiresAfterViews);
         Assert.AreEqual(default(DateTime), model.OldSecretDeletionDateUtc);
+    }
+
+    [TestMethod]
+    public void ManualEntraAppSecretRotationModel_ShouldRequire_TenantId()
+    {
+        var json = """
+        {
+            "AppId": "12345678-1234-1234-1234-123456789012",
+            "ResourceName": "TestApp",
+            "KeyVaults": ["https://kv1.vault.local"],
+            "SecretName": "TestSecret"
+        }
+        """;
+
+        try
+        {
+            JsonSerializer.Deserialize<ManualEntraAppSecretRotationModel>(json);
+            Assert.Fail("Expected JsonException but no exception was thrown");
+        }
+        catch (JsonException ex)
+        {
+            Assert.IsTrue(ex.Message.Contains("TenantId") || ex.Message.Contains("required"),
+                $"Expected deserialization to fail for missing TenantId. Actual message: {ex.Message}");
+        }
+    }
+
+    [TestMethod]
+    public void ManualEntraAppSecretRotationModel_ShouldRequire_AppId()
+    {
+        var json = """
+        {
+            "TenantId": "87654321-4321-4321-4321-210987654321",
+            "ResourceName": "TestApp",
+            "KeyVaults": ["https://kv1.vault.local"],
+            "SecretName": "TestSecret"
+        }
+        """;
+
+        try
+        {
+            JsonSerializer.Deserialize<ManualEntraAppSecretRotationModel>(json);
+            Assert.Fail("Expected JsonException but no exception was thrown");
+        }
+        catch (JsonException ex)
+        {
+            Assert.IsTrue(ex.Message.Contains("AppId") || ex.Message.Contains("required"),
+                $"Expected deserialization to fail for missing AppId. Actual message: {ex.Message}");
+        }
+    }
+
+    [TestMethod]
+    public void ManualEntraAppSecretRotationModel_ShouldDeserialize_WhenAllRequiredFieldsPresent()
+    {
+        var json = """
+        {
+            "TenantId": "87654321-4321-4321-4321-210987654321",
+            "AppId": "12345678-1234-1234-1234-123456789012",
+            "ResourceName": "TestApp",
+            "KeyVaults": ["https://kv1.vault.local"],
+            "SecretName": "TestSecret"
+        }
+        """;
+
+        var model = JsonSerializer.Deserialize<ManualEntraAppSecretRotationModel>(json);
+
+        Assert.IsNotNull(model);
+        Assert.AreEqual("87654321-4321-4321-4321-210987654321", model.TenantId);
+        Assert.AreEqual("12345678-1234-1234-1234-123456789012", model.AppId);
+        Assert.AreEqual("TestApp", model.ResourceName);
+        Assert.AreEqual("TestSecret", model.SecretName);
     }
 }
