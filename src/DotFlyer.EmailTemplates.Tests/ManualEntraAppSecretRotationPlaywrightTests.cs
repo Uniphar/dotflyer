@@ -5,9 +5,9 @@ using Microsoft.Playwright;
 namespace DotFlyer.EmailTemplates.Tests;
 
 [TestClass, TestCategory("Playwright")]
-public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
+public class ManualEntraAppSecretRotationPlaywrightTests : PlaywrightTestBase
 {
-    private ManualSecretRotationModel _testModel = null!;
+    private ManualEntraAppSecretRotationModel _testModel = null!;
     private EmailMessage _testMessage = null!;
 
     [TestInitialize]
@@ -15,10 +15,12 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
     {
         await PlaywrightSetup();
 
-        _testModel = new ManualSecretRotationModel
+        _testModel = new ManualEntraAppSecretRotationModel
         {
-            SecretName = "DbPassword",
-            ResourceName = "sqlserver1",
+            TenantId = Guid.NewGuid().ToString(),
+            AppId = Guid.NewGuid().ToString(),
+            SecretName = "ServicePrincipalSecret",
+            ResourceName = "my-service-principal",
             KeyVaults = new List<string>
             {
                 "https://kv1.vault.local",
@@ -26,17 +28,17 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
                 "https://kv3.vault.local"
             },
             OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
-            PwPushUrl = "https://pwpush.local/p/abcdefg",
+            PwPushUrl = "https://pwpush.local/p/xyz789",
             PwPushExpiresAfterViews = 5,
             PwPushExpiresInDays = 3
         };
 
         _testMessage = new EmailMessage
         {
-            Subject = "Manual Secret Rotation Required",
+            Subject = "Manual Entra App Secret Rotation Required",
             Body = "Fallback body",
             TemplateModel = _testModel,
-            TemplateId = EmailTemplateIds.ManualSecretRotation,
+            TemplateId = EmailTemplateIds.ManualEntraAppSecretRotation,
             From = new Contact { Email = "sender@test.local", Name = "Sender" },
             To = [new Contact { Email = "to@test.local", Name = "To" }]
         };
@@ -49,11 +51,11 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
     }
 
     [TestMethod]
-    public async Task ManualSecretRotationEmail_ShouldRenderCorrectly()
+    public async Task ManualEntraAppSecretRotationEmail_ShouldRenderCorrectly()
     {
-        var html = await RenderEmailHtml<ManualSecretRotationModel>(_testMessage);
+        var html = await RenderEmailHtml<ManualEntraAppSecretRotationModel>(_testMessage);
         await LoadHtml(html);
-        await TakeScreenshot("ManualSecretRotation_Full");
+        await TakeScreenshot("ManualEntraAppSecretRotation_Full");
 
         await AssertValidHtmlStructureAsync();
         await AssertRequiredSectionsAsync();
@@ -90,7 +92,7 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
         // Verify header logo is visible
         var headerLogo = Page.Locator(".email-header img");
         await headerLogo.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
-
+        
         // Verify header logo has loaded by checking naturalWidth
         var headerLogoLoaded = await headerLogo.EvaluateAsync<bool>("img => img.complete && img.naturalWidth > 0");
         Assert.IsTrue(headerLogoLoaded);
@@ -111,6 +113,8 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
 
         var bodyText = await GetElementText(".email-body");
         Assert.IsNotNull(bodyText);
+        StringAssert.Contains(bodyText, _testModel.TenantId);
+        StringAssert.Contains(bodyText, _testModel.AppId);
         StringAssert.Contains(bodyText, _testModel.SecretName);
     }
 

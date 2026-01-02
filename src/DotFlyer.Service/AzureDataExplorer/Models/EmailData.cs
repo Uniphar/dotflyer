@@ -33,13 +33,13 @@ public class EmailData
 
     public static EmailData ConvertToAdxModel(EmailMessage emailMessage, HttpStatusCode sendgridStatusCode, string sendgridResponseContent, string? htmlContent = null) => new()
     {
-        FromEmail = emailMessage.From?.Email ?? string.Empty,
-        FromName = emailMessage.From?.Name ?? string.Empty,
+        FromEmail = emailMessage.From.Email,
+        FromName = emailMessage.From.Name,
         To = JsonSerializer.Serialize(emailMessage.To),
         Cc = emailMessage.Cc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Cc),
         Bcc = emailMessage.Bcc == null ? "[]" : JsonSerializer.Serialize(emailMessage.Bcc),
         Attachments = emailMessage.Attachments == null ? "[]" : JsonSerializer.Serialize(emailMessage.Attachments.Select(attachment => new Attachment(attachment))),
-        Subject = emailMessage.Subject ?? string.Empty,
+        Subject = emailMessage.Subject,
         Body = !string.IsNullOrEmpty(htmlContent) ? htmlContent : emailMessage.Body ?? string.Empty,
         Tags = emailMessage.Tags == null ? "{}" : JsonSerializer.Serialize(emailMessage.Tags),
         SendGridStatusCodeInt = (int)sendgridStatusCode,

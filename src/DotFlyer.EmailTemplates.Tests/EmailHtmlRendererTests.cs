@@ -37,8 +37,6 @@ namespace DotFlyer.EmailTemplates.Tests
             var model = new ManualSecretRotationModel
             {
                 SecretName = "DbPassword",
-                TenantId = Guid.NewGuid().ToString(),
-                AppId = Guid.NewGuid().ToString(),  
                 ResourceName = "sqlserver1",
                 KeyVaults = new List<string>
                 {
@@ -63,12 +61,54 @@ namespace DotFlyer.EmailTemplates.Tests
             var html = await renderer.RenderAsync(message);
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
-            StringAssert.Contains(html, model.TenantId);
-            StringAssert.Contains(html, model.AppId);
             StringAssert.Contains(html, model.ResourceName);
+            StringAssert.Contains(html, model.SecretName);
             StringAssert.Contains(html, model.PwPushUrl);
 
             await WriteHtmlToFile("ManualSecretRotation.html", html);
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_ManualEntraAppSecretRotation_ShouldRenderTemplateSuccessfully()
+        {
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
+
+            var model = new ManualEntraAppSecretRotationModel
+            {
+                TenantId = Guid.NewGuid().ToString(),
+                AppId = Guid.NewGuid().ToString(),
+                SecretName = "ServicePrincipalSecret",
+                ResourceName = "my-app-registration",
+                KeyVaults = new List<string>
+                {
+                    "https://kv1.vault.local",
+                    "https://kv2.vault.local"
+                },
+                OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
+                PwPushUrl = "https://pwpush.local/p/xyz123",
+                PwPushExpiresAfterViews = 5,
+                PwPushExpiresInDays = 3
+            };
+            var message = new EmailMessage
+            {
+                Subject = "Manual Entra App Secret Rotation Required",
+                Body = "Fallback body",
+                TemplateModel = model,
+                TemplateId = EmailTemplateIds.ManualEntraAppSecretRotation,
+                From = new Contact { Email = "sender@test.local", Name = "Sender" },
+                To = [new Contact { Email = "to@test.local", Name = "To" }]
+            };
+
+            var html = await renderer.RenderAsync(message);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
+            StringAssert.Contains(html, model.TenantId);
+            StringAssert.Contains(html, model.AppId);
+            StringAssert.Contains(html, model.ResourceName);
+            StringAssert.Contains(html, model.SecretName);
+            StringAssert.Contains(html, model.PwPushUrl);
+
+            await WriteHtmlToFile("ManualEntraAppSecretRotation.html", html);
         }
 
         [TestMethod]
@@ -98,8 +138,6 @@ namespace DotFlyer.EmailTemplates.Tests
             var model = new ManualSecretRotationModel
             {
                 SecretName = "DbPassword-AutoResolved",
-                TenantId = Guid.NewGuid().ToString(),
-                AppId = Guid.NewGuid().ToString(),
                 ResourceName = "sqlserver1",
                 KeyVaults = new List<string>
                 {
