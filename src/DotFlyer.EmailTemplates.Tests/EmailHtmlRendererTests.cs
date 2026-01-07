@@ -1,8 +1,4 @@
-﻿using DotFlyer.Common.EmailTemplates;
-using DotFlyer.Common.Payload;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace DotFlyer.EmailTemplates.Tests
+﻿namespace DotFlyer.EmailTemplates.Tests
 {
     [TestClass, TestCategory("Unit")]
     public class EmailHtmlRendererTests
@@ -165,6 +161,54 @@ namespace DotFlyer.EmailTemplates.Tests
             StringAssert.Contains(html, message.Body);
 
             await WriteHtmlToFile("ManualSecretRotation_Fallback.html", html);
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithInvalidTemplateId_ShouldFallbackToJson()
+        {
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
+
+            var testModel = new { Test = "test", Property = "value" };
+            var message = new EmailMessage
+            {
+                Subject = "Invalid Template Test",
+                Body = "Fallback body if template fails",
+                From = new Contact { Email = "sender@test.local", Name = "Sender" },
+                To = [new Contact { Email = "to@test.local", Name = "To" }],
+                TemplateId = "Unknown",
+                TemplateModel = testModel
+            };
+
+            var html = await renderer.RenderAsync(message);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
+            // When an invalid template is provided and TemplateModel is set,
+            // the service should serialize the TemplateModel to JSON
+            var expectedJson = JsonSerializer.Serialize(testModel);
+            Assert.AreEqual(expectedJson, html);
+        }
+
+        [TestMethod]
+        public async Task RenderAsync_WithInvalidTemplateIdAndNoModel_ShouldFallbackToBody()
+        {
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
+
+            var message = new EmailMessage
+            {
+                Subject = "Invalid Template Test",
+                Body = "Fallback body if template fails",
+                From = new Contact { Email = "sender@test.local", Name = "Sender" },
+                To = [new Contact { Email = "to@test.local", Name = "To" }],
+                TemplateId = "Unknown",
+                TemplateModel = null
+            };
+
+            var html = await renderer.RenderAsync(message);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
+            // When an invalid template is provided and TemplateModel is null,
+            // the service should fall back to Body
+            Assert.AreEqual(message.Body, html);
         }
 
         private async Task WriteHtmlToFile(string fileName, string html)
