@@ -61,15 +61,17 @@ namespace DotFlyer.EmailTemplates
             }
             catch (InvalidOperationException ex)
             {
-                logger.LogError(ex, "No keyed service found for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
+                logger.LogWarning(ex, "No keyed service found for model type {TemplateId}, falling back to email body", emailMessage.TemplateId);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to render email template for template id {TemplateId}", emailMessage.TemplateId);
+                logger.LogWarning(ex, "Failed to render email template for template id {TemplateId}, falling back", emailMessage.TemplateId);
             }
 
-            //if failed to render html template, fall back to json serialized model
-            return JsonSerializer.Serialize(emailMessage.TemplateModel);
+            // If failed to render html template, fall back to json serialized model or body
+            return emailMessage.TemplateModel != null 
+                ? JsonSerializer.Serialize(emailMessage.TemplateModel)
+                : emailMessage.Body;
         }
     }
 }
