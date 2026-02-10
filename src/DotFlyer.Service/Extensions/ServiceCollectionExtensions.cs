@@ -39,7 +39,8 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddSingleton(credential);
 
-        serviceCollection.AddApplicationInsightsTelemetryWorkerService(options => options.EnableAdaptiveSampling = false);
+        // all telemetry is collected, no sampling
+        serviceCollection.AddApplicationInsightsTelemetryWorkerService(options => options.SamplingRatio = 1.0f);
 
         serviceCollection.AddAzureClients(clientBuilder =>
         {
