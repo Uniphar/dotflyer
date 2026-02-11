@@ -100,7 +100,7 @@ jobs:
           kubelogin-version: 'latest'
 
       - name: Gets K8s context
-        uses: azure/aks-set-context@v3
+        uses: azure/aks-set-context@v4
         with:
           resource-group: ${{ env.AKS_CLUSTER_RESOURCE_GROUP }}
           cluster-name: ${{ env.AKS_CLUSTER_NAME }}
