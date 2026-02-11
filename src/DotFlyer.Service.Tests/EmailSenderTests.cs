@@ -7,7 +7,6 @@ public class EmailSenderTests
 {
     private Mock<DefaultAzureCredential> _credentialMock;
     private Mock<ISendGridClient> _sendGridClientMock;
-    private Mock<ITelemetryChannel> _telemetryChannelMock;
     private Mock<IAzureDataExplorerClient> _azureDataExplorerClientMock;
 
     private EmailMessage? _emailMessage;
@@ -18,13 +17,19 @@ public class EmailSenderTests
     {
         _credentialMock = new Mock<DefaultAzureCredential>();
         _sendGridClientMock = new Mock<ISendGridClient>();
-        _telemetryChannelMock = new Mock<ITelemetryChannel>();
         _azureDataExplorerClientMock = new Mock<IAzureDataExplorerClient>();
 
         var serviceProviderMock = new Mock<IServiceProvider>();
         var emailHtmlRenderer = new EmailHtmlRenderer(serviceProviderMock.Object, NullLogger<EmailHtmlRenderer>.Instance);
 
-        _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, new TelemetryClient(new() { TelemetryChannel = _telemetryChannelMock.Object }), _azureDataExplorerClientMock.Object, emailHtmlRenderer);
+        var telemetryConfiguration = new TelemetryConfiguration
+        {
+            ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000",
+            DisableTelemetry = true
+        };
+        var telemetryClient = new TelemetryClient(telemetryConfiguration);
+
+        _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, telemetryClient, _azureDataExplorerClientMock.Object, emailHtmlRenderer);
     }
 
     [TestInitialize]
