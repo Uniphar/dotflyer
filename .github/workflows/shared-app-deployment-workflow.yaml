@@ -46,7 +46,7 @@ jobs:
         regionShortCode: ['ne', 'we']
     steps:
       - name: checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: gh-app-install token
         id: gh-app
@@ -56,7 +56,7 @@ jobs:
           private_key: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
 
       - name: checkout devops-azure repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: devops-azure
           repository: Uniphar/devops-azure
