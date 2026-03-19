@@ -24,8 +24,8 @@ jobs:
 
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.x'
-      
+          dotnet-version: "10.x"
+
       - name: gh-app-install token
         id: gh-app
         uses: getsentry/action-github-app-token@v2
@@ -44,10 +44,10 @@ jobs:
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          tenant-id: ${{ secrets.ENTRA_PROD_WORKFORCE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_PLATFORM_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
-      
+
       - name: get NuGet repository API key
         shell: pwsh
         run: |
@@ -59,12 +59,12 @@ jobs:
           $nuGetAPIKey = ConvertFrom-SecureString $nuGetAPIKeySecret.SecretValue -AsPlainText
 
           echo "NUGET_API_KEY=$nuGetAPIKey" >> $env:GITHUB_ENV
-      
+
       - name: dotnet pack
         working-directory: ./src/DotFlyer.Common
         run: dotnet pack --configuration Release -o ./.nupkgs
 
-      - name : dotnet nuget push
+      - name: dotnet nuget push
         working-directory: ./src/DotFlyer.Common
         run: dotnet nuget push ./.nupkgs/*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key $NUGET_API_KEY
 
@@ -82,9 +82,9 @@ jobs:
 
       - uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: 'shared-failed-build-notification-workflow.yaml'
+          workflow: "shared-failed-build-notification-workflow.yaml"
           inputs: '{
-              "workflowId":"${{ github.run_id }}", 
-              "repository":"${{ github.repository }}"
+            "workflowId":"${{ github.run_id }}",
+            "repository":"${{ github.repository }}"
             }'
           token: ${{ steps.gh-app.outputs.token }}
