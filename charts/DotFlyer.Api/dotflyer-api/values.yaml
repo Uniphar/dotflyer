@@ -6,3 +6,4 @@ resources: {}
 port: 8080
 
 appPath: /dotflyer
+environment: TBD
