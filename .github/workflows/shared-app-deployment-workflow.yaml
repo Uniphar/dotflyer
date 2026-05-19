@@ -8,36 +8,36 @@ on:
     secrets:
       AZURE_TENANT_ID:
         required: true
-        description: 'Azure Tenant ID'
+        description: "Azure Tenant ID"
       AZURE_CLIENT_ID:
         required: true
-        description: 'Azure Client ID'
+        description: "Azure Client ID"
       AZURE_SUBSCRIPTION_ID:
         required: true
-        description: 'Azure Subscription ID'
+        description: "Azure Subscription ID"
       ACTIONS_AUTH_APP_ID:
         required: true
-        description: 'GitHub App ID'
+        description: "GitHub App ID"
       ACTIONS_AUTH_APP_PRIVATE_KEY:
         required: true
-        description: 'GitHub App Private Key'
+        description: "GitHub App Private Key"
     inputs:
       environment:
         type: string
         required: true
-        description: 'Environment'
+        description: "Environment"
       applicationFolder:
         type: string
         required: true
-        description: 'Application Folder'
+        description: "Application Folder"
       applicationName:
         type: string
         required: true
-        description: 'Application Name'
+        description: "Application Name"
       applicationVersion:
         type: string
         required: true
-        description: 'Application Version'
+        description: "Application Version"
 
 jobs:
   deploy_app:
@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        regionShortCode: ['ne', 'we']
+        regionShortCode: ["ne", "we"]
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
@@ -81,7 +81,7 @@ jobs:
           $ACRName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
           $AKSClusterResourceGroup = Resolve-UniResourceName 'resource-group' $p_computeProject -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
           $AKSClusterName = Resolve-UniResourceName 'aks' $p_computeProject -Context $app_AKS -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
-          $AKSClusterSAName = Resolve-UniKubeWorkloadSAName '${{ inputs.environment }}' $p_devopsDomain
+          $AKSClusterSAName = Resolve-UniKubeWorkloadSAName '${{ inputs.environment }}' 'platform-app'
           $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
           $AzureEntraExternalTenantId = Resolve-UniEntraExternalTenantId -Environment '${{ inputs.environment }}'
 
@@ -100,14 +100,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          kubelogin-version: 'latest'
+          kubelogin-version: "latest"
 
       - name: Gets K8s context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ env.AKS_CLUSTER_RESOURCE_GROUP }}
           cluster-name: ${{ env.AKS_CLUSTER_NAME }}
-          use-kubelogin: 'true'
+          use-kubelogin: "true"
         id: k8context
 
       - name: setup helm
@@ -136,7 +136,7 @@ jobs:
           --set-string AKSClusterSAName="$AKS_CLUSTER_SERVICE_ACCOUNT_NAME"
           --set-string AzureKeyVaultName="$AZURE_KEY_VAULT_NAME"
           --set-string AzureEntraExternalTenantId="$AZURE_ENTRA_EXTERNAL_TENANT_ID"
-          -n devops
+          -n platform-app
           --atomic
 
   notify:
@@ -153,9 +153,9 @@ jobs:
 
       - uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: 'shared-failed-build-notification-workflow.yaml'
+          workflow: "shared-failed-build-notification-workflow.yaml"
           inputs: '{
-              "workflowId":"${{ github.run_id }}", 
-              "repository":"${{ github.repository }}"
+            "workflowId":"${{ github.run_id }}",
+            "repository":"${{ github.repository }}"
             }'
           token: ${{ steps.gh-app.outputs.token }}
