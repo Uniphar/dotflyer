@@ -6,7 +6,7 @@ COPY . .
 WORKDIR "/src/DotFlyer.Service"
 RUN dotnet publish "./DotFlyer.Service.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 USER app
 WORKDIR /app
 COPY --from=sdk /app/publish .
