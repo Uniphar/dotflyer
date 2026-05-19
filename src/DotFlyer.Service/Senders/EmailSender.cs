@@ -1,4 +1,5 @@
 ﻿using DotFlyer.EmailTemplates;
+using Uniphar.Platform.Telemetry;
 
 namespace DotFlyer.Service.Senders;
 
@@ -12,7 +13,7 @@ namespace DotFlyer.Service.Senders;
 public class EmailSender(
     DefaultAzureCredential credential,
     ISendGridClient sendGridClient,
-    TelemetryClient telemetryClient,
+    ICustomEventTelemetryClient telemetryClient,
     IAzureDataExplorerClient adxClient,
     EmailHtmlRenderer htmlRenderer) : IEmailSender
 {

@@ -14,6 +14,7 @@ global using System.Text;
 global using System.Text.Json;
 global using Twilio;
 global using Twilio.Rest.Lookups.V2;
+using Uniphar.Platform.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,8 @@ builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("AllOrEmail", policy => policy.RequireRole("dotflyer.sender.all", "dotflyer.sender.email"));
 
 builder.Services.AddHealthChecks();
-
+// register OpenTelemetry
+builder.RegisterOpenTelemetry("dotflyer-api").Build();
 var app = builder.Build();
 
 app.MapHealthChecks("/dotflyer/healthz/live");

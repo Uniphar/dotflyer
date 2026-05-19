@@ -16,7 +16,6 @@ global using Kusto.Data.Ingestion;
 global using Kusto.Data.Net.Client;
 global using Kusto.Ingest;
 global using Kusto.Ingest.Exceptions;
-global using Microsoft.ApplicationInsights;
 global using Microsoft.Extensions.Azure;
 global using SendGrid;
 global using SendGrid.Extensions.DependencyInjection;
@@ -28,6 +27,7 @@ global using Twilio.Clients;
 global using Twilio.Http;
 global using Twilio.Rest.Api.V2010.Account;
 global using Twilio.Types;
+using Uniphar.Platform.Telemetry;
 
 var builder = Host.CreateApplicationBuilder();
 
@@ -37,7 +37,8 @@ builder.Configuration
 builder.Services
     .AddDotFlyerMessagesProcessor<AzureServiceBusMessagesProcessor>()
     .WithDependencies(builder.Configuration);
-
+// register OpenTelemetry
+builder.RegisterOpenTelemetry("dotflyer-service").Build();
 var host = builder.Build();
 
 await host.InitializeResourcesAsync();

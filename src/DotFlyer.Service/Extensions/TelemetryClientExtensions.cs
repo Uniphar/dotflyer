@@ -1,8 +1,10 @@
-﻿namespace DotFlyer.Service.Extensions;
+﻿using Uniphar.Platform.Telemetry;
+
+namespace DotFlyer.Service.Extensions;
 
 public static class TelemetryClientExtensions
 {
-    private static Dictionary<string, string> GetEventDictionary(string message)
+    private static Dictionary<string, object> GetEventDictionary(string message)
     {
         return new()
         {
@@ -10,12 +12,12 @@ public static class TelemetryClientExtensions
         };
     }
 
-    public static void TrackInvalidEmailPayload(this TelemetryClient telemetryClient, string message)
+    public static void TrackInvalidEmailPayload(this ICustomEventTelemetryClient telemetryClient, string message)
     {
         telemetryClient.TrackEvent("InvalidEmailPayload", GetEventDictionary(message));
     }
 
-    public static void TrackInvalidSMSPayload(this TelemetryClient telemetryClient, string message)
+    public static void TrackInvalidSMSPayload(this ICustomEventTelemetryClient telemetryClient, string message)
     {
         telemetryClient.TrackEvent("InvalidSMSPayload", GetEventDictionary(message));
     }

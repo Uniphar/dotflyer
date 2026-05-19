@@ -1,4 +1,6 @@
-﻿namespace DotFlyer.Service.Senders;
+﻿using Uniphar.Platform.Telemetry;
+
+namespace DotFlyer.Service.Senders;
 
 /// <summary>
 /// The SMS sender service.
@@ -10,7 +12,7 @@
 public class SMSSender(
     SMSSenderConfiguration configuration,
     ITwilioRestClient twilioRestClient,
-    TelemetryClient telemetryClient,
+    ICustomEventTelemetryClient telemetryClient,
     IAzureDataExplorerClient adxClient) : ISMSSender
 {
     /// <summary>
