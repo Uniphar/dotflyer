@@ -136,6 +136,7 @@ jobs:
           --set-string AKSClusterSAName="$AKS_CLUSTER_SERVICE_ACCOUNT_NAME"
           --set-string AzureKeyVaultName="$AZURE_KEY_VAULT_NAME"
           --set-string AzureEntraExternalTenantId="$AZURE_ENTRA_EXTERNAL_TENANT_ID"
+          --set-string regioncode="${{ matrix.regionShortCode }}"
           -n platform-app
           --atomic
 

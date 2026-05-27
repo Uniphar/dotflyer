@@ -1,3 +1,4 @@
+{{- if eq .Values.regioncode "ne" }}
 apiVersion: devops.uniphar.ie/v1
 kind: PlatformDataPilotAdxDatabase
 metadata:
@@ -12,3 +13,4 @@ spec:
     workloadIdentity:
       name: compute-aks-platform-app-dev-k8s-sa
       namespace: platform-app
+{{- end }}
