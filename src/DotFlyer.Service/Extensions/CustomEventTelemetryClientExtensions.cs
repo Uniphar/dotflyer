@@ -1,6 +1,4 @@
-﻿using Uniphar.Platform.Telemetry;
-
-namespace DotFlyer.Service.Extensions;
+﻿namespace DotFlyer.Service.Extensions;
 
 public static class CustomEventTelemetryClientExtensions
 {

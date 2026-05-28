@@ -1,6 +1,4 @@
-﻿using Uniphar.Platform.Telemetry;
-
-namespace DotFlyer.Service.Senders;
+﻿namespace DotFlyer.Service.Senders;
 
 /// <summary>
 /// The SMS sender service.

@@ -1,7 +1,5 @@
 ﻿namespace DotFlyer.Service.Extensions;
 
-using DotFlyer.EmailTemplates;
-
 /// <summary>
 /// Extension methods for the <see cref="IServiceCollection"/> interface.
 /// </summary>

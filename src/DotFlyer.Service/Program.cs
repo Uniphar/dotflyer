@@ -1,8 +1,11 @@
+global using System.Net;
+global using System.Text.Json;
 global using Azure.Identity;
 global using Azure.Messaging.ServiceBus;
 global using Azure.Messaging.ServiceBus.Administration;
 global using Azure.Storage.Blobs;
 global using DotFlyer.Common.Payload;
+global using DotFlyer.EmailTemplates;
 global using DotFlyer.Service;
 global using DotFlyer.Service.AzureDataExplorer;
 global using DotFlyer.Service.AzureDataExplorer.Models;
@@ -20,14 +23,12 @@ global using Microsoft.Extensions.Azure;
 global using SendGrid;
 global using SendGrid.Extensions.DependencyInjection;
 global using SendGrid.Helpers.Mail;
-global using System.Net;
-global using System.Text.Json;
 global using Twilio;
 global using Twilio.Clients;
 global using Twilio.Http;
 global using Twilio.Rest.Api.V2010.Account;
 global using Twilio.Types;
-using Uniphar.Platform.Telemetry;
+global using Uniphar.Platform.Telemetry;
 
 var builder = Host.CreateApplicationBuilder();
 

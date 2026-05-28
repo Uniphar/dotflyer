@@ -1,3 +1,6 @@
+global using System.ComponentModel.DataAnnotations;
+global using System.Text;
+global using System.Text.Json;
 global using Azure.Identity;
 global using Azure.Messaging.ServiceBus;
 global using DotFlyer.Api.Extensions;
@@ -6,15 +9,15 @@ global using DotFlyer.Api.Validators;
 global using DotFlyer.Common.Payload;
 global using FluentValidation;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Azure;
+global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Identity.Web;
 global using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-global using System.Text;
-global using System.Text.Json;
 global using Twilio;
 global using Twilio.Rest.Lookups.V2;
-using Uniphar.Platform.Telemetry;
+global using Uniphar.Platform.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 

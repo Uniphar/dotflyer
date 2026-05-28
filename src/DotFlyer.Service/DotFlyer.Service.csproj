@@ -19,9 +19,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageReference Include="SendGrid" Version="*" />
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="*" />
-    <PackageReference Include="Uniphar.Platform.Telemetry" Version="*" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="*" />
     <PackageReference Include="Twilio" Version="*" />
+    <PackageReference Include="Uniphar.Platform.Telemetry" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
