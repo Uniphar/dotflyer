@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace DotFlyer.Api.Controllers;
+﻿namespace DotFlyer.Api.Controllers;
 
 [ApiController]
 [Route("dotflyer")]
