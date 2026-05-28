@@ -2,7 +2,7 @@
 
 namespace DotFlyer.Service.Extensions;
 
-public static class TelemetryClientExtensions
+public static class CustomEventTelemetryClientExtensions
 {
     private static Dictionary<string, object> GetEventDictionary(string message)
     {

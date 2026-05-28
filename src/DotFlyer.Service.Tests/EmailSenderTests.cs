@@ -23,7 +23,7 @@ public class EmailSenderTests
 
         var serviceProviderMock = new Mock<IServiceProvider>();
         var emailHtmlRenderer = new EmailHtmlRenderer(serviceProviderMock.Object, NullLogger<EmailHtmlRenderer>.Instance);
-var telemetryClient= new Mock<ICustomEventTelemetryClient>().Object;
+        var telemetryClient = new Mock<ICustomEventTelemetryClient>().Object;
 
         _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, telemetryClient, _azureDataExplorerClientMock.Object, emailHtmlRenderer);
     }
