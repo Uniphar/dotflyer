@@ -5,7 +5,7 @@
 /// </summary>
 /// <param name="configuration">The <see cref="SMSSenderConfiguration"/> instance that contains the Twilio configuration.</param>
 /// <param name="twilioRestClient">The <see cref="ITwilioRestClient"/> instance that is used to send SMS messages.</param>
-/// <param name="telemetryClient">The <see cref="TelemetryClient"/> instance that is used to log telemetry data.</param>
+/// <param name="telemetryClient">The <see cref="ICustomEventTelemetryClient"/> instance that is used to log telemetry data.</param>
 /// <param name="adxClient">The <see cref="IAzureDataExplorerClient"/> instance that is used to ingest data into Azure Data Explorer.</param>
 public class SMSSender(
     SMSSenderConfiguration configuration,
