@@ -1,7 +1,5 @@
 ﻿namespace DotFlyer.Service.Extensions;
 
-using DotFlyer.EmailTemplates;
-
 /// <summary>
 /// Extension methods for the <see cref="IServiceCollection"/> interface.
 /// </summary>
@@ -39,8 +37,6 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddSingleton(credential);
 
-        // all telemetry is collected, no sampling
-        serviceCollection.AddApplicationInsightsTelemetryWorkerService(options => options.SamplingRatio = 1.0f);
 
         serviceCollection.AddAzureClients(clientBuilder =>
         {

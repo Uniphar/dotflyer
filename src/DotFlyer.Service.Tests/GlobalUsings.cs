@@ -12,8 +12,6 @@ global using Kusto.Cloud.Platform.Data;
 global using Kusto.Data;
 global using Kusto.Data.Common;
 global using Kusto.Data.Net.Client;
-global using Microsoft.ApplicationInsights;
-global using Microsoft.ApplicationInsights.Extensibility;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;

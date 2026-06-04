@@ -1,18 +1,16 @@
-﻿using DotFlyer.EmailTemplates;
-
-namespace DotFlyer.Service.Senders;
+﻿namespace DotFlyer.Service.Senders;
 
 /// <summary>
 /// The email sender service.
 /// </summary>
 /// <param name="credential">The <see cref="DefaultAzureCredential"/> instance to authenticate with Azure services.</param>
 /// <param name="sendGridClient">The <see cref="ISendGridClient"/> instance to send emails.</param>
-/// <param name="telemetryClient">The <see cref="TelemetryClient"/> instance to log telemetry data.</param>
+/// <param name="telemetryClient">The <see cref="ICustomEventTelemetryClient"/> instance to log telemetry data.</param>
 /// <param name="adxClient">The <see cref="IAzureDataExplorerClient"/> instance to ingest email data.</param>
 public class EmailSender(
     DefaultAzureCredential credential,
     ISendGridClient sendGridClient,
-    TelemetryClient telemetryClient,
+    ICustomEventTelemetryClient telemetryClient,
     IAzureDataExplorerClient adxClient,
     EmailHtmlRenderer htmlRenderer) : IEmailSender
 {

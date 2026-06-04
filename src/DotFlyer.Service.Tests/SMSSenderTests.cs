@@ -1,3 +1,5 @@
+using Uniphar.Platform.Telemetry;
+
 namespace DotFlyer.Service.Tests;
 
 [TestClass, TestCategory("Unit")]
@@ -23,12 +25,7 @@ public class SMSSenderTests
             FromPhoneNumber = "+1234567890"
         };
 
-        var telemetryConfiguration = new TelemetryConfiguration
-        {
-            ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000",
-            DisableTelemetry = true
-        };
-        var telemetryClient = new TelemetryClient(telemetryConfiguration);
+        var telemetryClient = new Mock<ICustomEventTelemetryClient>().Object;
 
         _smsSender = new(config, _twilioRestClientMock.Object, telemetryClient, _azureDataExplorerClientMock.Object);
     }

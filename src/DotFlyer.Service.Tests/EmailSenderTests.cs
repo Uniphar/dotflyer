@@ -1,4 +1,6 @@
-﻿namespace DotFlyer.Service.Tests;
+﻿using Uniphar.Platform.Telemetry;
+
+namespace DotFlyer.Service.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -21,13 +23,7 @@ public class EmailSenderTests
 
         var serviceProviderMock = new Mock<IServiceProvider>();
         var emailHtmlRenderer = new EmailHtmlRenderer(serviceProviderMock.Object, NullLogger<EmailHtmlRenderer>.Instance);
-
-        var telemetryConfiguration = new TelemetryConfiguration
-        {
-            ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000",
-            DisableTelemetry = true
-        };
-        var telemetryClient = new TelemetryClient(telemetryConfiguration);
+        var telemetryClient = new Mock<ICustomEventTelemetryClient>().Object;
 
         _emailSender = new(_credentialMock.Object, _sendGridClientMock.Object, telemetryClient, _azureDataExplorerClientMock.Object, emailHtmlRenderer);
     }

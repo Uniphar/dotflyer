@@ -12,7 +12,6 @@
     <PackageReference Include="Azure.Identity" Version="*" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="*" />
     <PackageReference Include="Azure.Storage.Blobs" Version="*" />
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="*" />
     <PackageReference Include="Microsoft.Azure.Kusto.Ingest" Version="*" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="*" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="*" />
@@ -22,6 +21,7 @@
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="*" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="*" />
     <PackageReference Include="Twilio" Version="*" />
+    <PackageReference Include="Uniphar.Platform.Telemetry" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
