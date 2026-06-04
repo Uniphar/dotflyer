@@ -42,11 +42,12 @@ builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("AllOrEmail", policy => policy.RequireRole("dotflyer.sender.all", "dotflyer.sender.email"));
 
 builder.Services.AddHealthChecks();
+var healthUrl = "/dotflyer/healthz/live";
 // register OpenTelemetry
-builder.RegisterOpenTelemetry("dotflyer-api").Build();
+builder.RegisterOpenTelemetry("dotflyer-api").WithFilterExclusion([healthUrl]).Build();
 var app = builder.Build();
 
-app.MapHealthChecks("/dotflyer/healthz/live");
+app.MapHealthChecks(healthUrl);
 
 app.UseSwagger(c => { c.RouteTemplate = "dotflyer/open-api/{documentName}"; });
 

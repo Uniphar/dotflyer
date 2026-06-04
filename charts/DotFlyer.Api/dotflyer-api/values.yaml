@@ -7,3 +7,4 @@ AKSClusterSAName: tbd
 AzureKeyVaultName: tbd
 ACRName: computeaksacr
 AzureEntraExternalTenantId: tbd
+healthUrl: /healthz/live

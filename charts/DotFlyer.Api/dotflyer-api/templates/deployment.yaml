@@ -20,8 +20,6 @@ spec:
         service: {{ .Chart.Name }}-service
         app.kubernetes.io/name: {{ .Chart.Name }}
         azure.workload.identity/use: "true"
-      annotations:
-        {{- with .Values.podAnnotations }}{{- toYaml . | nindent 8 }}{{- end }}
     spec:
       serviceAccountName: {{ .Values.AKSClusterSAName }}
       containers:
@@ -37,7 +35,12 @@ spec:
               value: {{ .Values.AzureKeyVaultName }}
             - name: "AZURE_ENTRA_EXTERNAL_TENANT_ID"
               value: {{ .Values.AzureEntraExternalTenantId }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            periodSeconds: 10
+            timeoutSeconds: 30
+            httpGet:
+              path: {{ .Values.appPath }}{{ .Values.healthUrl }}
+              scheme: HTTP
+              port: {{ .Values.port }}
       nodeSelector:
         agentpool: platform
