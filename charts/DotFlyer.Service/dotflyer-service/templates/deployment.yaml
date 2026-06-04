@@ -15,8 +15,6 @@ spec:
       labels:
         app.kubernetes.io/name: {{ .Chart.Name }}
         azure.workload.identity/use: "true"
-      annotations:
-        {{- with .Values.podAnnotations }}{{- toYaml . | nindent 8 }}{{- end }}
     spec:
       serviceAccountName: {{ .Values.AKSClusterSAName }}
       containers:
@@ -26,7 +24,5 @@ spec:
           env:
             - name: "AZURE_KEY_VAULT_NAME"
               value: {{ .Values.AzureKeyVaultName }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
       nodeSelector:
         agentpool: platform
