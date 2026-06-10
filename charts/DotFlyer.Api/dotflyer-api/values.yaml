@@ -1,9 +1,10 @@
 replicaCount: 1
 revisionHistoryLimit: 2
-
-resources: {}
-
 port: 8080
-
 appPath: /dotflyer
 environment: TBD
+AKSClusterSAName: tbd
+AzureKeyVaultName: tbd
+ACRName: computeaksacr
+AzureEntraExternalTenantId: tbd
+healthUrl: /healthz/live

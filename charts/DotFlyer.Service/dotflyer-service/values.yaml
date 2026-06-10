@@ -1,4 +1,6 @@
 replicaCount: 1
 revisionHistoryLimit: 2
 regioncode: TB
-resources: {}
+AKSClusterSAName: tbd
+AzureKeyVaultName: tbd
+ACRName: computeaksacr
