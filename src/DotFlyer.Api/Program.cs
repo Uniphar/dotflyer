@@ -44,7 +44,11 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddHealthChecks();
 var healthUrl = "/dotflyer/healthz/live";
 // register OpenTelemetry
-builder.RegisterOpenTelemetry("dotflyer-api").WithFilterExclusion([healthUrl]).Build();
+builder
+    .RegisterOpenTelemetry("dotflyer-api")
+    .WithAppInsightsEnvironmentVariable("APPLICATIONINSIGHTS:CONNECTIONSTRING")
+    .WithFilterExclusion([healthUrl])
+    .Build();
 var app = builder.Build();
 
 app.MapHealthChecks(healthUrl);
