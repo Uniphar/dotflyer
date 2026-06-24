@@ -39,7 +39,10 @@ builder.Services
     .AddDotFlyerMessagesProcessor<AzureServiceBusMessagesProcessor>()
     .WithDependencies(builder.Configuration);
 // register OpenTelemetry
-builder.RegisterOpenTelemetry("dotflyer-service").Build();
+builder
+    .RegisterOpenTelemetry("dotflyer-service")
+        .WithAppInsightsConnectionString(builder.Configuration["APPLICATIONINSIGHTS:CONNECTIONSTRING"] ?? throw new InvalidOperationException("Application Insights connection string is required"))
+    .Build();
 var host = builder.Build();
 
 await host.InitializeResourcesAsync();

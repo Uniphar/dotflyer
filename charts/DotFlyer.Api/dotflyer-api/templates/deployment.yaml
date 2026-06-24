@@ -42,5 +42,12 @@ spec:
               path: {{ .Values.appPath }}{{ .Values.healthUrl }}
               scheme: HTTP
               port: {{ .Values.port }}
+          readinessProbe:
+            periodSeconds: 10
+            timeoutSeconds: 30
+            httpGet:
+              path: {{ .Values.appPath }}{{ .Values.healthUrl }}
+              scheme: HTTP
+              port: {{ .Values.port }}   
       nodeSelector:
         agentpool: platform
