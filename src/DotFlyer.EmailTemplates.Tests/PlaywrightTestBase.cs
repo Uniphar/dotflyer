@@ -41,9 +41,9 @@ public abstract class PlaywrightTestBase
     [TestCleanup]
     public async Task PlaywrightCleanup()
     {
-        try { await Page.CloseAsync(); } catch (ObjectDisposedException) { }
-        try { await Context.CloseAsync(); } catch (ObjectDisposedException) { }
-        try { await Browser.CloseAsync(); } catch (ObjectDisposedException) { }
+        try { if (Page is not null) await Page.CloseAsync(); } catch (ObjectDisposedException) { }
+        try { if (Context is not null) await Context.CloseAsync(); } catch (ObjectDisposedException) { }
+        try { if (Browser is not null) await Browser.CloseAsync(); } catch (ObjectDisposedException) { }
         PlaywrightInstance?.Dispose();
         Provider?.Dispose();
     }
