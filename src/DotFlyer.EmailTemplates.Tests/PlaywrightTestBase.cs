@@ -41,9 +41,9 @@ public abstract class PlaywrightTestBase
     [TestCleanup]
     public async Task PlaywrightCleanup()
     {
-        await Page?.CloseAsync()!;
-        await Context?.CloseAsync()!;
-        await Browser?.CloseAsync()!;
+        try { if (Page is not null) await Page.CloseAsync(); } catch (ObjectDisposedException) { }
+        try { if (Context is not null) await Context.CloseAsync(); } catch (ObjectDisposedException) { }
+        try { if (Browser is not null) await Browser.CloseAsync(); } catch (ObjectDisposedException) { }
         PlaywrightInstance?.Dispose();
         Provider?.Dispose();
     }
@@ -53,7 +53,7 @@ public abstract class PlaywrightTestBase
         var renderer = Provider.GetRequiredService<EmailHtmlRenderer>();
         var html = await renderer.RenderAsync(message);
         
-        var fileName = $"{typeof(T).Name}_{DateTime.Now:yyyyMMddHHmmss}.html";
+        var fileName = $"{typeof(T).Name}.html";
         var filePath = Path.Combine(OutputDirectory, fileName);
         await File.WriteAllTextAsync(filePath, html);
         return html;
@@ -84,7 +84,7 @@ public abstract class PlaywrightTestBase
 
     protected async Task TakeScreenshot(string name)
     {
-        var screenshotPath = Path.Combine(OutputDirectory, $"{name}_{DateTime.Now:yyyyMMddHHmmss}.png");
+        var screenshotPath = Path.Combine(OutputDirectory, $"{name}.png");
         await Page.ScreenshotAsync(new PageScreenshotOptions
         {
             Path = screenshotPath,

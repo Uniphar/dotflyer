@@ -42,7 +42,8 @@
                 OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
                 PwPushUrl = "https://pwpush.local/p/abcdefg",
                 PwPushExpiresAfterViews = 5,
-                PwPushExpiresInDays = 3
+                PwPushExpiresInDays = 3,
+                Environment = "prod"
             };
             var message = new EmailMessage
             {
@@ -83,7 +84,8 @@
                 OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
                 PwPushUrl = "https://pwpush.local/p/xyz123",
                 PwPushExpiresAfterViews = 5,
-                PwPushExpiresInDays = 3
+                PwPushExpiresInDays = 3,
+                Environment = "test"
             };
             var message = new EmailMessage
             {

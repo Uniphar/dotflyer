@@ -5,7 +5,12 @@
     public string? Title { get; set; }
 
     [Parameter]
+    public string? Environment { get; set; }
+
+    [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    private string? EnvironmentCssClass => string.IsNullOrWhiteSpace(Environment) ? null : $"env-{Environment.ToLowerInvariant()}";
 }
 
 <!DOCTYPE html>
@@ -50,12 +55,25 @@
 
     a { color:#2b4cbd; text-decoration:none; }
     a:hover { text-decoration:underline; }
+
+    /* Environment badge */
+    .env-banner { padding:12px 32px; text-align:center; font-size:14px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+    .env-banner.env-prod { background:#dc2626; color:#ffffff; }
+    .env-banner.env-test { background:#f59e0b; color:#1a1a1a; }
+    .env-banner.env-dev { background:#16a34a; color:#ffffff; }
+
+    /* Utility */
+    .mt-4 { margin-top:16px; }
   </style>
 </head>
 <body>
   <div class="email-root">
     <div class="email-container">
       <div class="brand-bar"></div>
+      @if (!string.IsNullOrWhiteSpace(Environment))
+      {
+        <div class="env-banner @EnvironmentCssClass"> Environment: @Environment.ToUpperInvariant()</div>
+      }
       <div class="email-header">
         <div class="email-header-left">
                     <img src="https://raw.githubusercontent.com/Uniphar/dotflyer/refs/heads/main/src/DotFlyer.EmailTemplates/Assets/uniphar-logo-header.png" alt="Uniphar" class="logo" />
