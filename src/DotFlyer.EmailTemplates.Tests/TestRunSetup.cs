@@ -14,9 +14,22 @@ public static class TestRunSetup
 
         foreach (var dir in outputDirs)
         {
-            if (Directory.Exists(dir))
+            if (!Directory.Exists(dir))
+            {
+                continue;
+            }
+
+            try
             {
                 Directory.Delete(dir, recursive: true);
+            }
+            catch (IOException)
+            {
+                // Best-effort cleanup; ignore file locks.
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Best-effort cleanup; ignore permission issues.
             }
         }
     }
