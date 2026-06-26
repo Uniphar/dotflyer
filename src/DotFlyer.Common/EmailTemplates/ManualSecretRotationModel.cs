@@ -14,6 +14,8 @@ public class ManualSecretRotationModel
     public string? PwPushUrl { get; set; }
     public int PwPushExpiresInDays { get; set; }
     public int PwPushExpiresAfterViews { get; set; }
+
+    public string? Environment { get; set; }
 }
 
 /// <summary>

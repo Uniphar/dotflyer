@@ -13,8 +13,6 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
     [TestInitialize]
     public async Task TestSetup()
     {
-        await PlaywrightSetup();
-
         _testModel = new ManualSecretRotationModel
         {
             SecretName = "DbPassword",
@@ -28,7 +26,8 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
             OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
             PwPushUrl = "https://pwpush.local/p/abcdefg",
             PwPushExpiresAfterViews = 5,
-            PwPushExpiresInDays = 3
+            PwPushExpiresInDays = 3,
+            Environment = "prod"
         };
 
         _testMessage = new EmailMessage
@@ -42,11 +41,7 @@ public class ManualSecretRotationPlaywrightTests : PlaywrightTestBase
         };
     }
 
-    [TestCleanup]
-    public async Task TestTeardown()
-    {
-        await PlaywrightCleanup();
-    }
+    // Cleanup handled by base PlaywrightTestBase.PlaywrightCleanup()
 
     [TestMethod]
     public async Task ManualSecretRotationEmail_ShouldRenderCorrectly()

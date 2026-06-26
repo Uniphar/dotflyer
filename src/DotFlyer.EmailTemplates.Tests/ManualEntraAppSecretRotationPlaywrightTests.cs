@@ -13,8 +13,6 @@ public class ManualEntraAppSecretRotationPlaywrightTests : PlaywrightTestBase
     [TestInitialize]
     public async Task TestSetup()
     {
-        await PlaywrightSetup();
-
         _testModel = new ManualEntraAppSecretRotationModel
         {
             TenantId = Guid.NewGuid().ToString(),
@@ -30,7 +28,8 @@ public class ManualEntraAppSecretRotationPlaywrightTests : PlaywrightTestBase
             OldSecretDeletionDateUtc = DateTime.UtcNow.AddDays(7),
             PwPushUrl = "https://pwpush.local/p/xyz789",
             PwPushExpiresAfterViews = 5,
-            PwPushExpiresInDays = 3
+            PwPushExpiresInDays = 3,
+            Environment = "prod"
         };
 
         _testMessage = new EmailMessage
@@ -44,11 +43,7 @@ public class ManualEntraAppSecretRotationPlaywrightTests : PlaywrightTestBase
         };
     }
 
-    [TestCleanup]
-    public async Task TestTeardown()
-    {
-        await PlaywrightCleanup();
-    }
+    // Cleanup handled by base PlaywrightTestBase.PlaywrightCleanup()
 
     [TestMethod]
     public async Task ManualEntraAppSecretRotationEmail_ShouldRenderCorrectly()
