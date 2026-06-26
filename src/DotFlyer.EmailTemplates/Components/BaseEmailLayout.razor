@@ -10,7 +10,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string EnvironmentCssClass => $"env-{Environment?.ToLowerInvariant()}";
+    private string? EnvironmentCssClass => string.IsNullOrWhiteSpace(Environment) ? null : $"env-{Environment.ToLowerInvariant()}";
 }
 
 <!DOCTYPE html>
