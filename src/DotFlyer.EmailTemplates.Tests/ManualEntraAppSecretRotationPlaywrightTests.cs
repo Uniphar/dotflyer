@@ -11,7 +11,7 @@ public class ManualEntraAppSecretRotationPlaywrightTests : PlaywrightTestBase
     private EmailMessage _testMessage = null!;
 
     [TestInitialize]
-    public async Task TestSetup()
+    public void TestSetup()
     {
         _testModel = new ManualEntraAppSecretRotationModel
         {
