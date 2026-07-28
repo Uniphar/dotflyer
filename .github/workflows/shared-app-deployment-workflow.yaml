@@ -38,15 +38,15 @@ on:
         type: string
         required: true
         description: "Application Version"
+      regionCode:
+        type: string
+        required: true
+        description: "Region short code (e.g. ne, we)"
 
 jobs:
   deploy_app:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        regionShortCode: ["ne", "we"]
     steps:
       - name: checkout repo
         uses: actions/checkout@v6
@@ -75,19 +75,18 @@ jobs:
 
       - name: compute environment variables
         shell: pwsh
+        env:
+          AKS_CLUSTER_NAME: ${{ vars[format('AKS_{0}_{1}_CLUSTER', inputs.regionCode, inputs.environment)] }}
         run: |
           Import-Module .\devops-azure\src\Uniphar.DevOps.psd1 -ErrorAction Stop -Force
 
           $ACRName = Resolve-UniResourceName 'acr' $p_computeProject -Context $app_AKS
-          $AKSClusterResourceGroup = Resolve-UniResourceName 'resource-group' $p_computeProject -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
-          $AKSClusterName = Resolve-UniResourceName 'aks' $p_computeProject -Context $app_AKS -Environment '${{ inputs.environment }}' -Region '${{ matrix.regionShortCode }}'
           $AKSClusterSAName = Resolve-UniKubeWorkloadSAName '${{ inputs.environment }}' 'platform-app'
           $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
           $AzureEntraExternalTenantId = Resolve-UniEntraExternalTenantId -Environment '${{ inputs.environment }}'
 
           echo "ACR_NAME=$ACRName" >> $env:GITHUB_ENV
-          echo "AKS_CLUSTER_RESOURCE_GROUP=$AKSClusterResourceGroup" >> $env:GITHUB_ENV
-          echo "AKS_CLUSTER_NAME=$AKSClusterName" >> $env:GITHUB_ENV
+          echo "AKS_CLUSTER_NAME=$env:AKS_CLUSTER_NAME" >> $env:GITHUB_ENV
           echo "AKS_CLUSTER_SERVICE_ACCOUNT_NAME=$AKSClusterSAName" >> $env:GITHUB_ENV
           echo "AZURE_KEY_VAULT_NAME=$AzureKeyVaultName" >> $env:GITHUB_ENV
           echo "AZURE_ENTRA_EXTERNAL_TENANT_ID=$AzureEntraExternalTenantId" >> $env:GITHUB_ENV
@@ -105,7 +104,7 @@ jobs:
       - name: Gets K8s context
         uses: azure/aks-set-context@v4
         with:
-          resource-group: ${{ env.AKS_CLUSTER_RESOURCE_GROUP }}
+          resource-group: compute-${{ inputs.regionCode }}-${{ inputs.environment }}
           cluster-name: ${{ env.AKS_CLUSTER_NAME }}
           use-kubelogin: "true"
         id: k8context
@@ -136,7 +135,7 @@ jobs:
           --set-string AKSClusterSAName="$AKS_CLUSTER_SERVICE_ACCOUNT_NAME"
           --set-string AzureKeyVaultName="$AZURE_KEY_VAULT_NAME"
           --set-string AzureEntraExternalTenantId="$AZURE_ENTRA_EXTERNAL_TENANT_ID"
-          --set-string regioncode="${{ matrix.regionShortCode }}"
+          --set-string regioncode="${{ inputs.regionCode }}"
           -n platform-app
           --atomic
 
