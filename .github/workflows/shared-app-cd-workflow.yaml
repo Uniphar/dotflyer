@@ -18,12 +18,9 @@ on:
       AZURE_DEV_SUBSCRIPTION_ID:
         required: true
         description: "Azure Dev Subscription ID"
-<<<<<<< HEAD
       AZURE_DEV_NEW_SUBSCRIPTION_ID:
-        required: true
+        required: false
         description: "Azure Dev New Subscription ID"
-=======
->>>>>>> origin/main
       AZURE_PROD_SUBSCRIPTION_ID:
         required: true
         description: "Azure Prod Subscription ID"
@@ -57,7 +54,6 @@ jobs:
       applicationName: ${{ inputs.applicationName }}
 
   app_deployment_dev_ne:
-<<<<<<< HEAD
     needs: app_package
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
@@ -74,8 +70,6 @@ jobs:
       regionCode: ne
 
   app_deployment_dev_we:
-=======
->>>>>>> origin/main
     needs: app_package
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
@@ -89,25 +83,6 @@ jobs:
       applicationFolder: ${{ inputs.applicationFolder }}
       applicationName: ${{ inputs.applicationName }}
       applicationVersion: ${{ needs.app_package.outputs.applicationVersion }}
-<<<<<<< HEAD
-=======
-      regionCode: ne
-
-  app_deployment_dev_we:
-    needs: app_deployment_dev_ne
-    uses: ./.github/workflows/shared-app-deployment-workflow.yaml
-    secrets:
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_DEV_SUBSCRIPTION_ID }}
-      ACTIONS_AUTH_APP_ID: ${{ secrets.ACTIONS_AUTH_APP_ID }}
-      ACTIONS_AUTH_APP_PRIVATE_KEY: ${{ secrets.ACTIONS_AUTH_APP_PRIVATE_KEY }}
-    with:
-      environment: dev
-      applicationFolder: ${{ inputs.applicationFolder }}
-      applicationName: ${{ inputs.applicationName }}
-      applicationVersion: ${{ needs.app_package.outputs.applicationVersion }}
->>>>>>> origin/main
       regionCode: we
 
   app_integration_tests_dev:
@@ -138,11 +113,7 @@ jobs:
       openApiSpecPath: "dotflyer/open-api/v1"
 
   app_deployment_test_ne:
-<<<<<<< HEAD
     needs: [app_package, app_integration_tests_dev]
-=======
-    needs: [app_package]
->>>>>>> origin/main
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -158,11 +129,7 @@ jobs:
       regionCode: ne
 
   app_deployment_test_we:
-<<<<<<< HEAD
     needs: [app_package, app_integration_tests_dev]
-=======
-    needs: [app_deployment_test_ne]
->>>>>>> origin/main
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -205,11 +172,7 @@ jobs:
       openApiSpecPath: "dotflyer/open-api/v1"
 
   app_deployment_prod_ne:
-<<<<<<< HEAD
     needs: [app_package, app_integration_tests_test]
-=======
-    needs: [app_package]
->>>>>>> origin/main
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -225,11 +188,7 @@ jobs:
       regionCode: ne
 
   app_deployment_prod_we:
-<<<<<<< HEAD
     needs: [app_package, app_integration_tests_test]
-=======
-    needs: [app_deployment_prod_ne]
->>>>>>> origin/main
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
