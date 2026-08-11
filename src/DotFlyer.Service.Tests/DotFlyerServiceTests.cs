@@ -25,11 +25,11 @@ public class DotFlyerServiceTests
 
         DefaultAzureCredential credential = new();
 
-        var apiProjectPath = Path.GetFullPath("../../../../Teams.Notifications.Api");
+        var serviceProjectPath = Path.GetFullPath("../../../../src/DotFlyer.Service");
         var runEnv = (context.Properties["Environment"]?.ToString() ?? "dev").Trim().ToLowerInvariant();
         var env = runEnv == "local" ? "dev" : runEnv;
         var config = new ConfigurationBuilder()
-            .SetBasePath(apiProjectPath)
+            .SetBasePath(serviceProjectPath)
             .AddJsonFile("appsettings.json", false, false)
             .AddJsonFile($"appsettings.{env}.json", true, false)
             .AddAzureKeyVault(new($"https://uni-devops-app-{env}-kv.vault.azure.net/"), new DefaultAzureCredential())
