@@ -1,8 +1,11 @@
-﻿namespace DotFlyer.Api.Tests;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace DotFlyer.Api.Tests;
 
 [TestClass, TestCategory("Integration")]
 public class ApiTests
 {
+    private static IConfigurationRoot _config;
     private static IServiceProvider? _serviceProvider;
 
     private static string? _apiHost;
@@ -10,7 +13,7 @@ public class ApiTests
     private static string? _scope;
 
     private static CancellationToken _cancellationToken;
-    private static SecretClient? _secretClient;
+
     private static ICslQueryProvider? _cslQueryProvider;
 
     // these will be initialized before use
@@ -41,12 +44,19 @@ public class ApiTests
         _apiHost = Environment.GetEnvironmentVariable("API_HOST");
         _instance = $"https://login.microsoftonline.com/{Environment.GetEnvironmentVariable("AZURE_ENTRA_EXTERNAL_TENANT_ID")}";
 
-        _secretClient = new(new($"https://{Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME")}.vault.azure.net/"), credential);
-
-        var appClientId = (await _secretClient!.GetSecretAsync("dotflyer-api-client-id", cancellationToken: _cancellationToken)).Value.Value;
+        var serviceProjectPath = Path.GetFullPath("../../../../src/DotFlyer.Service");
+        var runEnv = (context.Properties["Environment"]?.ToString() ?? "dev").Trim().ToLowerInvariant();
+        var env = runEnv == "local" ? "dev" : runEnv;
+        _config = new ConfigurationBuilder()
+            .SetBasePath(serviceProjectPath)
+            .AddJsonFile("appsettings.json", false, false)
+            .AddJsonFile($"appsettings.{env}.json", true, false)
+            .AddAzureKeyVault(new Uri($"https://uni-devops-app-{env}-kv.vault.azure.net/"), credential)
+            .Build();
+        var appClientId = _config["dotflyer-api-client-id"];
         _scope = $"api://dotflyer-api/{appClientId}/.default";
 
-        var adxHostAddress = (await _secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
+        var adxHostAddress = _config["AzureDataExplorer:HostAddress"];
 
         var kcsb = new KustoConnectionStringBuilder(adxHostAddress, "devops")
             .WithAadTokenProviderAuthentication(async () =>
@@ -54,10 +64,10 @@ public class ApiTests
 
         _cslQueryProvider = KustoClientFactory.CreateCslQueryProvider(kcsb);
 
-        _smsReceiverNumber = (await _secretClient.GetSecretAsync("integration-test-dotflyer-receiver-number", cancellationToken: _cancellationToken)).Value.Value;
+        _smsReceiverNumber = _config["integration-test-dotflyer-receiver-number"];
 
-        _senderEmail = (await _secretClient.GetSecretAsync("integration-test-dotflyer-sender", cancellationToken: _cancellationToken)).Value.Value;
-        _receiverEmail = (await _secretClient.GetSecretAsync("integration-test-dotflyer-receiver", cancellationToken: _cancellationToken)).Value.Value;
+        _senderEmail = _config["integration-test-dotflyer-sender"];
+        _receiverEmail = _config["integration-test-dotflyer-receiver"];
     }
 
     [TestMethod]
@@ -650,8 +660,8 @@ public class ApiTests
 
     public static async Task<string> GetAccessTokenAsync(string clientId, string clientSecret)
     {
-        var clientIdValue = (await _secretClient!.GetSecretAsync(clientId, cancellationToken: _cancellationToken)).Value.Value;
-        var clientSecretValue = (await _secretClient!.GetSecretAsync(clientSecret, cancellationToken: _cancellationToken)).Value.Value;
+        var clientIdValue = _config[clientId];
+        var clientSecretValue = _config[clientSecret];
 
         var result = await ConfidentialClientApplicationBuilder
                             .Create(clientIdValue)

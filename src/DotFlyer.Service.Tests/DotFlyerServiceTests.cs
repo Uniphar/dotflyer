@@ -21,8 +21,6 @@ public class DotFlyerServiceTests
     {
         _cancellationToken = context.CancellationTokenSource.Token;
 
-        var azureKeyVaultName = Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME");
-
         DefaultAzureCredential credential = new();
 
         var serviceProjectPath = Path.GetFullPath("../../../../src/DotFlyer.Service");
@@ -32,10 +30,9 @@ public class DotFlyerServiceTests
             .SetBasePath(serviceProjectPath)
             .AddJsonFile("appsettings.json", false, false)
             .AddJsonFile($"appsettings.{env}.json", true, false)
-            .AddAzureKeyVault(new Uri($"https://uni-devops-app-{env}-kv.vault.azure.net/"), credential)
+            .AddAzureKeyVault(new($"https://uni-devops-app-{env}-kv.vault.azure.net/"), credential)
             .Build();
-        var serviceBusNamespaceName = config["AzureServiceBus:Name"]
-            ?? throw new InvalidOperationException("Missing configuration value 'AzureServiceBus:Name'.");
+        var serviceBusNamespaceName = config["AzureServiceBus:Name"] ?? throw new InvalidOperationException("Missing configuration value 'AzureServiceBus:Name'.");
 
         _serviceBusClient = new(serviceBusNamespaceName, credential);
         _emailServiceBusSender = _serviceBusClient.CreateSender("dotflyer-email");
