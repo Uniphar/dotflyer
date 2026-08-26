@@ -84,12 +84,16 @@ jobs:
           $AKSClusterSAName = Resolve-UniKubeWorkloadSAName '${{ inputs.environment }}' 'platform-app'
           $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
           $AzureEntraExternalTenantId = Resolve-UniEntraExternalTenantId -Environment '${{ inputs.environment }}'
+          $AzureServiceBusName = Resolve-UniResourceName 'service-bus' $p_devopsDomain -Environment '${{ inputs.environment }}'
+          $AzureDataExplorerName = Resolve-UniResourceName 'adx' $p_devopsDomain -Environment '${{ inputs.environment }}'
 
           echo "ACR_NAME=$ACRName" >> $env:GITHUB_ENV
           echo "AKS_CLUSTER_NAME=$env:AKS_CLUSTER_NAME" >> $env:GITHUB_ENV
           echo "AKS_CLUSTER_SERVICE_ACCOUNT_NAME=$AKSClusterSAName" >> $env:GITHUB_ENV
           echo "AZURE_KEY_VAULT_NAME=$AzureKeyVaultName" >> $env:GITHUB_ENV
           echo "AZURE_ENTRA_EXTERNAL_TENANT_ID=$AzureEntraExternalTenantId" >> $env:GITHUB_ENV
+          echo "AZURE_SERVICE_BUS_NAME=$AzureServiceBusName.servicebus.windows.net" >> $env:GITHUB_ENV
+          echo "AZURE_DATA_EXPLORER_HOST_ADDRESS=https://$AzureDataExplorerName.$g_coreLocation.kusto.windows.net" >> $env:GITHUB_ENV
           echo "APPLICATION_FOLDER=${{ inputs.applicationFolder }}" >> $env:GITHUB_ENV
           echo "APPLICATION_NAME=${{ inputs.applicationName }}" >> $env:GITHUB_ENV
           echo "APPLICATION_VERSION=${{ inputs.applicationVersion }}" >> $env:GITHUB_ENV
@@ -135,6 +139,8 @@ jobs:
           --set-string AKSClusterSAName="$AKS_CLUSTER_SERVICE_ACCOUNT_NAME"
           --set-string AzureKeyVaultName="$AZURE_KEY_VAULT_NAME"
           --set-string AzureEntraExternalTenantId="$AZURE_ENTRA_EXTERNAL_TENANT_ID"
+          --set-string AzureServiceBusName="$AZURE_SERVICE_BUS_NAME"
+          --set-string AzureDataExplorerHostAddress="$AZURE_DATA_EXPLORER_HOST_ADDRESS"
           --set-string regioncode="${{ inputs.regionCode }}"
           -n platform-app
           --atomic

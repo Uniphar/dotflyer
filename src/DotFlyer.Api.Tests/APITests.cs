@@ -56,7 +56,7 @@ public class ApiTests
         var appClientId = _config["dotflyer-api-client-id"];
         _scope = $"api://dotflyer-api/{appClientId}/.default";
 
-        var adxHostAddress = _config["AzureDataExplorer:HostAddress"];
+        var adxHostAddress = Environment.GetEnvironmentVariable("AZURE_DATA_EXPLORER_HOST_ADDRESS") ?? _config["AzureDataExplorer:HostAddress"];
 
         var kcsb = new KustoConnectionStringBuilder(adxHostAddress, "devops")
             .WithAadTokenProviderAuthentication(async () =>

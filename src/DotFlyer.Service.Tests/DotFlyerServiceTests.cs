@@ -32,7 +32,7 @@ public class DotFlyerServiceTests
             .AddJsonFile($"appsettings.{env}.json", true, false)
             .AddAzureKeyVault(new($"https://uni-devops-app-{env}-kv.vault.azure.net/"), credential)
             .Build();
-        var serviceBusNamespaceName = config["AzureServiceBus:Name"] ?? throw new InvalidOperationException("Missing configuration value 'AzureServiceBus:Name'.");
+        var serviceBusNamespaceName = Environment.GetEnvironmentVariable("AZURE_SERVICE_BUS_NAME") ?? config["AzureServiceBus:Name"] ?? throw new InvalidOperationException("Missing configuration value 'AzureServiceBus:Name'.");
 
         _serviceBusClient = new(serviceBusNamespaceName, credential);
         _emailServiceBusSender = _serviceBusClient.CreateSender("dotflyer-email");
@@ -48,7 +48,7 @@ public class DotFlyerServiceTests
 
         _receiverNumber = config["integration-test-dotflyer-receiver-number"];
 
-        var _adxHostAddress = config["AzureDataExplorer:HostAddress"];
+        var _adxHostAddress = Environment.GetEnvironmentVariable("AZURE_DATA_EXPLORER_HOST_ADDRESS") ?? config["AzureDataExplorer:HostAddress"];
 
         var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, "devops")
             .WithAadTokenProviderAuthentication(async () =>
