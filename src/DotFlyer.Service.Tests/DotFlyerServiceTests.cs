@@ -21,30 +21,34 @@ public class DotFlyerServiceTests
     {
         _cancellationToken = context.CancellationTokenSource.Token;
 
-        var azureKeyVaultName = Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME");
-
         DefaultAzureCredential credential = new();
 
-        SecretClient secretClient = new(new($"https://{azureKeyVaultName}.vault.azure.net/"), credential);
+        var serviceProjectPath = Path.GetFullPath("../../../../src/DotFlyer.Service");
+        var runEnv = (context.Properties["Environment"]?.ToString() ?? "dev").Trim().ToLowerInvariant();
+        var env = runEnv == "local" ? "dev" : runEnv;
+        var config = new ConfigurationBuilder()
+            .SetBasePath(serviceProjectPath)
+            .AddJsonFile("appsettings.json", false, false)
+            .AddJsonFile($"appsettings.{env}.json", true, false)
+            .AddAzureKeyVault(new($"https://uni-devops-app-{env}-kv.vault.azure.net/"), credential)
+            .Build();
+        var serviceBusNamespaceName = Environment.GetEnvironmentVariable("AZURE_SERVICE_BUS_NAME") ?? config["AzureServiceBus:Name"] ?? throw new InvalidOperationException("Missing configuration value 'AzureServiceBus:Name'.");
 
-        var serviceBusNamespaceName = await secretClient.GetSecretAsync("AzureServiceBus--Name", cancellationToken: _cancellationToken);
-
-        _serviceBusClient = new(serviceBusNamespaceName.Value.Value, credential);
-
+        _serviceBusClient = new(serviceBusNamespaceName, credential);
         _emailServiceBusSender = _serviceBusClient.CreateSender("dotflyer-email");
         _smsServiceBusSender = _serviceBusClient.CreateSender("dotflyer-sms");
 
-        var sendgridApiKeyIntegrationTest = await secretClient.GetSecretAsync("SendGrid--ApiKeyIntegrationTest", cancellationToken: _cancellationToken);
+        var sendgridApiKeyIntegrationTest = config["SendGrid:ApiKeyIntegrationTest"];
 
         _httpClient = new() { BaseAddress = new("https://api.sendgrid.com/v3/") };
-        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {sendgridApiKeyIntegrationTest.Value.Value}");
+        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {sendgridApiKeyIntegrationTest}");
 
-        _senderEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-sender", cancellationToken: _cancellationToken)).Value.Value;
-        _receiverEmail = (await secretClient.GetSecretAsync("integration-test-dotflyer-receiver", cancellationToken: _cancellationToken)).Value.Value;
+        _senderEmail = config["integration-test-dotflyer-sender"];
+        _receiverEmail = config["integration-test-dotflyer-receiver"];
 
-        _receiverNumber = (await secretClient.GetSecretAsync("integration-test-dotflyer-receiver-number", cancellationToken: _cancellationToken)).Value.Value;
+        _receiverNumber = config["integration-test-dotflyer-receiver-number"];
 
-        var _adxHostAddress = (await secretClient.GetSecretAsync("AzureDataExplorer--HostAddress", cancellationToken: _cancellationToken)).Value.Value;
+        var _adxHostAddress = Environment.GetEnvironmentVariable("AZURE_DATA_EXPLORER_HOST_ADDRESS") ?? config["AzureDataExplorer:HostAddress"];
 
         var kcsb = new KustoConnectionStringBuilder(_adxHostAddress, "devops")
             .WithAadTokenProviderAuthentication(async () =>

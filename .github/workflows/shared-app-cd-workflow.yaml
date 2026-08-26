@@ -175,7 +175,7 @@ jobs:
       openApiSpecPath: "dotflyer/open-api/v1"
 
   app_deployment_prod_ne:
-    needs: app_package
+    needs: [app_package]
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

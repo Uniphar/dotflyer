@@ -4,3 +4,5 @@ regioncode: TB
 AKSClusterSAName: tbd
 AzureKeyVaultName: tbd
 ACRName: computeaksacr
+AzureServiceBusName: tbd
+AzureDataExplorerHostAddress: tbd

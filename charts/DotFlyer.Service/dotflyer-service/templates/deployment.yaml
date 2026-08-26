@@ -24,5 +24,9 @@ spec:
           env:
             - name: "AZURE_KEY_VAULT_NAME"
               value: {{ .Values.AzureKeyVaultName }}
+            - name: "AzureServiceBus__Name"
+              value: {{ .Values.AzureServiceBusName }}
+            - name: "AzureDataExplorer__HostAddress"
+              value: {{ .Values.AzureDataExplorerHostAddress }}
       nodeSelector:
         agentpool: platform

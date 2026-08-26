@@ -21,7 +21,7 @@ All required dependencies/services can be added with `WithDependencies` extensio
 
 The following configuration settings are required by the service:
 
-- `AzureServiceBus:Name` - Azure Service Bus namespace name
+- `AzureServiceBus:Name` - Azure Service Bus namespace name. For `test`/`prod`, this is resolved via `Resolve-UniResourceName` in the CD pipeline and injected as the `AzureServiceBus__Name` environment variable through the Helm chart; `dev`/local runs keep using `appsettings.dev.json`.
 - `AzureServiceBus:TopicNameForEmail` - Azure Service Bus topic name, where messages for email sending are received
 - `AzureServiceBus:TopicNameForSms` - Azure Service Bus topic name, where messages for SMS sending are received
 - `AzureServiceBus:DuplicateDetectionTimeWindowInSeconds` - Azure Service Bus duplicate detection time window in seconds
@@ -32,7 +32,7 @@ The following configuration settings are required by the service:
 - `Twilio:ApiKeySID` - Twilio API key SID
 - `Twilio:ApiKeySecret` - Twilio API key secret
 - `Twilio:FromPhoneNumber` - Twilio phone number, which is used to send SMS
-- `AzureDataExplorer:HostAddress` - Azure Data Explorer host address, where email information is saved
+- `AzureDataExplorer:HostAddress` - Azure Data Explorer host address, where email information is saved. For `test`/`prod`, this is resolved via `Resolve-UniResourceName` in the CD pipeline and injected as the `AzureDataExplorer__HostAddress` environment variable through the Helm chart; `dev`/local runs keep using `appsettings.dev.json`.
 - `AzureDataExplorer:DatabaseName` - Azure Data Explorer database name, which is used to save email information
 
 ### DotFlyer.Api
