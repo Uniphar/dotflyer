@@ -85,7 +85,7 @@ jobs:
           $AzureKeyVaultName = Resolve-UniResourceName 'keyvault' "$p_devopsDomain-app" -Environment '${{ inputs.environment }}'
           $AzureEntraExternalTenantId = Resolve-UniEntraExternalTenantId -Environment '${{ inputs.environment }}'
           $AzureServiceBusName = Resolve-UniResourceName 'service-bus' $p_devopsDomain -Environment '${{ inputs.environment }}'
-          $AzureDataExplorerName = Resolve-UniResourceName 'adx' $p_devopsDomain -Environment '${{ inputs.environment }}'
+          $AzureDataExplorerName = Resolve-UniResourceName 'adx-cluster' $p_devopsDomain -Environment '${{ inputs.environment }}'
 
           echo "ACR_NAME=$ACRName" >> $env:GITHUB_ENV
           echo "AKS_CLUSTER_NAME=$env:AKS_CLUSTER_NAME" >> $env:GITHUB_ENV
