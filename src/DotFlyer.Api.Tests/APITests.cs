@@ -44,7 +44,7 @@ public class ApiTests
         _apiHost = Environment.GetEnvironmentVariable("API_HOST");
         _instance = $"https://login.microsoftonline.com/{Environment.GetEnvironmentVariable("AZURE_ENTRA_EXTERNAL_TENANT_ID")}";
 
-        var serviceProjectPath = Path.GetFullPath("../../../DotFlyer.Service", AppContext.BaseDirectory);
+        var serviceProjectPath = Path.GetFullPath("../../../../DotFlyer.Service", AppContext.BaseDirectory);
         var runEnv = (context.Properties["Environment"]?.ToString() ?? "dev").Trim().ToLowerInvariant();
         var env = runEnv == "local" ? "dev" : runEnv;
         _config = new ConfigurationBuilder()
