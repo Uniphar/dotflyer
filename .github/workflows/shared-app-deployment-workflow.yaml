@@ -143,7 +143,9 @@ jobs:
           --set-string AzureDataExplorerHostAddress="$AZURE_DATA_EXPLORER_HOST_ADDRESS"
           --set-string regioncode="${{ inputs.regionCode }}"
           -n platform-app
-          --atomic
+          --wait
+          --timeout 5m
+          --rollback-on-failure
 
   notify:
     needs: deploy_app
