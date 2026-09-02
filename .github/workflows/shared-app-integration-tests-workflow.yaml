@@ -8,28 +8,28 @@ on:
     secrets:
       AZURE_TENANT_ID:
         required: true
-        description: 'Azure Tenant ID'
+        description: "Azure Tenant ID"
       AZURE_CLIENT_ID:
         required: true
-        description: 'Azure Client ID'
+        description: "Azure Client ID"
       AZURE_SUBSCRIPTION_ID:
         required: true
-        description: 'Azure Subscription ID'
+        description: "Azure Subscription ID"
       ACTIONS_AUTH_APP_ID:
         required: true
-        description: 'GitHub App ID'
+        description: "GitHub App ID"
       ACTIONS_AUTH_APP_PRIVATE_KEY:
         required: true
-        description: 'GitHub App Private Key'
+        description: "GitHub App Private Key"
     inputs:
       environment:
         type: string
         required: true
-        description: 'Environment'
+        description: "Environment"
       applicationFolder:
         type: string
         required: true
-        description: 'Application Folder'
+        description: "Application Folder"
 
 jobs:
   run_integration_tests:
@@ -72,7 +72,7 @@ jobs:
         uses: azure/powershell@v2
         with:
           azPSVersion: "latest"
-          errorActionPreference: 'stop'
+          errorActionPreference: "stop"
           failOnStandardError: true
           inlineScript: |
             try{
@@ -83,7 +83,7 @@ jobs:
               $dnsRecordName = Resolve-UniDnsRecordName $p_webApiProject -Environment '${{ inputs.environment }}'
               $ApiHost = "$($dnsRecordName).$($g_mainPublicDns)"
               $AzureServiceBusName = Resolve-UniResourceName 'service-bus' $p_devopsDomain -Environment '${{ inputs.environment }}'
-              $AzureDataExplorerName = Resolve-UniResourceName 'adx' $p_devopsDomain -Environment '${{ inputs.environment }}'
+              $AzureDataExplorerName = Resolve-UniResourceName 'adx-cluster' $p_devopsDomain -Environment '${{ inputs.environment }}'
 
               echo "AZURE_KEY_VAULT_NAME=$AzureKeyVaultName" >> $env:GITHUB_ENV
               echo "AZURE_ENTRA_EXTERNAL_TENANT_ID=$AzureEntraExternalTenantId" >> $env:GITHUB_ENV
@@ -114,9 +114,9 @@ jobs:
 
       - uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: 'shared-failed-build-notification-workflow.yaml'
+          workflow: "shared-failed-build-notification-workflow.yaml"
           inputs: '{
-              "workflowId":"${{ github.run_id }}", 
-              "repository":"${{ github.repository }}"
+            "workflowId":"${{ github.run_id }}",
+            "repository":"${{ github.repository }}"
             }'
           token: ${{ steps.gh-app.outputs.token }}
