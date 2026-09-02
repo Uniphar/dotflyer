@@ -23,7 +23,7 @@ public class DotFlyerServiceTests
 
         DefaultAzureCredential credential = new();
 
-        var serviceProjectPath = Path.GetFullPath("../../../../src/DotFlyer.Service");
+        var serviceProjectPath = Path.GetFullPath("../../../DotFlyer.Service", AppContext.BaseDirectory);
         var runEnv = (context.Properties["Environment"]?.ToString() ?? "dev").Trim().ToLowerInvariant();
         var env = runEnv == "local" ? "dev" : runEnv;
         var config = new ConfigurationBuilder()
