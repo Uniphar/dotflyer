@@ -44,7 +44,7 @@ public class ApiTests
         _apiHost = Environment.GetEnvironmentVariable("API_HOST");
         _instance = $"https://login.microsoftonline.com/{Environment.GetEnvironmentVariable("AZURE_ENTRA_EXTERNAL_TENANT_ID")}";
 
-        var serviceProjectPath = Path.GetFullPath("../../../../src/DotFlyer.Service");
+        var serviceProjectPath = Path.GetFullPath("../../../../DotFlyer.Service", AppContext.BaseDirectory);
         var runEnv = (context.Properties["Environment"]?.ToString() ?? "dev").Trim().ToLowerInvariant();
         var env = runEnv == "local" ? "dev" : runEnv;
         _config = new ConfigurationBuilder()
@@ -458,7 +458,7 @@ public class ApiTests
     public async Task Post_Email_WithManualSecretRotationTemplate_ShouldReturn_200_And_RenderTemplate()
     {
         var testGuid = Guid.NewGuid();
-        
+
         var emailMessage = new EmailMessage
         {
             Subject = $"Manual Secret Rotation Test - {testGuid}",
@@ -498,7 +498,7 @@ public class ApiTests
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
         var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
 
         // Wait for the email to be processed and ingested into ADX
@@ -521,7 +521,7 @@ public class ApiTests
     public async Task Post_Email_WithManualEntraAppSecretRotationTemplate_ShouldReturn_200_And_RenderTemplate()
     {
         var testGuid = Guid.NewGuid();
-        
+
         var emailMessage = new EmailMessage
         {
             Subject = $"Manual Entra App Secret Rotation Test - {testGuid}",
@@ -563,7 +563,7 @@ public class ApiTests
         var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
 
         var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
-        
+
         response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
 
         // Wait for the email to be processed and ingested into ADX
