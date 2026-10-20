@@ -33,6 +33,8 @@ spec:
           env:
             - name: "AZURE_KEY_VAULT_NAME"
               value: {{ .Values.AzureKeyVaultName }}
+            - name: "ASPNETCORE_ENVIRONMENT"
+              value: {{ .Values.environment | quote }}
             - name: "AZURE_ENTRA_EXTERNAL_TENANT_ID"
               value: {{ .Values.AzureEntraExternalTenantId }}
           livenessProbe:

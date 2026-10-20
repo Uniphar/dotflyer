@@ -32,7 +32,7 @@ public class DotFlyerServiceTests
             .SetBasePath(serviceProjectPath)
             .AddJsonFile("appsettings.json", false, false)
             .AddJsonFile($"appsettings.{env}.json", true, false)
-            .AddAzureKeyVault(new($"https://uni-devops-app-{env}-kv.vault.azure.net/"), credential)
+            .AddIntegrationTestOldUniKeyvault(env, credential)
             .Build();
         var serviceBusNamespaceName = Environment.GetEnvironmentVariable("AZURE_SERVICE_BUS_NAME") ?? config["AzureServiceBus:Name"] ?? throw new InvalidOperationException("Missing configuration value 'AzureServiceBus:Name'.");
 

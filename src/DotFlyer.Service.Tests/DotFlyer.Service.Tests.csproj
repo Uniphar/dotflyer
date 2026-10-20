@@ -10,14 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AwesomeAssertions" Version="*" />
+    <PackageReference Include="AwesomeAssertions" Version="*" />
     <PackageReference Include="Azure.Identity" Version="*" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="*" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="*" />
     <PackageReference Include="coverlet.collector" Version="*" />
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
-	  <PackageReference Include="Moq" Version="*" />
+    <PackageReference Include="Moq" Version="*" />
     <PackageReference Include="MSTest.TestAdapter" Version="*" />
     <PackageReference Include="MSTest.TestFramework" Version="*" />
     <PackageReference Include="Polly" Version="*" />
@@ -28,4 +28,8 @@
     <ProjectReference Include="..\DotFlyer.Service\DotFlyer.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Uniphar.Platform.Common" Version="*" />
+    <Using Include="Uniphar.Platform.Common.Extensions" />
+  </ItemGroup>
 </Project>
