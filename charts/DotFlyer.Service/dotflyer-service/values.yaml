@@ -3,6 +3,7 @@ revisionHistoryLimit: 2
 regioncode: TB
 AKSClusterSAName: tbd
 AzureKeyVaultName: tbd
+environment: TBD
 ACRName: computeaksacr
 AzureServiceBusName: tbd
 AzureDataExplorerHostAddress: tbd
