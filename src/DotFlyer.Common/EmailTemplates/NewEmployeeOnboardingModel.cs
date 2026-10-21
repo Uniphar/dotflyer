@@ -7,7 +7,7 @@ public class NewEmployeeOnboardingModel
 {
     public required string FirstName { get; init; }
     public required string UserPrincipalName { get; init; }
-    public string? PwPushUrl { get; set; }
+    public required string PwPushUrl { get; init; }
     public int PwPushExpiresInDays { get; set; }
     public int PwPushExpiresAfterViews { get; set; }
 

@@ -54,7 +54,8 @@ public class NewEmployeeOnboardingModelTests
         var json = """
         {
             "FirstName": "Jane",
-            "UserPrincipalName": "jane.doe@example.com"
+            "UserPrincipalName": "jane.doe@example.com",
+            "PwPushUrl": "https://example.com/pwpush"
         }
         """;
 
@@ -63,6 +64,7 @@ public class NewEmployeeOnboardingModelTests
         Assert.IsNotNull(model);
         Assert.AreEqual("Jane", model.FirstName);
         Assert.AreEqual("jane.doe@example.com", model.UserPrincipalName);
+        Assert.AreEqual("https://example.com/pwpush", model.PwPushUrl);
     }
 
     [TestMethod]
@@ -71,14 +73,14 @@ public class NewEmployeeOnboardingModelTests
         var json = """
         {
             "FirstName": "Jane",
-            "UserPrincipalName": "jane.doe@example.com"
+            "UserPrincipalName": "jane.doe@example.com",
+            "PwPushUrl": "https://example.com/pwpush"
         }
         """;
 
         var model = JsonSerializer.Deserialize<NewEmployeeOnboardingModel>(json);
 
         Assert.IsNotNull(model);
-        Assert.IsNull(model.PwPushUrl);
         Assert.AreEqual(0, model.PwPushExpiresInDays);
         Assert.AreEqual(0, model.PwPushExpiresAfterViews);
         Assert.IsNull(model.Environment);
