@@ -10,6 +10,7 @@ namespace DotFlyer.EmailTemplates
 
             services.AddKeyedSingleton(EmailTemplateIds.ManualSecretRotation, typeof(Components.ManualSecretRotation));
             services.AddKeyedSingleton(EmailTemplateIds.ManualEntraAppSecretRotation, typeof(Components.ManualEntraAppSecretRotation));
+            services.AddKeyedSingleton(EmailTemplateIds.NewEmployeeOnboarding, typeof(Components.NewEmployeeOnboarding));
 
             return services;
         }

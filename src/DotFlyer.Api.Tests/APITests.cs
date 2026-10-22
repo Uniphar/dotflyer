@@ -583,6 +583,67 @@ public class ApiTests
     }
 
     [TestMethod]
+    public async Task Post_Email_WithNewEmployeeOnboardingTemplate_ShouldReturn_200_And_RenderTemplate()
+    {
+        var testGuid = Guid.NewGuid();
+
+        var emailMessage = new EmailMessage
+        {
+            Subject = $"New Employee Onboarding Test - {testGuid}",
+            Body = "Fallback body if template fails",
+            From = new Contact
+            {
+                Email = _senderEmail,
+                Name = "Integration Test"
+            },
+            To =
+            [
+                new Contact
+                {
+                    Email = _receiverEmail,
+                    Name = "Integration Test Destination"
+                }
+            ],
+            TemplateId = EmailTemplateIds.NewEmployeeOnboarding,
+            TemplateModel = new NewEmployeeOnboardingModel
+            {
+                FirstName = "Test",
+                UserPrincipalName = "test.user@contoso.test",
+                PwPushUrl = "https://pwpush.test/p/newemployee123",
+                PwPushExpiresInDays = 3,
+                PwPushExpiresAfterViews = 5
+            },
+            Tags = new Dictionary<string, string>
+            {
+                { "TestName", "Email Template Integration Test - New Employee Onboarding" }
+            }
+        };
+
+        var httpClient = GetHttpClient(await GetSenderAccessTokenAsync());
+
+        var response = await httpClient.PostAsync("dotflyer/email", GetStringContent(emailMessage), _cancellationToken);
+
+        var responseContent = await response.Content.ReadAsStringAsync(_cancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK, $"Response content: {responseContent}");
+
+        // Wait for the email to be processed and ingested into ADX
+        EmailData emailData = await _cslQueryProvider!
+            .WaitSingleQueryResult<EmailData>(
+                $"[\"{EmailTable.Instance.TableName}\"] | where Subject == \"{emailMessage.Subject}\"",
+                TimeSpan.FromMinutes(10),
+                _cancellationToken);
+
+        emailData.Should().NotBeNull();
+        emailData.Subject.Should().Be(emailMessage.Subject);
+        emailData.FromEmail.Should().Be(emailMessage.From.Email);
+        emailData.FromName.Should().Be(emailMessage.From.Name);
+        emailData.SendGridStatusCodeInt.Should().Be(202);
+        emailData.SendGridStatusCodeString.Should().Be("Accepted");
+        emailData.Body.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [TestMethod]
     public async Task Post_Email_WithInvalidTemplateId_ShouldFallbackToJson()
     {
         var testGuid = Guid.NewGuid();

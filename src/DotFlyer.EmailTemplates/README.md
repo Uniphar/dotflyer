@@ -28,6 +28,7 @@ The DotFlyer API will render the specified template with the provided model and 
 
 ## Available Templates
 
-- `EmailTemplateId.ManualSecretRotation` - Manual secret rotation template
+- `EmailTemplateIds.ManualSecretRotation` - Manual secret rotation template
+- `EmailTemplateIds.NewEmployeeOnboarding` - New employee onboarding email with Microsoft 365 sign-in details and password delivery link
 
 Templates are stored as Razor components in the `Components/` folder.

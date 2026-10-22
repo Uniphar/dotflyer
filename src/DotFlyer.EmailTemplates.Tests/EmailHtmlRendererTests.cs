@@ -110,6 +110,40 @@
         }
 
         [TestMethod]
+        public async Task RenderAsync_NewEmployeeOnboarding_ShouldRenderTemplateSuccessfully()
+        {
+            var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
+
+            var model = new NewEmployeeOnboardingModel
+            {
+                FirstName = "Jane",
+                UserPrincipalName = "jane.doe@example.com",
+                PwPushUrl = "https://pwpush.local/p/onboard1",
+                PwPushExpiresAfterViews = 5,
+                PwPushExpiresInDays = 3,
+                Environment = "prod"
+            };
+            var message = new EmailMessage
+            {
+                Subject = "Your Microsoft 365 Work Account Is Ready",
+                Body = "Fallback body",
+                TemplateModel = model,
+                TemplateId = EmailTemplateIds.NewEmployeeOnboarding,
+                From = new Contact { Email = "sender@test.local", Name = "Sender" },
+                To = [new Contact { Email = "to@test.local", Name = "To" }]
+            };
+
+            var html = await renderer.RenderAsync(message);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(html));
+            StringAssert.Contains(html, model.FirstName);
+            StringAssert.Contains(html, model.UserPrincipalName);
+            StringAssert.Contains(html, model.PwPushUrl);
+
+            await WriteHtmlToFile("NewEmployeeOnboarding.html", html);
+        }
+
+        [TestMethod]
         public async Task RenderAsync_NoTemplate_ShouldReturnBody()
         {
             var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
