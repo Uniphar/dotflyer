@@ -9,13 +9,10 @@ public static class ConfigurationBuilderExtensions
     /// 
     /// </summary>
     /// <param name="configurationBuilder"></param>
+    /// <param name="environment">The environment name, one of dev, test or prod.</param>
     /// <returns></returns>
-    public static IConfigurationBuilder AddDotFlyerConfiguration(this IConfigurationBuilder configurationBuilder)
+    public static IConfigurationBuilder AddDotFlyerConfiguration(this IConfigurationBuilder configurationBuilder, string environment)
     {
-        configurationBuilder.AddAzureKeyVault(
-            new Uri($"https://{Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME")}.vault.azure.net/"),
-            new DefaultAzureCredential());
-
-        return configurationBuilder;
+        return configurationBuilder.AddUniOldKeyvault(environment, new DefaultAzureCredential());
     }
 }

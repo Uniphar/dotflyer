@@ -9,11 +9,10 @@ public static class ConfigurationBuilderExtensions
     /// Adds the Azure Key Vault configuration provider to the configuration manager and configures authentication options.
     /// </summary>
     /// <param name="configurationManager">The <see cref="ConfigurationManager"/>.</param>
-    public static void AddDotFlyerConfiguration(this ConfigurationManager configurationManager)
+    /// <param name="environment">The environment name, one of dev, test or prod.</param>
+    public static void AddDotFlyerConfiguration(this ConfigurationManager configurationManager, string environment)
     {
-        configurationManager.AddAzureKeyVault(
-            new Uri($"https://{Environment.GetEnvironmentVariable("AZURE_KEY_VAULT_NAME")}.vault.azure.net/"),
-            new DefaultAzureCredential());
+        configurationManager.AddUniOldKeyvault(environment, new DefaultAzureCredential());
 
         Dictionary<string, string?> azureAuthConfiguration = new()
         {

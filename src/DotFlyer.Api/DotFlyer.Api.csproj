@@ -18,6 +18,7 @@
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Mvc" Version="*" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="*" />
     <PackageReference Include="Twilio" Version="*" />
+    <PackageReference Include="Uniphar.Platform.Common" Version="*" />
     <PackageReference Include="Uniphar.Platform.Telemetry" Version="*" />
   </ItemGroup>
 

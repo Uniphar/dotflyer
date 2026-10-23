@@ -146,6 +146,7 @@ jobs:
           --set-string ACRName="$ACR_NAME"
           --set-string AKSClusterSAName="$AKS_CLUSTER_SERVICE_ACCOUNT_NAME"
           --set-string AzureKeyVaultName="$AZURE_KEY_VAULT_NAME"
+          --set-string environment="${{ inputs.environment }}"
           --set-string AzureEntraExternalTenantId="$AZURE_ENTRA_EXTERNAL_TENANT_ID"
           --set-string AzureServiceBusName="$AZURE_SERVICE_BUS_NAME"
           --set-string AzureDataExplorerHostAddress="$AZURE_DATA_EXPLORER_HOST_ADDRESS"
