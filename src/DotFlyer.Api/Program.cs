@@ -21,7 +21,7 @@ global using Uniphar.Platform.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddDotFlyerConfiguration(builder.Environment.EnvironmentName);
+builder.Configuration.AddDotFlyerConfiguration("dotflyer-api", builder.Environment.EnvironmentName);
 builder.Services.AddDependencies(builder.Configuration);
 builder.Services.AddControllers();
 

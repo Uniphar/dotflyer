@@ -20,6 +20,7 @@
     <PackageReference Include="Twilio" Version="*" />
     <PackageReference Include="Uniphar.Platform.Common" Version="*" />
     <PackageReference Include="Uniphar.Platform.Telemetry" Version="*" />
+    <Using Include="Uniphar.Platform.Common.Extensions" />
   </ItemGroup>
 
   <ItemGroup>

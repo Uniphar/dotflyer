@@ -51,7 +51,7 @@ public class ApiTests
             .SetBasePath(serviceProjectPath)
             .AddJsonFile("appsettings.json", false, false)
             .AddJsonFile($"appsettings.{env}.json", true, false)
-            .AddIntegrationTestOldUniKeyvault(env, credential)
+            .AddIntegrationTestOldUniKeyvault("dotflyer-api", "platform", env, credential)
             .Build();
         var appClientId = _config["dotflyer-api-client-id"];
         _scope = $"api://dotflyer-api/{appClientId}/.default";

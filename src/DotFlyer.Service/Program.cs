@@ -33,7 +33,7 @@ global using Uniphar.Platform.Telemetry;
 var builder = Host.CreateApplicationBuilder();
 
 builder.Configuration
-    .AddDotFlyerConfiguration(builder.Environment.EnvironmentName);
+    .AddDotFlyerConfiguration("dotflyer-service", builder.Environment.EnvironmentName);
 
 builder.Services
     .AddDotFlyerMessagesProcessor<AzureServiceBusMessagesProcessor>()
