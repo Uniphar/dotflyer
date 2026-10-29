@@ -610,7 +610,7 @@ public class ApiTests
                 FirstName = "Test",
                 UserPrincipalName = "test.user@contoso.test",
                 PwPushUrl = "https://pwpush.test/p/newemployee123",
-                PwPushExpiresInDays = 3,
+                PwPushExpiresInHours = 8,
                 PwPushExpiresAfterViews = 5
             },
             Tags = new Dictionary<string, string>

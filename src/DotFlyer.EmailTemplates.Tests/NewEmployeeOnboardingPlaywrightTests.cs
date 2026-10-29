@@ -15,7 +15,7 @@ public class NewEmployeeOnboardingPlaywrightTests : PlaywrightTestBase
             UserPrincipalName = "jane.doe@example.com",
             PwPushUrl = "https://pwpush.local/p/onboard1",
             PwPushExpiresAfterViews = 5,
-            PwPushExpiresInDays = 3,
+            PwPushExpiresInHours = 3,
             Environment = "prod"
         };
 
@@ -105,7 +105,7 @@ public class NewEmployeeOnboardingPlaywrightTests : PlaywrightTestBase
 
         var bodyText = await GetElementText(".email-body");
         Assert.IsNotNull(bodyText);
-        StringAssert.Contains(bodyText, _testModel.PwPushExpiresInDays.ToString());
+        StringAssert.Contains(bodyText, _testModel.PwPushExpiresInHours.ToString());
         StringAssert.Contains(bodyText, _testModel.PwPushExpiresAfterViews.ToString());
     }
 
