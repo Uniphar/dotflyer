@@ -19,7 +19,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="*" />
     <PackageReference Include="Twilio" Version="*" />
     <PackageReference Include="Uniphar.Platform.Telemetry" Version="*" />
-    <!-- Direct reference of transitive dependencies because of security updates -->
+    <!-- Direct reference of transitive dependencies -->
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="*" />
   </ItemGroup>
 
