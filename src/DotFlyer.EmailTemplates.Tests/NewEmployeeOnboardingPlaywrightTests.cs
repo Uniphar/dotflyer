@@ -105,7 +105,7 @@ public class NewEmployeeOnboardingPlaywrightTests : PlaywrightTestBase
 
         var bodyText = await GetElementText(".email-body");
         Assert.IsNotNull(bodyText);
-        StringAssert.Contains(bodyText, _testModel.PwPushExpiresInHours.ToString());
+        StringAssert.Contains(bodyText, $"{_testModel.PwPushExpiresInHours} hours");
         StringAssert.Contains(bodyText, _testModel.PwPushExpiresAfterViews.ToString());
     }
 
