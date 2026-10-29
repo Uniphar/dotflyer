@@ -81,7 +81,7 @@ public class NewEmployeeOnboardingModelTests
         var model = JsonSerializer.Deserialize<NewEmployeeOnboardingModel>(json);
 
         Assert.IsNotNull(model);
-        Assert.AreEqual(0, model.PwPushExpiresInDays);
+        Assert.AreEqual(0, model.PwPushExpiresInHours);
         Assert.AreEqual(0, model.PwPushExpiresAfterViews);
         Assert.IsNull(model.Environment);
     }
