@@ -120,7 +120,7 @@
                 UserPrincipalName = "jane.doe@example.com",
                 PwPushUrl = "https://pwpush.local/p/onboard1",
                 PwPushExpiresAfterViews = 5,
-                PwPushExpiresInDays = 3,
+                PwPushExpiresInHours = 3,
                 Environment = "prod"
             };
             var message = new EmailMessage
