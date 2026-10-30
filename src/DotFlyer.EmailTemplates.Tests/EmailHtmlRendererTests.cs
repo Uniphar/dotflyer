@@ -1,4 +1,6 @@
-﻿namespace DotFlyer.EmailTemplates.Tests
+﻿using System.Text.Encodings.Web;
+
+namespace DotFlyer.EmailTemplates.Tests
 {
     [TestClass, TestCategory("Unit")]
     public class EmailHtmlRendererTests
@@ -139,7 +141,7 @@
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
             StringAssert.Contains(html, model.FirstName);
-            StringAssert.Contains(html, System.Text.Encodings.Web.HtmlEncoder.Default.Encode(model.UserPrincipalName));
+            StringAssert.Contains(html, HtmlEncoder.Default.Encode(model.UserPrincipalName));
             StringAssert.Contains(html, model.PwPushUrl);
             StringAssert.Contains(html, "Temporary passcode delivery link:");
             StringAssert.Contains(html, $"Link valid for {model.PwPushExpiresInHours} hours or {model.PwPushExpiresAfterViews} views (whichever comes first).");
