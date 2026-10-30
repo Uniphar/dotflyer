@@ -110,14 +110,16 @@
         }
 
         [TestMethod]
-        public async Task RenderAsync_NewEmployeeOnboarding_ShouldRenderTemplateSuccessfully()
+        [DataRow("jane.doe@example.com", "https://mysignins.microsoft.com/security-info?login_hint=jane.doe%40example.com")]
+        [DataRow("jane+qa&security@example.com", "https://mysignins.microsoft.com/security-info?login_hint=jane%2Bqa%26security%40example.com")]
+        public async Task RenderAsync_NewEmployeeOnboarding_ShouldRenderTemplateSuccessfully(string userPrincipalName, string expectedSignInUrl)
         {
             var renderer = _provider.GetRequiredService<EmailHtmlRenderer>();
 
             var model = new NewEmployeeOnboardingModel
             {
                 FirstName = "Jane",
-                UserPrincipalName = "jane.doe@example.com",
+                UserPrincipalName = userPrincipalName,
                 PwPushUrl = "https://pwpush.local/p/onboard1",
                 PwPushExpiresAfterViews = 5,
                 PwPushExpiresInHours = 3,
@@ -137,8 +139,11 @@
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(html));
             StringAssert.Contains(html, model.FirstName);
-            StringAssert.Contains(html, model.UserPrincipalName);
+            StringAssert.Contains(html, System.Text.Encodings.Web.HtmlEncoder.Default.Encode(model.UserPrincipalName));
             StringAssert.Contains(html, model.PwPushUrl);
+            StringAssert.Contains(html, "Temporary passcode delivery link:");
+            StringAssert.Contains(html, $"Link valid for {model.PwPushExpiresInHours} hours or {model.PwPushExpiresAfterViews} views (whichever comes first).");
+            StringAssert.Contains(html, $"href=\"{expectedSignInUrl}\"");
 
             await WriteHtmlToFile("NewEmployeeOnboarding.html", html);
         }

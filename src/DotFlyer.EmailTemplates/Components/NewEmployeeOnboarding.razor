@@ -5,6 +5,8 @@
 @code {
     [Parameter]
     public required NewEmployeeOnboardingModel Model { get; set; }
+
+    private string SignInUrl => $"https://mysignins.microsoft.com/security-info?login_hint={Uri.EscapeDataString(Model.UserPrincipalName)}";
 }
 
 <BaseEmailLayout Environment="@Model.Environment">
@@ -22,7 +24,7 @@
         {
             <div class="mt-4">
                 <p>
-                    <strong>Password delivery link:</strong>
+                    <strong>Temporary passcode delivery link:</strong>
                     <a href="@Model.PwPushUrl">@Model.PwPushUrl</a><br />
                     <span class="email-muted">
                         Link valid for @Model.PwPushExpiresInHours hours or @Model.PwPushExpiresAfterViews views (whichever comes first).
@@ -30,9 +32,19 @@
                 </p>
             </div>
         }
+
+        <div class="mt-4">
+            <p>
+                <strong>Microsoft 365 sign-in:</strong>
+                <a href="@SignInUrl">@SignInUrl</a><br />
+                <span class="email-muted">
+                    Open the sign-in link above. Enter your Microsoft 365 username if prompted, then use your temporary passcode (Temporary Access Pass) to sign in and follow the on-screen prompts to register your sign-in methods.
+                </span>
+            </p>
+        </div>
     </div>
 
     <div class="mt-4">
-        <p class="email-muted"><strong>Important:</strong> Your password is not included in this email. Please do not forward this email or share your sign-in details with anyone. If you were not expecting this email, do not open any links in it.</p>
+        <p class="email-muted"><strong>Important:</strong> Your temporary passcode is not included in this email. Please do not forward this email or share your sign-in details with anyone. If you were not expecting this email, do not open any links in it.</p>
     </div>
 </BaseEmailLayout>
