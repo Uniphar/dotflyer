@@ -3,3 +3,4 @@ global using DotFlyer.Common.Payload;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Playwright;
 global using System.Text.Json;
+global using System.Text.Encodings.Web;

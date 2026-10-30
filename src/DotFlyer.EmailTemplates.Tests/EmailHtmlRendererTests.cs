@@ -1,6 +1,4 @@
-﻿using System.Text.Encodings.Web;
-
-namespace DotFlyer.EmailTemplates.Tests
+﻿namespace DotFlyer.EmailTemplates.Tests
 {
     [TestClass, TestCategory("Unit")]
     public class EmailHtmlRendererTests
