@@ -24,6 +24,8 @@ spec:
           env:
             - name: "AZURE_KEY_VAULT_NAME"
               value: {{ .Values.AzureKeyVaultName }}
+            - name: "DOTNET_ENVIRONMENT"
+              value: {{ .Values.environment | quote }}
             - name: "AzureServiceBus__Name"
               value: {{ .Values.AzureServiceBusName }}
             - name: "AzureDataExplorer__HostAddress"
