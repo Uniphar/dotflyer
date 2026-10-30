@@ -103,8 +103,16 @@ public class NewEmployeeOnboardingPlaywrightTests : PlaywrightTestBase
         var link = Page.Locator($"a[href='{_testModel.PwPushUrl}']");
         Assert.IsGreaterThan(0, await link.CountAsync(), "Password push link should exist");
 
+        var deliveryLabel = Page.GetByText("Temporary passcode delivery link:", new PageGetByTextOptions { Exact = true });
+        await deliveryLabel.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+
+        var signInUrl = $"https://mysignins.microsoft.com/security-info?login_hint={Uri.EscapeDataString(_testModel.UserPrincipalName)}";
+        var signInLink = Page.Locator($"a[href='{signInUrl}']");
+        Assert.IsGreaterThan(0, await signInLink.CountAsync(), "Microsoft 365 sign-in link should exist");
+
         var bodyText = await GetElementText(".email-body");
         Assert.IsNotNull(bodyText);
+        StringAssert.Contains(bodyText, "Temporary passcode delivery link:");
         StringAssert.Contains(bodyText, $"{_testModel.PwPushExpiresInHours} hours");
         StringAssert.Contains(bodyText, _testModel.PwPushExpiresAfterViews.ToString());
     }
