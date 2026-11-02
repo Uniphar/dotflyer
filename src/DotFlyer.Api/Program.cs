@@ -46,7 +46,6 @@ var healthUrl = "/dotflyer/healthz/live";
 // register OpenTelemetry
 builder
     .RegisterOpenTelemetry("dotflyer-api")
-        .WithAppInsightsConnectionString(builder.Configuration["APPLICATIONINSIGHTS:CONNECTIONSTRING"] ?? throw new InvalidOperationException("Application Insights connection string is required"))
     .WithFilterExclusion([healthUrl])
     .Build();
 var app = builder.Build();
