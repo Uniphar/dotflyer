@@ -45,7 +45,6 @@ on:
 
 jobs:
   deploy_app:
-    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
