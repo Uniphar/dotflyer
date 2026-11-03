@@ -24,10 +24,6 @@ spec:
       operator: is_not_one_of
       values:
         - TaskCanceledException
-        - ObjectDisposedException
-        - ServiceBusException
-        - BlobNotFound
-        - HttpRequestException
     - key: exception.message
       operator: does_not_match
       value: "OperationCanceledException|TaskCanceledException"
