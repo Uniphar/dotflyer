@@ -41,7 +41,6 @@ builder.Services
 // register OpenTelemetry
 builder
     .RegisterOpenTelemetry("dotflyer-service")
-        .WithAppInsightsConnectionString(builder.Configuration["APPLICATIONINSIGHTS:CONNECTIONSTRING"] ?? throw new InvalidOperationException("Application Insights connection string is required"))
     .Build();
 var host = builder.Build();
 

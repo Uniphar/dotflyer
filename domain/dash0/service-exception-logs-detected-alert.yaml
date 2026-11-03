@@ -1,0 +1,22 @@
+﻿apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: dotflyer-service-exception-logs-detected-__ENVIRONMENT__
+  labels:
+    dash0.com/id: dotflyer-service-exception-logs-detected-__ENVIRONMENT__
+spec:
+  groups:
+    - name: DotFlyer Service
+      interval: 5m
+      rules:
+        - alert: Exception Logs Detected (__ENVIRONMENT__)
+          expr: sum(increase({otel_metric_name="dash0.logs", service_name="dotflyer-service", otel_log_severity_range=~"ERROR|FATAL", exception_type!~"TaskCanceledException", exception_message!~`.*(OperationCanceledException|TaskCanceledException).*`}[10m])) > 0
+          for: 5m
+          keep_firing_for: 5m
+          annotations:
+            summary: "Exception logs detected in dotflyer-service (__ENVIRONMENT__)"
+            description: "One or more ERROR or FATAL log records were recorded for dotflyer-service in __ENVIRONMENT__ over the last 10 minutes. Open the 'Only unexpected exceptions' view in the 'DotFlyer Service' folder in Logging to see them."
+            dash0.com/notification-channel-ids: platform-apps-team-__ENVIRONMENT__
+          labels:
+            environment: __ENVIRONMENT__
+            service: dotflyer-service

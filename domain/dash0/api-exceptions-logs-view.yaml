@@ -1,0 +1,56 @@
+﻿apiVersion: operator.dash0.com/v1alpha1
+kind: Dash0View
+metadata:
+  name: dotflyer-api-exception-logs-__ENVIRONMENT__
+  annotations:
+    dash0.com/folder-path: "/DotFlyer API"
+  labels:
+    dash0.com/id: dotflyer-api-exception-logs-__ENVIRONMENT__
+spec:
+  type: logs
+  display:
+    name: Only unexpected exceptions
+    description: Exception logs for dotflyer-api.
+  filter:
+    - key: service.name
+      operator: is
+      value: dotflyer-api
+    - key: otel.log.severity.range
+      operator: is_one_of
+      values:
+        - ERROR
+        - FATAL
+    - key: exception.type
+      operator: is_not_one_of
+      values:
+        - TaskCanceledException
+    - key: exception.message
+      operator: does_not_match
+      value: "OperationCanceledException|TaskCanceledException"
+
+  table:
+    columns:
+      - colSize: min-content
+        key: otel.log.time
+        label: Time
+      - colSize: min-content
+        key: service.name
+        label: Service
+      - colSize: 7rem
+        key: otel.log.severity.range
+        label: Severity
+      - colSize: minmax(auto, 4fr)
+        key: otel.log.body
+        label: Body
+      - colSize: minmax(auto, 1fr)
+        key: exception.type
+        label: Exception Type
+      - colSize: minmax(auto, 2fr)
+        key: exception.message
+        label: Exception Message
+      - colSize: minmax(auto, 1fr)
+        key: otel.trace.id
+        label: Trace Id
+    sort:
+      - direction: descending
+        key: otel.log.time
