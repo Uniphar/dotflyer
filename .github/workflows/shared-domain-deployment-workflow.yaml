@@ -1,0 +1,70 @@
+name: Shared Domain Deployment Workflow
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_TENANT_ID:
+        required: true
+        description: "Azure Tenant ID"
+      AZURE_CLIENT_ID:
+        required: true
+        description: "Azure Client ID"
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+        description: "Azure Subscription ID"
+      AZURE_PLATFORM_SUBSCRIPTION_ID:
+        required: true
+        description: "Azure Platform Subscription ID (hosts uni-core-platform-kv, where the Dash0 secrets live)"
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: "Environment"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy_domain:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Azure login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_PLATFORM_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      - name: Fetch dash0 secrets from key vault
+        uses: azure/powershell@v3
+        with:
+          inlineScript: |
+            $authTokenSecret = Get-AzKeyVaultSecret -VaultName uni-core-platform-kv -Name 'dash0-platform-authorization-secret-${{ inputs.environment }}'
+
+            $authToken = ConvertFrom-SecureString $authTokenSecret.SecretValue -AsPlainText
+
+            Write-Output "::add-mask::$authToken"
+
+            echo "DASH0_AUTH_TOKEN=$authToken" >> $env:GITHUB_ENV
+          azPSVersion: "latest"
+          errorActionPreference: "stop"
+          failOnStandardError: true
+
+      - name: Replace environment tokens in dash0 assets
+        run: find domain/dash0 -name '*.yaml' -exec sed -i "s/__ENVIRONMENT__/${{ inputs.environment }}/g" {} +
+
+      - name: Sync dash0 assets
+        uses: dash0hq/dash0-cli/.github/actions/sync-assets@main
+        with:
+          api-url: https://api.eu-west-1.aws.dash0.com
+          auth-token: ${{ env.DASH0_AUTH_TOKEN }}
+          dataset: platform-${{ inputs.environment }}
+          path: domain/dash0/
+          # deletion detection is off: the git history contains __ENVIRONMENT__ placeholders, not the applied asset names
+          since: none

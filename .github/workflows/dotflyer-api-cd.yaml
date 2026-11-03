@@ -11,7 +11,9 @@ on:
       - .github/workflows/shared-app-cd-workflow.yaml
       - .github/workflows/shared-app-package-workflow.yaml
       - .github/workflows/shared-app-deployment-workflow.yaml
+      - .github/workflows/shared-domain-deployment-workflow.yaml
       - .github/workflows/shared-app-integration-tests-workflow.yaml
+      - domain/**
       - src/DotFlyer.Api/**
 
 permissions:
