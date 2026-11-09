@@ -56,8 +56,19 @@ jobs:
       applicationFolder: ${{ inputs.applicationFolder }}
       applicationName: ${{ inputs.applicationName }}
 
-  app_deployment_dev_ne:
+  domain_deployment_dev:
     needs: app_package
+    uses: ./.github/workflows/shared-domain-deployment-workflow.yaml
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_DEV_SUBSCRIPTION_ID }}
+      AZURE_PLATFORM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PLATFORM_SUBSCRIPTION_ID }}
+    with:
+      environment: dev
+
+  app_deployment_dev_ne:
+    needs: [app_package, domain_deployment_dev]
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -115,8 +126,19 @@ jobs:
       apiPath: "dotflyer"
       openApiSpecPath: "dotflyer/open-api/v1"
 
+  domain_deployment_test:
+    needs: app_package
+    uses: ./.github/workflows/shared-domain-deployment-workflow.yaml
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_TEST_SUBSCRIPTION_ID }}
+      AZURE_PLATFORM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PLATFORM_SUBSCRIPTION_ID }}
+    with:
+      environment: test
+
   app_deployment_test_ne:
-    needs: [app_package]
+    needs: [app_package, domain_deployment_test]
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -174,8 +196,19 @@ jobs:
       apiPath: "dotflyer"
       openApiSpecPath: "dotflyer/open-api/v1"
 
+  domain_deployment_prod:
+    needs: app_package
+    uses: ./.github/workflows/shared-domain-deployment-workflow.yaml
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_PROD_SUBSCRIPTION_ID }}
+      AZURE_PLATFORM_SUBSCRIPTION_ID: ${{ secrets.AZURE_PLATFORM_SUBSCRIPTION_ID }}
+    with:
+      environment: prod
+
   app_deployment_prod_ne:
-    needs: [app_package]
+    needs: [app_package, domain_deployment_prod]
     uses: ./.github/workflows/shared-app-deployment-workflow.yaml
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
