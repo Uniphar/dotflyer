@@ -5,9 +5,9 @@ using System.Reflection;
 
 namespace DotFlyer.EmailTemplates.Preview;
 
-public sealed record PreviewTemplate(string Name, Type ComponentType, Type ModelType);
+internal sealed record PreviewTemplate(string Name, Type ComponentType, Type ModelType);
 
-public sealed class TemplateCatalog
+internal sealed class TemplateCatalog
 {
     private const string ComponentsNamespace = "DotFlyer.EmailTemplates.Components";
 
@@ -45,10 +45,10 @@ public sealed class TemplateCatalog
 
     public object CreateModel(Type modelType)
     {
-        var model = Activator.CreateInstance(modelType)!;
-
         if (ModelCache.TryGetValue(modelType, out var cachedModel))
             return cachedModel;
+
+        var model = Activator.CreateInstance(modelType)!;
 
         foreach (var property in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
