@@ -32,3 +32,15 @@ The DotFlyer API will render the specified template with the provided model and 
 - `EmailTemplateIds.NewEmployeeOnboarding` - New employee onboarding email with Microsoft 365 sign-in details and password delivery link
 
 Templates are stored as Razor components in the `Components/` folder.
+
+## Local preview
+
+With the .NET 11 SDK installed, run from the repository root:
+
+```sh
+dotnet run --project src/DotFlyer.EmailTemplates.Preview
+```
+
+Open the localhost URL printed by the app and select a template from the dropdown to preview it in the iframe. No email is sent, and no backend services or cloud credentials are required. This app is for local development only, not deployment.
+
+Templates are discovered from compiled components with a `Model` parameter; rebuild and restart after adding a template. Models use empty strings and string collections rather than realistic sample data, so conditional sections can be hidden and dates and numbers retain their defaults. Existing logo URLs require network access.
